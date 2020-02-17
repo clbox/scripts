@@ -196,6 +196,7 @@ class Postprocessed_memory:
     def mem_integral(self,mem_cutoff):
         self.nm_work=np.zeros((len(self.cutoffs),self.steps))
         self.force_vec = np.zeros((len(self.cutoffs),self.steps,len(self.friction_indices),3))
+        old_time_scale = np.arange(0,self.steps*time_step,self.steps)
         for co in range(len(self.cutoffs)):
 
             eta_t = self.eta_t_list[co]*-1
@@ -212,7 +213,7 @@ class Postprocessed_memory:
                         integrand[0,:,:]=0
                         continue
 
-                    real_below_ts = int((math.floor(t_prime)/2)+1)            
+                    real_below_ts = np.where(t_prime-old_time_scale < 0, t_prime-old_time_scale, -np.inf).argmax()   
                     real_above_ts = real_below_ts + 1
 
                     if time_step-t_prime > mem_cutoff:
