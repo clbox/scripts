@@ -1,0 +1,39 @@
+#BASH
+
+find dir1 dir2 -type d -exec cp file.txt {} \;     																								 #copies file.txt to all directories listed without overwriting files inside (unless it has same file name as file.txt)
+
+find ./ -type f -exec sed -i -e 's/kgridmin/kgrid/g' {} \; 																							#replaces kgridmin with kgrid for all files in all subdirectories of current working directory without replacing directory names
+
+for file in ./*/*.sh ; do sbatch "$file"; sleep 1; done #sbatch all .sh files in all subdirectories of current working directory with a second apart to be kind to the scheduler
+find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && sbatch tinis_submit.sh && sleep 1" \; 														# same
+
+find . -type f -name '*relax*' | sed -r 's|/[^/]+$||' |sort |uniq 																								#lists all directories containing a file that has relax in its title
+
+find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && python ../project_tensor\(2\).py aims.out ../NORMALMODES_OUTPUT && sleep 1" \; 											#calc relaxation rate from hessian and friction matrix
+
+sed -i.bak '/friction_window_size/d' * 																															#removes line of file containing string
+
+mjobctl -c -w user=msrvhs 																																								#cancels all jobs
+
+awk -v s=0.5000000 '{print $2-s, $3-s, $4}' geometry.in 										 																	#subtracts s from columns 2 and 3 (just prints 4) from geometry.in file and prints output to screen
+
+find /directory_path -mtime -1 -ls 																																#print all the files that have been changed within the last day. can do -mmin for hours etc.
+
+sacct --starttime 2018-12-09 --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist 										#Prints information on all jobs that started since 9th december 2018
+sacct -S start-date -u user-name 																														#nice formatting than last, still replace start-date with above
+
+sed -i  '/4 Au.*$/a constrain_relaxation .true.'  geometry.in 																							#add constrain_relaxation in new line after string <4 Au>
+
+tar -xvzf FOR_CONNOR.tar.gz FOR_CONNOR/CO_Cu100 --exclude='FOR_CONNOR/CO_Cu100/p1x1/first*' 																	#Extract folder CO_Cu100 from that archive excluding all the files in a specific folder beginning with string
+
+while true; do free | grep Mem >> cw_3_key.log; sleep 1; done 																						#grep memory usage and output to file every second
+
+rsync -avz --exclude '*wvfn*' athena:/gpfs/home/warw/msrvhs/calculations/nvt_co_pt111/nvt_p2x2/ nvt_p2x2/ #exclude files restart files
+
+
+find . -path "*/conventional/kgrid*/friction_eigenvectors.jmol" -exec grep "Mode #  6 f" /dev/null {} +
+
+
+for f in $(find . -wholename "*/20/*aims.out"); do echo $f && sed '/\*FRICTION\*/q' $f | grep "Total\ energy\ corrected"  | tail -1; done >> energies_cor.dat
+
+sed '/^id/d' tensors.dat | tr ' ' '\n' | sort -g | tail # biggest number in file 
