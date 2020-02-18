@@ -38,10 +38,8 @@ class Postprocessed_memory:
 
         for ts in range(self.steps):
                 for i in range(self.dimension):
-                    for j in range(self.dimension):
-                        if j<i:
-                            continue
-                        f = interpolate.interp1d(self.bins,self.raw_data[ts,i,j,:])
+                    for j in range(i,self.dimension):
+                        f = interp1d(self.bins,self.raw_data[ts,i,j,:])
                         new_data[ts,i,j,:] = f(new_bins)
         self.new_data = new_data
         self.new_bins = new_bins
@@ -66,25 +64,20 @@ class Postprocessed_memory:
         self.times_list = times_list
     
     def fourier_transform(self):
-        """Fourier transform to time time domain"""
-
+        """Fourier transform to time domain"""
+        try:
+            atoms = self.con.get_atoms(id=1)
+        except:
+            print('cannot get atoms for id = '+str(1))
+        masses = atoms.get_masses()
         for ts in range(self.steps):
-            try:
-                atoms = con.get_atoms(id=ts)
-            except:
-                print('cannot get atoms for id = '+str(ts+1)+' - continuing')
-                continue
-            
-            masses = atoms.get_masses()
-            
+
             re_memory_kernel=self.new_data[ts,:,:,:]
             
             for i in range(self.dimension):
-                i_atom = int(i/3)
-                for j in range(self.dimension):
-                    if j<i:
-                        continue
-                    j_atom = int(j/3)
+                i_atom = i // 3       
+                for j in range(i,self.dimension):
+                    j_atom = j // 3
                     mass_factor=np.sqrt(masses[self.friction_indices[i_atom]])*np.sqrt(masses[self.friction_indices[j_atom]]) #amu
                     lambda_omega = re_memory_kernel[i,j,:]*mass_factor/(fs*1000)
             
@@ -118,10 +111,8 @@ class Postprocessed_memory:
             eta_bar_inter = np.zeros((self.steps,self.dimension,self.dimension,len(times_up)))         
             
             for ts in range(self.steps):
-                for i in range(self.dimension):       
-                    for j in range(self.dimension):
-                        if j<i:
-                            continue
+                for i in range(self.dimension):
+                    for j in range(i,self.dimension):
                     
                         f = interp1d(times,eta_bar_t[ts,i,j,:],fill_value="extrapolate")
                         
@@ -155,17 +146,16 @@ class Postprocessed_memory:
             convolute_factor = sinc*exp_factor
             
             for ts in range(self.steps):
-                for i in range(self.dimension):    
-                    for j in range(self.dimension):
-                        if j<i:
-                            continue  
+                for i in range(self.dimension):
+                    for j in range(i,self.dimension):
                         eta_t[ts,i,j,:] = np.convolve(eta_bar_inter[ts,i,j,:],convolute_factor,'same')*dx 
             self.eta_t_list.append(eta_t)
 
     def get_velocities(self):
         
-        self.all_velocities = []
+        self.all_velocities = np.zeros((self.steps,len(self.friction_indices),3))
         for i in range(self.steps):
+            print(i+1)
             atoms = self.con.get_atoms(id=i+1)
             self.all_velocities[i,:,:] = atoms.get_velocities()[self.friction_indices,:]
 
@@ -179,8 +169,8 @@ class Postprocessed_memory:
         #Define time scale as index
 
         inter_time_scale = np.arange(0,self.steps*self.time_step,dts)
-        old_time_scale = np.arange(0,self.steps*self.time_step,self.steps)
-        self.velocities_inter = np.zeros(inter_time_scale,len(self.friction_indices),3)
+        old_time_scale = np.arange(0,self.steps*self.time_step,self.time_step)
+        self.velocities_inter = np.zeros((len(inter_time_scale),len(self.friction_indices),3))
 
 
         for atom in range(len(self.friction_indices)):
@@ -196,20 +186,17 @@ class Postprocessed_memory:
     #         etc to work with"""
 
 
-    def mem_integral(self):
-        nm_work=np.zeros((len(self.cutoffs),self.steps))
-        force_vec = np.zeros((len(self.cutoffs),self.steps,len(self.friction_indices),3))
+    def mem_integral(self):   
         old_time_scale = np.arange(0,self.steps*self.time_step,self.steps)
         dimension = self.dimension
         mem_cutoff = self.mem_cutoff
         inter_time_scale = self.inter_time_scale
         velocities_inter = self.velocities_inter
-        friction_indices = self.friction_indices
+        force_vec = np.zeros((len(self.cutoffs),len(inter_time_scale),len(self.friction_indices),3))
+        nm_work=np.zeros((len(self.cutoffs),len(inter_time_scale)))
         for co in range(len(self.cutoffs)):
 
             eta_t = self.eta_t_list[co]*-1
-            times = self.times_up_list[co]
-
 
             for i in range(dimension):
                 i_cart = i % 3
@@ -246,10 +233,8 @@ class Postprocessed_memory:
                             integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
                             integrand[tp,j,i] = integrand[tp,i,j] #TODO check integrand[0]
 
-
-
                         force_vec[co,ts,i_atom,i_cart] += np.trapz(integrand[:,i,j],time_axis)
-                    nm_work[co,ts] += np.dot(vel[friction_indices[i_atom],i_cart],force_vec[co,ts,i_atom,i_cart])
+                    nm_work[co,ts] += np.dot(velocities_inter[ts,i_atom,i_cart],force_vec[co,ts,i_atom,i_cart])
                 
                 
         self.nm_work = self.nm_work*self.time_step
@@ -271,16 +256,25 @@ class Postprocessed_memory:
             return(self.force_vec)
 
     def calculate_work(self):
-        
+        import time
+        start_time = time.time()
         if not hasattr(self,'nm_work'):
             self.frequency_interpolate()
+            print("--- %s FI ---" % (time.time() - start_time))
             self.generate_domains()
+            print("--- %s GD ---" % (time.time() - start_time))
             self.fourier_transform()
+            print("--- %s FT ---" % (time.time() - start_time))
             self.time_interpolate()
+            print("--- %s TI ---" % (time.time() - start_time))
             self.convolute()
+            print("--- %s C ---" % (time.time() - start_time))
             self.get_velocities()
+            print("--- %s GV ---" % (time.time() - start_time))
             self.velocitiy_interpolation()
+            print("--- %s VI ---" % (time.time() - start_time))
             self.mem_integral()
+            print("--- %s MI ---" % (time.time() - start_time))
             return(self.nm_work)
         else:
             return(self.nm_work)
@@ -293,24 +287,24 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
     import numpy as np
 
     filename  = 'raw_memory.npy'
+    bins,re,im,dimension,max_e = read_memory_kernel(path_to_calcs+'/'+str(file_range[0])+'/friction_memory_kernel.out')
     if read:
         print('reading')
         raw_data = np.load(filename)
 
     else:
 
-        bins,re_memory_kernel,im_memory_kernel,dimension,max_e = read_memory_kernel(path_to_calcs+'/'+str(file_range[0])+'/friction_memory_kernel.out')
-
         raw_data = np.zeros((len(file_range),dimension,dimension,len(bins)))
+
         for ts in file_range:        
             path = path_to_calcs+'/'+str(ts)+'/friction_memory_kernel.out'
             try:
-                bins,re_memory_kernel,im_memory_kernel,dimension,max_e = read_memory_kernel(path)
+                bins,re,im,dimension,max_e = read_memory_kernel(path)
             except:
                 print('cannot get mem_kernel for '+str(ts)+' - continuing')
                 continue
                     
-            raw_data[ts-1,:,:,:] = re_memory_kernel
+            raw_data[ts-1,:,:,:] = re
         np.save(filename,raw_data)
 
-        return raw_data,bins,dimension
+    return raw_data,bins,dimension

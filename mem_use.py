@@ -3,7 +3,7 @@ import mem_energy_loss as mel
 from ase.db import connect
 
 file_range = np.arange(1,20).tolist()
-raw_data,bins,dimension = mel.Parse_memory_kernels('./calcs',file_range) #parse all memory data, choose range of datapoints parse 
+raw_data,bins,dimension = mel.Parse_memory_kernels('./calcs',file_range,read=True) #parse all memory data, choose range of datapoints parse 
 
 #assumes in directories ./dir/n where n = 1,2,3 etc
 
@@ -22,3 +22,5 @@ pp = mel.Postprocessed_memory(bins,raw_data,cutoffs,40,friction_indices,time_ste
 nm_work = pp.calculate_work()
 
 nm_forces = pp.calculate_friction_force()
+
+np.savetxt('nm_work.txt',(pp.inter_time_scale,nm_work))
