@@ -20,6 +20,7 @@ class Postprocessed_memory:
         self.friction_indices = friction_indices
         self.time_step = time_step * fs
         self.bins = bins
+        self.con = con
 
     def frequency_interpolate(self):
         """Add extra bins in frequency domain"""
@@ -60,7 +61,7 @@ class Postprocessed_memory:
         self.frequency_list = frequency_list
         self.times_list = times_list
     
-    def fourier_transform(self,con):
+    def fourier_transform(self):
         """Fourier transform to time time domain"""
         from ase import Atoms
         from ase.db import connect
@@ -188,9 +189,9 @@ class Postprocessed_memory:
 
         self.inter_time_scale = inter_time_scale
 
-    def get_atoms(self,con):
-        """Just gets the atoms for the first structure to have the masses
-            etc to work with"""
+    # def get_atoms(self,con):
+    #     """Just gets the atoms for the first structure to have the masses
+    #         etc to work with"""
 
 
     def mem_integral(self):
@@ -250,13 +251,12 @@ class Postprocessed_memory:
                                 integrand[tp,i,j]=eta_t_fit[ts,i,j,0]
                                 continue  
 
-                            integrand[tp,i,j] = inter_bin(time_step-t_prime,times,eta_t_fit[ts,i,j,:])
-                            integrand[tp,i,j]*=velocities_inter[tp,j_atom,j_cart]
-                            integrand[tp,j,i]= integrand[tp,i,j] #TODO check integrand[0]
+                            integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
+                            integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
+                            integrand[tp,j,i] = integrand[tp,i,j] #TODO check integrand[0]
 
-                        force_vec[co,ts,i_atom,i_cart]+=np.trapz(integrand[:,i,j],time_axis)
-
-                    nm_work[co,ts]+=np.dot(vel[friction_indices[i_atom],i_cart],force_vec[co,ts,i_atom,i_cart])
+                        force_vec[co,ts,i_atom,i_cart] += np.trapz(integrand[:,i,j],time_axis)
+                    nm_work[co,ts] += np.dot(vel[friction_indices[i_atom],i_cart],force_vec[co,ts,i_atom,i_cart])
                 
                 
         self.nm_work = self.nm_work*self.time_step
@@ -265,14 +265,30 @@ class Postprocessed_memory:
     def calculate_friction_force(self):
 
         if not hasattr(self,'force_vec'):
-            do
+            self.frequency_interpolate()
+            self.generate_domains()
+            self.fourier_transform()
+            self.time_interpolate()
+            self.convolute()
+            self.get_velocities()
+            self.velocitiy_interpolation()
+            self.mem_integral()
+            return(self.force_vec)
         else:
             return(self.force_vec)
 
     def calculate_work(self):
         
         if not hasattr(self,'nm_work'):
-            do
+            self.frequency_interpolate()
+            self.generate_domains()
+            self.fourier_transform()
+            self.time_interpolate()
+            self.convolute()
+            self.get_velocities()
+            self.velocitiy_interpolation()
+            self.mem_integral()
+            return(self.nm_work)
         else:
             return(self.nm_work)
 
@@ -317,4 +333,4 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
             raw_data[ts-1,:,:,:] = re_memory_kernel
         np.save(filename,raw_data)
 
-        return raw_data
+        return raw_data,bins,dimension
