@@ -70,28 +70,28 @@ class Postprocessed_memory:
         except:
             print('cannot get atoms for id = '+str(1))
         masses = atoms.get_masses()
-        for ts in range(self.steps):
 
-            re_memory_kernel=self.new_data[ts,:,:,:]
-            
-            for i in range(self.dimension):
-                i_atom = i // 3       
-                for j in range(i,self.dimension):
-                    j_atom = j // 3
-                    mass_factor=np.sqrt(masses[self.friction_indices[i_atom]])*np.sqrt(masses[self.friction_indices[j_atom]]) #amu
-                    lambda_omega = re_memory_kernel[i,j,:]*mass_factor/(fs*1000)
-            
-                    for co in range(len(self.cutoffs)):
-                        times = self.times_list[co]
-                        frequencies = self.frequency_list[co]
-                        func = np.zeros(len(frequencies))
-                        eta_bar_t = self.eta_bar_t_list[co]
+        for co in range(len(self.cutoffs)):
+            times = self.times_list[co]
+            frequencies = self.frequency_list[co]
+            func = np.zeros(len(frequencies))
+            eta_bar_t = self.eta_bar_t_list[co]
+            for ts in range(self.steps):
+
+                re_memory_kernel=self.new_data[ts,:,:,:]
+                
+                for i in range(self.dimension):
+                    i_atom = i // 3       
+                    for j in range(i,self.dimension):
+                        j_atom = j // 3
+                        mass_factor=np.sqrt(masses[self.friction_indices[i_atom]])*np.sqrt(masses[self.friction_indices[j_atom]]) #amu
+                        lambda_omega = re_memory_kernel[i,j,:]*mass_factor/(fs*1000)
 
                         for t in range(len(times)):
                             func=(lambda_omega[0:len(frequencies)])*np.cos(frequencies*times[t])
                             func[0]=0
                             eta_bar_t[ts,i,j,t]=np.trapz(func[:],frequencies[:])
-                        self.eta_bar_t_list[co]=eta_bar_t
+            self.eta_bar_t_list[co]=eta_bar_t
 
     def time_interpolate(self):
         """At the moment it is neccesary to interpolate in the  time domain
