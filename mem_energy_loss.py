@@ -1,3 +1,11 @@
+import numpy as np
+from scipy.interpolate import interp1d
+from ase.units import _hbar, J, s, fs
+from ase import Atoms
+from ase.db import connect
+hbar = _hbar * J
+
+
 class Postprocessed_memory:
 
     """ Takes Raw data, array of n_structures,dimension,dimension,energy_bins 
@@ -6,12 +14,8 @@ class Postprocessed_memory:
         the effects of memory 
         
         Can do this at multiple cutoff energies if supplied, or one"""
-
-    def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con):
-        import numpy as np
-        from scipy.interpolate import interp1d
-        from ase.units import _hbar, J, s, fs
-        hbar = _hbar * J
+    
+    def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con):      
         self.raw_data = raw_data
         self.dimension = np.shape(raw_data)[1]
         self.cutoffs = cutoffs
@@ -63,8 +67,6 @@ class Postprocessed_memory:
     
     def fourier_transform(self):
         """Fourier transform to time time domain"""
-        from ase import Atoms
-        from ase.db import connect
 
         for ts in range(self.steps):
             try:
@@ -160,11 +162,11 @@ class Postprocessed_memory:
                         eta_t[ts,i,j,:] = np.convolve(eta_bar_inter[ts,i,j,:],convolute_factor,'same')*dx 
             self.eta_t_list.append(eta_t)
 
-    def get_velocities(self,con):
+    def get_velocities(self):
         
         self.all_velocities = []
         for i in range(self.steps):
-            atoms = con.get_atoms(id=i+1)
+            atoms = self.con.get_atoms(id=i+1)
             self.all_velocities[i,:,:] = atoms.get_velocities()[self.friction_indices,:]
 
     def velocitiy_interpolation(self):
@@ -176,8 +178,8 @@ class Postprocessed_memory:
         dts = dt*self.time_step
         #Define time scale as index
 
-        inter_time_scale = np.arange(0,self.steps*time_step,dts)
-        old_time_scale = np.arange(0,self.steps*time_step,self.steps)
+        inter_time_scale = np.arange(0,self.steps*self.time_step,dts)
+        old_time_scale = np.arange(0,self.steps*self.time_step,self.steps)
         self.velocities_inter = np.zeros(inter_time_scale,len(self.friction_indices),3)
 
 
@@ -208,24 +210,13 @@ class Postprocessed_memory:
             eta_t = self.eta_t_list[co]*-1
             times = self.times_up_list[co]
 
-            i_cart = -1
-            i_atom = 0
+
             for i in range(dimension):
-                i_cart = i_cart + 1
-                if (i_cart>2):
-                    i_cart = 0
-                    i_atom = i_atom + 1
-    
-                j_atom = 0
-                j_cart = -1          
-                for j in range(dimension):
-                    j_cart = j_cart + 1
-                    if (j_cart>2):
-                        j_cart = 0
-                        j_atom = j_atom + 1
-                    
-                    if j<i:
-                        continue
+                i_cart = i % 3
+                i_atom = i // 3       
+                for j in range(i,dimension):
+                    j_cart = j % 3
+                    j_atom = j // 3
 
                     fit = interp1d(old_time_scale,eta_t[:,i,j,:],kind='linear',axis=0)
 
@@ -237,11 +228,11 @@ class Postprocessed_memory:
                         time_axis = time_step - t_primes
                         integrand = np.zeros([len(t_primes),dimension,dimension])
 
+                        if ts == 0:
+                            integrand[0,i,j]=0
+                            continue
                         
                         for tp,t_prime in enumerate(t_primes): 
-                            if ts == 0:
-                                integrand[0,i,j]=0
-                                continue
 
                             if time_step-t_prime > mem_cutoff:
                                 integrand[tp,i,j] = 0
@@ -254,6 +245,8 @@ class Postprocessed_memory:
                             integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
                             integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
                             integrand[tp,j,i] = integrand[tp,i,j] #TODO check integrand[0]
+
+
 
                         force_vec[co,ts,i_atom,i_cart] += np.trapz(integrand[:,i,j],time_axis)
                     nm_work[co,ts] += np.dot(vel[friction_indices[i_atom],i_cart],force_vec[co,ts,i_atom,i_cart])
@@ -294,23 +287,10 @@ class Postprocessed_memory:
 
         
 
-
-    
-
-    
-    
-
-
-
-
-
-    
-
-
-
 def Parse_memory_kernels(path_to_calcs,file_range,read=False):
 
     from coolvib.tools.spectrum import read_memory_kernel
+    import numpy as np
 
     filename  = 'raw_memory.npy'
     if read:
@@ -319,11 +299,11 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
 
     else:
 
-        bins,re_memory_kernel,im_memory_kernel,dimension,max_e = read_memory_kernel(path_to_calcs+str(file_range[0])+'/friction_memory_kernel.out')
+        bins,re_memory_kernel,im_memory_kernel,dimension,max_e = read_memory_kernel(path_to_calcs+'/'+str(file_range[0])+'/friction_memory_kernel.out')
 
-        raw_data = np.zeros((file_range[-1]-1,dimension,dimension,len(bins)))
-        for ts in range(file_range):        
-            path = path_to_calcs+str(ts)+'/friction_memory_kernel.out'
+        raw_data = np.zeros((len(file_range),dimension,dimension,len(bins)))
+        for ts in file_range:        
+            path = path_to_calcs+'/'+str(ts)+'/friction_memory_kernel.out'
             try:
                 bins,re_memory_kernel,im_memory_kernel,dimension,max_e = read_memory_kernel(path)
             except:
