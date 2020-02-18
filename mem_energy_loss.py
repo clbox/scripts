@@ -45,7 +45,7 @@ class Postprocessed_memory:
         frequency_list = []
         times_list = []
         self.eta_bar_t_list = []
-        for co,cutoff in enumerate(self.cutoffs):
+        for cutoff in self.cutoffs:
             frequencies=((self.new_bins[self.new_bins<cutoff])/hbar)/s #ase units inverse time
             times = 1/frequencies #ase units time
         
@@ -193,88 +193,74 @@ class Postprocessed_memory:
             etc to work with"""
 
 
-    def mem_integral(self,mem_cutoff):
-        self.nm_work=np.zeros((len(self.cutoffs),self.steps))
-        self.force_vec = np.zeros((len(self.cutoffs),self.steps,len(self.friction_indices),3))
-        old_time_scale = np.arange(0,self.steps*time_step,self.steps)
+    def mem_integral(self):
+        nm_work=np.zeros((len(self.cutoffs),self.steps))
+        force_vec = np.zeros((len(self.cutoffs),self.steps,len(self.friction_indices),3))
+        old_time_scale = np.arange(0,self.steps*self.time_step,self.steps)
+        dimension = self.dimension
+        mem_cutoff = self.mem_cutoff
+        inter_time_scale = self.inter_time_scale
+        velocities_inter = self.velocities_inter
+        friction_indices = self.friction_indices
         for co in range(len(self.cutoffs)):
 
             eta_t = self.eta_t_list[co]*-1
             times = self.times_up_list[co]
 
-            for ts, time_step in enumerate(self.inter_time_scale):
-
-                t_primes = self.inter_time_scale[self.inter_time_scale<=time_step]
-                time_axis = time_step - t_primes
-                integrand = np.zeros([len(t_primes),self.dimension,self.dimension])
-
-                for tp,t_prime in enumerate(t_primes): 
-                    if ts ==0:
-                        integrand[0,:,:]=0
-                        continue
-
-                    real_below_ts = np.where(t_prime-old_time_scale < 0, t_prime-old_time_scale, -np.inf).argmax()   
-                    real_above_ts = real_below_ts + 1
-
-                    if time_step-t_prime > mem_cutoff:
-                        integrand[tp,:,:]=0
-                        continue
+            i_cart = -1
+            i_atom = 0
+            for i in range(dimension):
+                i_cart = i_cart + 1
+                if (i_cart>2):
+                    i_cart = 0
+                    i_atom = i_atom + 1
+    
+                j_atom = 0
+                j_cart = -1          
+                for j in range(dimension):
+                    j_cart = j_cart + 1
+                    if (j_cart>2):
+                        j_cart = 0
+                        j_atom = j_atom + 1
                     
-                    i_cart = -1
-                    i_atom = 0
-                    for i in range(self.dimension):
-                        i_cart = i_cart + 1
-                        if (i_cart>2):
-                            i_cart = 0
-                            i_atom = i_atom + 1
-          
-                        j_atom = 0
-                        j_cart = -1          
-                        for j in range(self.dimension):
-                            j_cart = j_cart + 1
-                            if (j_cart>2):
-                                j_cart = 0
-                                j_atom = j_atom + 1
-                            
-                            if j<i:
+                    if j<i:
+                        continue
+
+                    fit = interp1d(old_time_scale,eta_t[:,i,j,:],kind='linear',axis=0)
+
+                    eta_t_fit = fit(inter_time_scale)
+
+                    for ts, time_step in enumerate(inter_time_scale):
+
+                        t_primes = inter_time_scale[inter_time_scale<=time_step]
+                        time_axis = time_step - t_primes
+                        integrand = np.zeros([len(t_primes),dimension,dimension])
+
+                        
+                        for tp,t_prime in enumerate(t_primes): 
+                            if ts == 0:
+                                integrand[0,i,j]=0
                                 continue
 
-                            eta_t_below = eta_t[real_below_ts-1,i,j,:] 
-                            eta_t_above = eta_t[real_above_ts-1,i,j,:] 
+                            if time_step-t_prime > mem_cutoff:
+                                integrand[tp,i,j] = 0
+                                continue
 
-                            fit = interp1d([0,1], np.vstack([eta_t_below, eta_t_above]), axis=0) 
-
-                            eta_t_sort = fit(t_prime/((real_above_ts-1)*2))
                             if t_prime == time_step:
-                                integrand[tp,i,j]=eta_t_sort[0]
+                                integrand[tp,i,j]=eta_t_fit[ts,i,j,0]
                                 continue  
 
-                            integrand[tp,i,j] = inter_bin(time_step-(t_prime*fs),times,eta_t_sort)
-                            integrand[tp,i,j]*=self.velocities_inter[tp,j_atom,j_cart]
+                            integrand[tp,i,j] = inter_bin(time_step-t_prime,times,eta_t_fit[ts,i,j,:])
+                            integrand[tp,i,j]*=velocities_inter[tp,j_atom,j_cart]
                             integrand[tp,j,i]= integrand[tp,i,j] #TODO check integrand[0]
-                
-                i_cart = -1
-                i_atom = 0
-                for i in range(self.dimension):
-                    i_cart = i_cart + 1
-                    if (i_cart>2):
-                        i_cart = 0
-                        i_atom = i_atom + 1
-                                
-                    j_atom = 0
-                    j_cart = -1          
-                    for j in range(self.dimension):
-                        j_cart = j_cart + 1
-                        if (j_cart>2):
-                            j_cart = 0
-                            j_atom = j_atom + 1
 
-                        self.force_vec[co,ts,i_atom,i_cart]+=np.trapz(integrand[:,i,j],time_axis)
+                        force_vec[co,ts,i_atom,i_cart]+=np.trapz(integrand[:,i,j],time_axis)
 
-                    self.nm_work[co,ts]+=np.dot(vel[self.friction_indices[i_atom],i_cart],self.force_vec[co,ts,i_atom,i_cart])
+                    nm_work[co,ts]+=np.dot(vel[friction_indices[i_atom],i_cart],force_vec[co,ts,i_atom,i_cart])
                 
                 
         self.nm_work = self.nm_work*self.time_step
+        self.force_vec = force_vec
 
     def calculate_friction_force(self):
 
@@ -320,14 +306,7 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
         bins,re_memory_kernel,im_memory_kernel,dimension,max_e = read_memory_kernel(path_to_calcs+str(file_range[0])+'/friction_memory_kernel.out')
 
         raw_data = np.zeros((file_range[-1]-1,dimension,dimension,len(bins)))
-        for ts in range(file_range):
-            row = con.get(id=ts)
-            try:
-                atoms = con.get_atoms(id=ts)
-            except:
-                print('cannot get atoms for '+str(ts)+' - continuing')
-                continue
-        
+        for ts in range(file_range):        
             path = path_to_calcs+str(ts)+'/friction_memory_kernel.out'
             try:
                 bins,re_memory_kernel,im_memory_kernel,dimension,max_e = read_memory_kernel(path)
