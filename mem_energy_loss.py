@@ -66,7 +66,7 @@ class Postprocessed_memory:
     def fourier_transform(self):
         """Fourier transform to time domain"""
         friction_indices = self.friction_indices
-        dimension =  self.dimensiomn
+        dimension =  self.dimension
 
         try:
             atoms = self.con.get_atoms(id=1)
