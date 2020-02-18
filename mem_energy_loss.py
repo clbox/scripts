@@ -90,7 +90,7 @@ class Postprocessed_memory:
 
             for ts in range(self.steps):          
                 lambda_omega=np.tensordot(self.new_data[ts,:,:,:],mass_factor,axes=[0,1])/(fs*1000) #convert from ps-1
-
+                print(np.shape(lambda_omega))
                 for i in range(dimension):
                     i_atom = i // 3       
                     for j in range(i,dimension):
