@@ -28,7 +28,7 @@ nm_work = pp.calculate_work()
 
 nm_forces = pp.calculate_friction_force()
 
-fig, ax = plt.subplots(dimension,dimension)
+fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         for ts in range(pp.steps):
