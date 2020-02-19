@@ -93,7 +93,7 @@ class Postprocessed_memory:
                         lambda_omega*=np.sqrt(masses[i_atom]*masses[j_atom])
                         func = lambda_omega[i,j,None,:] * cos_factor
                         func[:,0]=0
-                        eta_bar_t[ts,i,j,:]=np.trapz(func,frequencies,2)
+                        eta_bar_t[ts,i,j,:]=np.trapz(func,frequencies,1)
             self.eta_bar_t_list[co]=eta_bar_t
 
     def time_interpolate(self):
