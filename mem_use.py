@@ -39,7 +39,7 @@ fig.set_figwidth(20)
 fig.savefig('eta_bar.pdf')
 
 
-fig, ax = plt.subplots(dimension,dimension)
+fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         for ts in range(pp.steps):
@@ -50,7 +50,7 @@ fig.set_figwidth(20)
 fig.savefig('eta_bar_inter.pdf')
 
 
-fig, ax = plt.subplots(dimension,dimension)
+fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         for ts in range(pp.steps):
@@ -60,7 +60,7 @@ fig.set_figheight(20)
 fig.set_figwidth(20)
 fig.savefig('eta_inter.pdf')
 
-fig, ax = plt.subplots(dimension,dimension)
+fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         for ts in range(pp.steps):
@@ -85,6 +85,11 @@ ax.legend()
 fig.savefig('nm_forces.pdf')
 
 
+fig, ax = plt.subplots(1,1)
+for co in range(len(cutoffs)):
+    ax.plot(pp.inter_time_scale/fs,nm_work[co,:],label=str(cutoffs[co]))
+ax.legend()
+fig.savefig('nm_work.pdf')
 
 
 
