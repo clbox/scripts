@@ -81,11 +81,7 @@ class Postprocessed_memory:
             frequencies = self.frequency_list[co]
             func = np.zeros(len(frequencies))
             eta_bar_t = self.eta_bar_t_list[co]
-            print('times'+str(times))
-            print(frequencies)
-
             cos_factor = np.cos(frequencies*times[:,None])
-            print('cos_max: ' + str(np.max(cos_factor)))
             for ts in range(self.steps):
                 lambda_omega = self.new_data[ts,:,:,0:len(frequencies)]/(fs*1000) #convert from ps-1
                 for i in range(dimension):
