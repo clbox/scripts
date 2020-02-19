@@ -94,7 +94,7 @@ class Postprocessed_memory:
                         func[:,0]=0
                         print('max func:' + str(np,max(func)))
                         eta_bar_t[ts,i,j,:]=np.trapz(func,frequencies,1)
-            print('max etabart:' + str(np,max(eta_bar_t)))
+            print('max etabart:' + str(np.max(eta_bar_t)))
             self.eta_bar_t_list[co]=eta_bar_t
 
     def time_interpolate(self):
