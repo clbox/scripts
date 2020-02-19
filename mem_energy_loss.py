@@ -84,7 +84,9 @@ class Postprocessed_memory:
 
             cos_factor = np.cos(frequencies*times[:,None])
             for ts in range(self.steps):
+                print('ts'+str(ts))
                 lambda_omega = self.new_data[ts,:,:,0:len(frequencies)]/(fs*1000) #convert from ps-1
+                print('lo max' + str(np.max(self.lambda_omega)))
                 for i in range(dimension):
                     i_atom = i // 3       
                     for j in range(i,dimension):
@@ -92,7 +94,6 @@ class Postprocessed_memory:
                         lambda_omega*=np.sqrt(masses[i_atom]*masses[j_atom])
                         func = lambda_omega[i,j,None,:] * cos_factor
                         func[:,0]=0
-                        print('lambda max' + str(np.max(func)))
                         eta_bar_t[ts,i,j,:]=np.trapz(func,frequencies,1)
             self.eta_bar_t_list[co]=eta_bar_t
 
