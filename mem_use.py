@@ -28,22 +28,67 @@ nm_work = pp.calculate_work()
 
 nm_forces = pp.calculate_friction_force()
 
-fig, ax = plt.subplots(1,1)
-ax.plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[0,0,0,:])
+fig, ax = plt.subplots(dimension,dimension)
+for i in range(dimension):
+    for j in range(i,dimension):
+        for ts in range(pp.steps):
+            ax[i,j].plot(pp.times_list[-1]/fs,(pp.eta_bar_t_list[-1])[ts,i,j,:],label=str(ts))
+ax[0,0].legend()
+fig.set_figheight(20)
+fig.set_figwidth(20)
+fig.savefig('eta_bar.pdf')
+
+
+fig, ax = plt.subplots(dimension,dimension)
+for i in range(dimension):
+    for j in range(i,dimension):
+        for ts in range(pp.steps):
+            ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,i,j,:],label=str(ts))
+ax[0,0].legend()
+fig.set_figheight(20)
+fig.set_figwidth(20)
+fig.savefig('eta_bar_inter.pdf')
+
+
+fig, ax = plt.subplots(dimension,dimension)
+for i in range(dimension):
+    for j in range(i,dimension):
+        for ts in range(pp.steps):
+            ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,i,j,:],label=str(ts))
+ax[0,0].legend()
+fig.set_figheight(20)
+fig.set_figwidth(20)
 fig.savefig('eta_inter.pdf')
+
+fig, ax = plt.subplots(dimension,dimension)
+for i in range(dimension):
+    for j in range(i,dimension):
+        for ts in range(pp.steps):
+            ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_t_list[-1])[ts,i,j,:],label=str(ts))
+ax[0,0].legend()
+fig.set_figheight(20)
+fig.set_figwidth(20)
+fig.savefig('eta_t.pdf')
 
 fig, ax = plt.subplots(1,1)
 for atom in range(len(friction_indices)):       
     for cart in range(3):
-        ax.plot(pp.inter_time_scale,pp.velocities_inter[:,atom,cart],label=str(atom)+str(cart))
+        ax.plot(pp.inter_time_scale/fs,pp.velocities_inter[:,atom,cart],label=str(atom)+str(cart))
 ax.legend()
 fig.savefig('velocities_inter.pdf')
 
+fig, ax = plt.subplots(1,1)
+for atom in range(len(friction_indices)):       
+    for cart in range(3):
+        ax.plot(pp.inter_time_scale/fs,nm_forces[-1,:,atom,cart],label=str(atom)+str(cart))
+ax.legend()
+fig.savefig('nm_forces.pdf')
 
 
 
 
-print(pp.inter_time_scale)
-print(nm_work)
+
+#print(pp.inter_time_scale)
+#print(nm_work)
 
 np.savetxt('nm_work.txt',(pp.inter_time_scale,nm_work))

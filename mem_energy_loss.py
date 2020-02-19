@@ -197,11 +197,6 @@ class Postprocessed_memory:
 
         self.inter_time_scale = inter_time_scale
 
-    # def get_atoms(self,con):
-    #     """Just gets the atoms for the first structure to have the masses
-    #         etc to work with"""
-
-
     def mem_integral(self):   
         old_time_scale = np.arange(0,self.steps*self.time_step,self.time_step)
         dimension = self.dimension
@@ -216,6 +211,7 @@ class Postprocessed_memory:
             eta_t = self.eta_t_list[co]*-1
             fit = interp1d(old_time_scale,eta_t[:,:,:,:],kind='linear',axis=0)
             eta_t_fit = fit(inter_time_scale)
+
             for i in range(dimension):
                 i_cart = i % 3
                 i_atom = i // 3       
@@ -223,7 +219,6 @@ class Postprocessed_memory:
                     j_cart = j % 3
                     j_atom = j // 3
                     for ts, time_step in enumerate(inter_time_scale):
-
                         t_primes = inter_time_scale[inter_time_scale<=time_step]
                         time_axis = time_step - t_primes
                         integrand = np.zeros([len(t_primes),dimension,dimension])
@@ -241,14 +236,18 @@ class Postprocessed_memory:
                             if t_prime == time_step:
                                 integrand[tp,i,j]=eta_t_fit[ts,i,j,0]
                                 continue  
-
+                            
                             integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
                             integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
                             integrand[tp,j,i] = integrand[tp,i,j] #TODO check integrand[0]
-
                         force_vec[co,ts,i_atom,i_cart] += np.trapz(integrand[:,i,j],time_axis)
-                        nm_work[co,ts] += np.dot(velocities_inter[ts,i_atom,i_cart],force_vec[co,ts,i_atom,i_cart])
-                
+
+            for ts, time_step in enumerate(inter_time_scale):     
+                for i in range(dimension):
+                    i_cart = i % 3
+                    i_atom = i // 3 
+                    
+                    nm_work[co,ts] += np.dot(velocities_inter[ts,i_atom,i_cart],force_vec[co,ts,i_atom,i_cart])
                 
         self.nm_work = nm_work*self.time_step
         self.force_vec = force_vec
