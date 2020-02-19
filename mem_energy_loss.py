@@ -54,8 +54,9 @@ class Postprocessed_memory:
             times = 1/frequencies #ase units time
         
             times = np.append(times,0)
+            times = np.sort(times) #check consequencies
+            times[-1] = float('inf') #check consequencies assumes 0 freq
 
-                    
             frequency_list.append(frequencies)
             times_list.append(times)
             eta_bar_t = np.zeros((self.steps,self.dimension,self.dimension,len(times)))
