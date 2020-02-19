@@ -55,7 +55,7 @@ class Postprocessed_memory:
         
             times = np.append(times,0)
             times = np.sort(times) #check consequencies
-            times[-1] = float('inf') #check consequencies assumes 0 freq
+            times[-1] = 2**32 #check consequencies assumes 0 freq
 
             frequency_list.append(frequencies)
             times_list.append(times)
