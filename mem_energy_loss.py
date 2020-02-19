@@ -86,7 +86,7 @@ class Postprocessed_memory:
             for ts in range(self.steps):
                 print('ts'+str(ts))
                 lambda_omega = self.new_data[ts,:,:,0:len(frequencies)]/(fs*1000) #convert from ps-1
-                print('lo max' + str(np.max(self.lambda_omega)))
+                print('lo max' + str(np.max(lambda_omega)))
                 for i in range(dimension):
                     i_atom = i // 3       
                     for j in range(i,dimension):
