@@ -75,7 +75,7 @@ class Postprocessed_memory:
             print('cannot get atoms for id = '+str(1))
         masses = atoms.get_masses()[friction_indices]
 
-        print('new_data max' + str(np.max(self.new_dat)))
+        print('new_data max' + str(np.max(self.new_data)))
         for co in range(len(self.cutoffs)):
             times = self.times_list[co]
             frequencies = self.frequency_list[co]
