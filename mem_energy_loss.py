@@ -276,7 +276,7 @@ class Postprocessed_memory:
             self.time_interpolate()
             self.convolute()
             self.get_velocities()
-            self.velocitiy_interpolation()
+            self.velocity_interpolation()
             self.mem_integral()
             return(self.force_vec)
         else:
