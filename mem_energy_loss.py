@@ -4,8 +4,8 @@ from ase.units import _hbar, J, s, fs
 from ase import Atoms
 from ase.db import connect
 import math
-hbar = _hbar * J
-
+hbar = _hbar * J * s 
+ps = fs*1000
 
 class Postprocessed_memory:
 
@@ -14,10 +14,20 @@ class Postprocessed_memory:
         convolution and calculates energy loss due to friction including
         the effects of memory 
         
-        Can do this at multiple cutoff energies if supplied, or one"""
+        Can do this at multiple cutoff energies if supplied, or one
+        INPUT:
+        bins / eV
+        raw_data / ps-1
+        cutoffs / eV
+        mem_cutoff / fs
+        time_step / fs
+
+        self. all ase units
+        
+    """
     
     def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con):      
-        self.raw_data = raw_data
+        self.raw_data = raw_data / ps
         self.dimension = np.shape(raw_data)[1]
         self.cutoffs = cutoffs
         self.mem_cutoff = mem_cutoff * fs
@@ -30,7 +40,7 @@ class Postprocessed_memory:
     def frequency_interpolate(self):
         """Add extra bins in frequency domain"""
         
-        time_bins = np.linspace(4e-15,self.mem_cutoff/fs,500) #fs
+        time_bins = np.linspace(4*fs,self.mem_cutoff,500)
         add_bins = (1/(time_bins))*hbar #eV
         new_bins = np.append(self.bins,add_bins)
         new_bins = np.sort(new_bins)
@@ -42,6 +52,7 @@ class Postprocessed_memory:
                     for j in range(i,self.dimension):
                         f = interp1d(self.bins,self.raw_data[ts,i,j,:])
                         new_data[ts,i,j,:] = f(new_bins)
+
         self.new_data = new_data
         self.new_bins = new_bins
 
@@ -50,7 +61,7 @@ class Postprocessed_memory:
         times_list = []
         self.eta_bar_t_list = []
         for cutoff in self.cutoffs:
-            frequencies=((self.new_bins[self.new_bins<cutoff])/hbar)/s #ase units inverse time
+            frequencies=((self.new_bins[self.new_bins<cutoff])/hbar) #ase units inverse time
             times = 1/frequencies #ase units time
         
             times = np.append(times,0)
@@ -83,13 +94,15 @@ class Postprocessed_memory:
             eta_bar_t = self.eta_bar_t_list[co]
             cos_factor = np.cos(frequencies*times[:,None])
             for ts in range(self.steps):
-                lambda_omega = self.new_data[ts,:,:,0:len(frequencies)]/(fs*1000) #convert from ps-1
+                lambda_omega = self.new_data[ts,:,:,0:len(frequencies)] #convert from ps-1
+                
                 for i in range(dimension):
                     i_atom = i // 3       
                     for j in range(i,dimension):
                         j_atom = j // 3                        
                         func = lambda_omega[i,j,None,:] * cos_factor * np.sqrt(masses[i_atom]*masses[j_atom])
                         func[:,0]=0
+
                         eta_bar_t[ts,i,j,:]=np.trapz(func,frequencies,1)
             self.eta_bar_t_list[co]=eta_bar_t
 
@@ -109,6 +122,7 @@ class Postprocessed_memory:
 
         dt = (self.time_step/10)
         n_points = math.ceil(self.mem_cutoff/dt)
+        n_points = n_points + n_points-1
         time_e_max = dt * (n_points-1)
         times_forward = np.linspace(0,time_e_max,n_points)
         times_up = np.append(times_forward,-times_forward[1:])
@@ -147,7 +161,7 @@ class Postprocessed_memory:
             dx = times_up[1]-times_up[0]
             #find cutoff
 
-            cutoff_freq = (cutoff/hbar)/s
+            cutoff_freq = (cutoff/hbar)
             #factors
             sinc = cutoff_freq*np.sinc((times_up*cutoff_freq)/2)    
             
@@ -172,7 +186,7 @@ class Postprocessed_memory:
             atoms = self.con.get_atoms(id=i+1)
             self.all_velocities[i,:,:] = atoms.get_velocities()[self.friction_indices,:]
 
-    def velocitiy_interpolation(self):
+    def velocity_interpolation(self):
         """To properly evaluate the memory integral, need to carry out
         integration on a scale denser than the nuclear time step scale"""
 
@@ -194,8 +208,9 @@ class Postprocessed_memory:
 
         self.inter_time_scale = inter_time_scale
 
-    def mem_integral(self):   
-        old_time_scale = np.arange(0,self.steps*self.time_step,self.time_step)
+    def mem_integral(self):
+
+        old_time_scale = np.linspace(0,(self.steps-1)*self.time_step,self.steps)
         dimension = self.dimension
         mem_cutoff = self.mem_cutoff
         inter_time_scale = self.inter_time_scale
@@ -204,9 +219,12 @@ class Postprocessed_memory:
         nm_work=np.zeros((len(self.cutoffs),len(inter_time_scale)))
 
         for co in range(len(self.cutoffs)):
-
+            times_up = self.times_up_list[co]
             eta_t = self.eta_t_list[co]*-1
-            fit = interp1d(old_time_scale,eta_t[:,:,:,:],kind='linear',axis=0)
+
+            eta_t = eta_t[:,:,:,times_up >= 0.0]
+            times_up = times_up[times_up >= 0.0]
+            fit = interp1d(old_time_scale,eta_t,kind='linear',axis=0)
             eta_t_fit = fit(inter_time_scale)
 
             for i in range(dimension):
@@ -233,10 +251,10 @@ class Postprocessed_memory:
                             if t_prime == time_step:
                                 integrand[tp,i,j]=eta_t_fit[ts,i,j,0]
                                 continue  
-                            
                             integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
                             integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
-                            integrand[tp,j,i] = integrand[tp,i,j] #TODO check integrand[0]
+                        integrand[:,j,i] = integrand[:,i,j] #TODO check integrand[0]
+            
                         force_vec[co,ts,i_atom,i_cart] += np.trapz(integrand[:,i,j],time_axis)
 
             for ts, time_step in enumerate(inter_time_scale):     
@@ -246,7 +264,7 @@ class Postprocessed_memory:
                     
                     nm_work[co,ts] += np.dot(velocities_inter[ts,i_atom,i_cart],force_vec[co,ts,i_atom,i_cart])
                 
-        self.nm_work = nm_work*self.time_step
+        self.nm_work = nm_work*(inter_time_scale[1]-inter_time_scale[0])
         self.force_vec = force_vec
 
     def calculate_friction_force(self):
@@ -280,7 +298,7 @@ class Postprocessed_memory:
             print("--- %s C ---" % (time.time() - start_time))
             self.get_velocities()
             print("--- %s GV ---" % (time.time() - start_time))
-            self.velocitiy_interpolation()
+            self.velocity_interpolation()
             print("--- %s VI ---" % (time.time() - start_time))
             self.mem_integral()
             print("--- %s MI ---" % (time.time() - start_time))
