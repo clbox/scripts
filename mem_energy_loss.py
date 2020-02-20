@@ -120,7 +120,7 @@ class Postprocessed_memory:
         self.eta_bar_inter_list = []
 
 
-        dt = (self.time_step/100)
+        dt = (self.time_step/20)
         n_points = math.ceil(self.mem_cutoff/dt)
         n_points = n_points + n_points-1
         time_e_max = dt * (n_points-1)
