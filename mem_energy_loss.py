@@ -254,8 +254,10 @@ class Postprocessed_memory:
                             integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
                             integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
                         integrand[:,j,i] = integrand[:,i,j] #TODO check integrand[0]
-            
-                        force_vec[co,ts,i_atom,i_cart] += np.trapz(integrand[:,i,j],time_axis)
+                        force = np.trapz(integrand[:,i,j],time_axis)
+                        force_vec[co,ts,i_atom,i_cart] += force
+                        if i != j:
+                            force_vec[co,ts,j_atom,j_cart] += force
 
             for ts, time_step in enumerate(inter_time_scale):     
                 for i in range(dimension):
