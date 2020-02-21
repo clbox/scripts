@@ -28,7 +28,7 @@ class Postprocessed_memory:
     
     def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con):      
         self.raw_data = raw_data / ps
-        self.dimension = np.shape(raw_data)[1]
+        self.elements= np.shape(raw_data)[1]
         self.cutoffs = cutoffs
         self.mem_cutoff = mem_cutoff * fs
         self.steps = np.shape(raw_data)[0]
@@ -36,7 +36,7 @@ class Postprocessed_memory:
         self.time_step = time_step * fs
         self.bins = bins
         self.con = con
-
+        self.dimension = len(friction_indices)*3
     def frequency_interpolate(self):
         """Add extra bins in frequency domain"""
         
@@ -45,13 +45,12 @@ class Postprocessed_memory:
         new_bins = np.append(self.bins,add_bins)
         new_bins = np.sort(new_bins)
 
-        new_data = np.zeros((self.steps,self.dimension,self.dimension,len(new_bins)))
+        new_data = np.zeros((self.steps,self.elements,len(new_bins)))
 
         for ts in range(self.steps):
-                for i in range(self.dimension):
-                    for j in range(i,self.dimension):
-                        f = interp1d(self.bins,self.raw_data[ts,i,j,:])
-                        new_data[ts,i,j,:] = f(new_bins)
+                for e in range(self.elements):
+                    f = interp1d(self.bins,self.raw_data[ts,e,:])
+                    new_data[ts,e,:] = f(new_bins)
 
         self.new_data = new_data
         self.new_bins = new_bins
@@ -70,7 +69,7 @@ class Postprocessed_memory:
 
             frequency_list.append(frequencies)
             times_list.append(times)
-            eta_bar_t = np.zeros((self.steps,self.dimension,self.dimension,len(times)))
+            eta_bar_t = np.zeros((self.steps,self.elements,len(times)))
             self.eta_bar_t_list.append(eta_bar_t)
 
         self.frequency_list = frequency_list
@@ -79,8 +78,8 @@ class Postprocessed_memory:
     def fourier_transform(self):
         """Fourier transform to time domain"""
         friction_indices = self.friction_indices
-        dimension =  self.dimension
-
+        elements = self.elements
+        indices = self.element_index()
         try:
             atoms = self.con.get_atoms(id=1)
         except:
@@ -94,16 +93,14 @@ class Postprocessed_memory:
             eta_bar_t = self.eta_bar_t_list[co]
             cos_factor = np.cos(frequencies*times[:,None])
             for ts in range(self.steps):
-                lambda_omega = self.new_data[ts,:,:,0:len(frequencies)] #convert from ps-1
+                lambda_omega = self.new_data[ts,:,0:len(frequencies)] #convert from ps-1
                 
-                for i in range(dimension):
-                    i_atom = i // 3       
-                    for j in range(i,dimension):
-                        j_atom = j // 3                        
-                        func = lambda_omega[i,j,None,:] * cos_factor * np.sqrt(masses[i_atom]*masses[j_atom])
-                        func[:,0]=0
+                for e in range(elements):
+                    i_atom,j_atom = (indices[e])[0] // 3, (indices[e])[1] // 3
+                    func = lambda_omega[e,None,:] * cos_factor * np.sqrt(masses[i_atom]*masses[j_atom])
+                    func[:,0]=0
+                    eta_bar_t[ts,e,:]=np.trapz(func,frequencies,1)
 
-                        eta_bar_t[ts,i,j,:]=np.trapz(func,frequencies,1)
             self.eta_bar_t_list[co]=eta_bar_t
 
     def time_interpolate(self):
@@ -120,7 +117,7 @@ class Postprocessed_memory:
         self.eta_bar_inter_list = []
 
 
-        dt = (self.time_step/35)
+        dt = (self.time_step/40)
         n_points = math.ceil(self.mem_cutoff/dt)
         n_points = n_points + n_points-1
         time_e_max = dt * (n_points-1)
@@ -136,20 +133,20 @@ class Postprocessed_memory:
             
             self.times_up_list.append(times_up)
             
-            eta_bar_inter = np.zeros((self.steps,self.dimension,self.dimension,len(times_up)))         
+            eta_bar_inter = np.zeros((self.steps,self.elements,len(times_up)))         
             
             for ts in range(self.steps):
-                for i in range(self.dimension):
-                    for j in range(i,self.dimension):
+                for e in range(self.elements):
                     
-                        f = interp1d(times,eta_bar_t[ts,i,j,:],fill_value="extrapolate")
+                        f = interp1d(times,eta_bar_t[ts,e,:],fill_value="extrapolate")
                         
-                        eta_bar_inter[ts,i,j,:] = f(times_up)
+                        eta_bar_inter[ts,e,:] = f(times_up)
                         
-                        eta_bar_inter[ts,i,j,below_zero] = 0
+                        eta_bar_inter[ts,e,below_zero] = 0
             
 
             self.eta_bar_inter_list.append(eta_bar_inter)       
+
 
     def convolute(self):
         """Convolute with sinc factor in time domain"""
@@ -169,14 +166,13 @@ class Postprocessed_memory:
             exp_factor = np.cos(0.5*times_up*cutoff_freq)
 
             #eta_t = np.zeros((final,dimension,dimension,len(times_up)),dtype=complex)
-            eta_t = np.zeros((self.steps,self.dimension,self.dimension,len(times_up)))
+            eta_t = np.zeros((self.steps,self.elements,len(times_up)))
             
             convolute_factor = sinc*exp_factor
             
             for ts in range(self.steps):
-                for i in range(self.dimension):
-                    for j in range(i,self.dimension):
-                        eta_t[ts,i,j,:] = np.convolve(eta_bar_inter[ts,i,j,:],convolute_factor,'same')*dx 
+                for e in range(self.elements):
+                    eta_t[ts,e,:] = np.convolve(eta_bar_inter[ts,e,:],convolute_factor,'same')*dx 
             self.eta_t_list.append(eta_t)
 
     def get_velocities(self):
@@ -217,51 +213,46 @@ class Postprocessed_memory:
         velocities_inter = self.velocities_inter
         force_vec = np.zeros((len(self.cutoffs),len(inter_time_scale),len(self.friction_indices),3))
         nm_work=np.zeros((len(self.cutoffs),len(inter_time_scale)))
+        elements = self.elements
+        indices = self.element_index()
 
         for co in range(len(self.cutoffs)):
             times_up = self.times_up_list[co]
             eta_t = self.eta_t_list[co]*-1
-
-            eta_t = eta_t[:,:,:,times_up >= 0.0]
+            eta_t = eta_t[:,:,times_up >= 0.0]
             times_up = times_up[times_up >= 0.0]
             fit = interp1d(old_time_scale,eta_t,kind='linear',axis=0)
-            eta_t_fit = fit(inter_time_scale)
 
-            for i in range(dimension):
-                i_cart = i % 3
-                i_atom = i // 3       
-                for j in range(i,dimension):
-                    j_cart = j % 3
-                    j_atom = j // 3
-                    for ts, time_step in enumerate(inter_time_scale):
-                        t_primes = inter_time_scale[inter_time_scale<=time_step]
-                        time_axis = time_step - t_primes
-                        integrand = np.zeros([len(t_primes),dimension,dimension])
+            for ts, time_step in enumerate(inter_time_scale):
+                print(ts)
+                t_primes = inter_time_scale[inter_time_scale<=time_step]
+                time_axis = time_step - t_primes
+                eta_t_fit = fit(t_primes[time_axis<=mem_cutoff])
+                print('len: ' +str(len(eta_t_fit)))
+                integrand = np.zeros([len(t_primes),elements])
 
-                        if ts == 0:
-                            integrand[0,i,j]=0
-                            continue
-                        
-                        for tp,t_prime in enumerate(t_primes): 
+                for tp,t_prime in enumerate(t_primes): 
+                    if time_step-t_prime > mem_cutoff:
+                        integrand[tp,:] = 0
+                    elif t_prime == time_step:
+                        integrand[tp,:] = eta_t_fit[ts,:,0]
+                    else:
+                        integrand[tp,:] = eta_t_fit[tp,:,ts-tp]
+                for e in range(elements):
+                    i = (indices[e])[0]
+                    j = (indices[e])[1]
+                    i_cart,j_cart = i % 3, j % 3
+                    i_atom,j_atom = i // 3, j // 3
 
-                            if time_step-t_prime > mem_cutoff:
-                                integrand[tp,i,j] = 0
-                            elif t_prime == time_step:
-                                integrand[tp,i,j] = eta_t_fit[ts,i,j,0]
-                            else:
-                                integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
-                            integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
-                        integrand[:,j,i] = integrand[:,i,j] #TODO check integrand[0]
-                        force = np.trapz(integrand[:,i,j],time_axis)
-                        force_vec[co,ts,i_atom,i_cart] += force
-                        if i != j:
-                            force_vec[co,ts,j_atom,j_cart] += force
-
-            for ts, time_step in enumerate(inter_time_scale):     
+                    integrand[:,e] *= velocities_inter[:len(t_primes),j_atom,j_cart]
+                    force = np.trapz(integrand[:,e],time_axis)
+                    force_vec[co,ts,i_atom,i_cart] += force
+                    if i != j:
+                        force_vec[co,ts,j_atom,j_cart] += force
+    
                 for i in range(dimension):
                     i_cart = i % 3
-                    i_atom = i // 3 
-                    
+                    i_atom = i // 3                
                     nm_work[co,ts] += np.dot(velocities_inter[ts,i_atom,i_cart],force_vec[co,ts,i_atom,i_cart])
                 
         self.nm_work = nm_work*(inter_time_scale[1]-inter_time_scale[0])
@@ -306,18 +297,35 @@ class Postprocessed_memory:
         else:
             return(self.nm_work)
 
+    def element_index(self):
+        "Returns list of indices for flattened triangular array"
+        a = np.arange(0,self.elements)
+        i=0 
+        j=0
+        indices = []
+        for e in a:
+            indices.append((i,j))
+            if j == self.dimension-1: 
+                i += 1 
+                j = i 
+                continue
+            j+=1
+        return(indices)
+            
+
         
 
 def Parse_memory_kernels(path_to_calcs,file_range,read=False):
     filename  = 'raw_memory.npy'
     bins,re,im,dimension,max_e = read_memory_kernel(path_to_calcs+'/'+str(file_range[0])+'/friction_memory_kernel.out')
+    elements = int((((dimension*dimension)-dimension)/2)+dimension)
     if read:
         print('reading')
         raw_data = np.load(filename)
 
     else:
 
-        raw_data = np.zeros((len(file_range),dimension,dimension,len(bins)))
+        raw_data = np.zeros((len(file_range),elements,len(bins)))
 
         for ts in file_range:        
             path = path_to_calcs+'/'+str(ts)+'/friction_memory_kernel.out'
@@ -327,7 +335,7 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
                 print('cannot get mem_kernel for '+str(ts)+' - continuing')
                 continue
                     
-            raw_data[ts-1,:,:,:] = re
+            raw_data[ts-1,:,:] = re
         np.save(filename,raw_data)
 
     return raw_data,bins,dimension
@@ -346,28 +354,27 @@ def read_memory_kernel(path):
                 continue
             max_e = float(line.split()[0])
 
-    elements = (((dimension*dimension)-dimension)/2)+dimension
-
+    elements = int((((dimension*dimension)-dimension)/2)+dimension)
     if elements < head_count:
         n_spin = 2 
 #        print("This system is spin unrestricted")
 
     bins=np.zeros((int(max_e/discretization)+1))
-    re_memory_kernel=np.zeros((dimension,dimension,len(bins)))
+    re_memory_kernel=np.zeros((elements,len(bins)))
     im_memory_kernel=np.zeros_like(re_memory_kernel)
-    
+    e=0
     with open(path, "r") as f:
         for line in f:
             if "Friction" in line:
                 i = int(line.split()[3])
                 j = int(line.split()[4])
-                head_count += 1
                 c=0
+                e +=1
             if any(x in line for x in header):
                 continue
             else:
-                re_memory_kernel[i-1,j-1,c]=float(line.split()[1])
-                im_memory_kernel[i-1,j-1,c]=float(line.split()[2])
+                re_memory_kernel[e-1,c]=float(line.split()[1])
+                im_memory_kernel[e-1,c]=float(line.split()[2])
                 bins[c]=float(line.split()[0])
                 c +=1 
     return(bins,re_memory_kernel,im_memory_kernel,dimension,max_e)

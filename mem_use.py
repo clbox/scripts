@@ -15,13 +15,15 @@ raw_data,bins,dimension = mel.Parse_memory_kernels('./calcs',file_range)#,read=T
 
 con = connect('database.db') #connection to database that stores atoms objects and velocities
 
-cutoffs = np.linspace(0.2,2.4,5) #all cutoff energies in eV investigating
+#cutoffs = np.linspace(0.2,2.4,2) #all cutoff energies in eV investigating
+
+cutoffs = [2.4]
 
 friction_indices = [64,65] #indices of friction atoms
 
 time_step = 2 #fs nuclear time step
 
-mem_cutoff = 40 #fs dont include more the X fs back in time in the memory integral
+mem_cutoff = 20 #fs dont include more the X fs back in time in the memory integral
 
 pp = mel.Postprocessed_memory(bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con)
 
@@ -34,8 +36,8 @@ fig_path = './figures/'
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
-        ax[i,j].plot(pp.new_bins,(pp.new_data[0,i,j,:]),label='interpolated')
-        ax[i,j].plot(pp.bins, pp.raw_data[0,i,j,:],label='raw_data')
+        ax[i,j].plot(pp.new_bins,(pp.new_data[0,i+j,:]),label='interpolated')
+        ax[i,j].plot(pp.bins, pp.raw_data[0,i+j,:],label='raw_data')
     
 ax[0,0].legend()
 fig.set_figheight(20)
@@ -47,7 +49,7 @@ fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-        ax[i,j].plot(pp.times_list[-1]/fs,(pp.eta_bar_t_list[-1])[ts,i,j,:],label=str(ts))
+        ax[i,j].plot(pp.times_list[-1]/fs,(pp.eta_bar_t_list[-1])[ts,i+j,:],label=str(ts))
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
@@ -58,7 +60,7 @@ fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-            ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,i,j,:],label=str(ts))
+            ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,i+j,:],label=str(ts))
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
@@ -69,7 +71,7 @@ fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-        ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,i,j,:],label=str(ts))
+        ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,i+j,:],label=str(ts))
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
@@ -79,7 +81,7 @@ fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-        ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_t_list[-1])[ts,i,j,:],label=str(ts))
+        ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_t_list[-1])[ts,i+j,:],label=str(ts))
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
@@ -90,7 +92,7 @@ for co in range(len(cutoffs)):
     for i in range(dimension):
         for j in range(i,dimension):
             #for ts in range(pp.steps):
-            ax[i,j].plot(pp.times_up_list[co]/fs,(pp.eta_t_list[co])[ts,i,j,:],label='CO: ' + str(cutoffs[co])+'TS: '+ str(ts))
+            ax[i,j].plot(pp.times_up_list[co]/fs,(pp.eta_t_list[co])[ts,i+j,:],label='CO: ' + str(cutoffs[co])+'TS: '+ str(ts))
             ax[i,j].set_xlim(0,5)
 ax[0,0].legend()
 fig.set_figheight(20)
