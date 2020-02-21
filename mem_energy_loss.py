@@ -240,7 +240,7 @@ class Postprocessed_memory:
             for i in range(dimension):
                 i_cart = i % 3
                 i_atom = i // 3                
-                nm_work[co,:] += np.dot(velocities_inter[:,i_atom,i_cart],force_vec[co,:,i_atom,i_cart])
+                nm_work[co,:] += velocities_inter[:,i_atom,i_cart]*force_vec[co,:,i_atom,i_cart]
                 
         self.nm_work = nm_work*dt
         self.force_vec = force_vec

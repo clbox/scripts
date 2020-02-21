@@ -16,14 +16,13 @@ raw_data,bins,dimension = mel.Parse_memory_kernels('./calcs',file_range)#,read=T
 con = connect('database.db') #connection to database that stores atoms objects and velocities
 
 #cutoffs = np.linspace(0.2,2.4,2) #all cutoff energies in eV investigating
-
 cutoffs = [2.4]
 
 friction_indices = [64,65] #indices of friction atoms
 
 time_step = 2 #fs nuclear time step
 
-mem_cutoff = 20 #fs dont include more the X fs back in time in the memory integral
+mem_cutoff = 40 #fs dont include more the X fs back in time in the memory integral
 
 pp = mel.Postprocessed_memory(bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con)
 
