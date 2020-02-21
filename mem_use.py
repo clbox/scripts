@@ -8,7 +8,7 @@ from ase.units import _hbar, J, s, fs
 from scipy.integrate import cumtrapz
 
 
-file_range = np.arange(1,21).tolist()
+file_range = np.arange(1,101).tolist()
 raw_data,bins,dimension = mel.Parse_memory_kernels('./calcs',file_range)#,read=True) #parse all memory data, choose range of datapoints parse 
 
 #assumes in directories ./dir/n where n = 1,2,3 etc
