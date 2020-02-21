@@ -120,7 +120,7 @@ class Postprocessed_memory:
         self.eta_bar_inter_list = []
 
 
-        dt = (self.time_step/25)
+        dt = (self.time_step/35)
         n_points = math.ceil(self.mem_cutoff/dt)
         n_points = n_points + n_points-1
         time_e_max = dt * (n_points-1)
@@ -246,12 +246,10 @@ class Postprocessed_memory:
 
                             if time_step-t_prime > mem_cutoff:
                                 integrand[tp,i,j] = 0
-                                continue
-
-                            if t_prime == time_step:
-                                integrand[tp,i,j]=eta_t_fit[ts,i,j,0]
-                                continue  
-                            integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
+                            elif t_prime == time_step:
+                                integrand[tp,i,j] = eta_t_fit[ts,i,j,0]
+                            else:
+                                integrand[tp,i,j] = eta_t_fit[tp,i,j,ts-tp]
                             integrand[tp,i,j] *= velocities_inter[tp,j_atom,j_cart]
                         integrand[:,j,i] = integrand[:,i,j] #TODO check integrand[0]
                         force = np.trapz(integrand[:,i,j],time_axis)
@@ -311,10 +309,6 @@ class Postprocessed_memory:
         
 
 def Parse_memory_kernels(path_to_calcs,file_range,read=False):
-
-    from coolvib.tools.spectrum import read_memory_kernel
-    import numpy as np
-
     filename  = 'raw_memory.npy'
     bins,re,im,dimension,max_e = read_memory_kernel(path_to_calcs+'/'+str(file_range[0])+'/friction_memory_kernel.out')
     if read:
@@ -337,3 +331,43 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
         np.save(filename,raw_data)
 
     return raw_data,bins,dimension
+
+def read_memory_kernel(path):
+    head_count =0
+    header = ["No of","Discretization","Number of Bins","Excitation energy","==========","k-point","Friction"] #skip lines
+    with open(path, "r") as f:
+        for line in f:
+            if "Friction" in line:
+                dimension = int(line.split()[3])
+                head_count += 1
+            if "Discretization" in line:
+                discretization=float(line.split()[-1])
+            if any(x in line for x in header):
+                continue
+            max_e = float(line.split()[0])
+
+    elements = (((dimension*dimension)-dimension)/2)+dimension
+
+    if elements < head_count:
+        n_spin = 2 
+#        print("This system is spin unrestricted")
+
+    bins=np.zeros((int(max_e/discretization)+1))
+    re_memory_kernel=np.zeros((dimension,dimension,len(bins)))
+    im_memory_kernel=np.zeros_like(re_memory_kernel)
+    
+    with open(path, "r") as f:
+        for line in f:
+            if "Friction" in line:
+                i = int(line.split()[3])
+                j = int(line.split()[4])
+                head_count += 1
+                c=0
+            if any(x in line for x in header):
+                continue
+            else:
+                re_memory_kernel[i-1,j-1,c]=float(line.split()[1])
+                im_memory_kernel[i-1,j-1,c]=float(line.split()[2])
+                bins[c]=float(line.split()[0])
+                c +=1 
+    return(bins,re_memory_kernel,im_memory_kernel,dimension,max_e)
