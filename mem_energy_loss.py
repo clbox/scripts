@@ -216,46 +216,34 @@ class Postprocessed_memory:
         elements = self.elements
         indices = self.element_index()
 
+        dt = inter_time_scale[1]-inter_time_scale[0]
+
         for co in range(len(self.cutoffs)):
             times_up = self.times_up_list[co]
             eta_t = self.eta_t_list[co]*-1
             eta_t = eta_t[:,:,times_up >= 0.0]
             times_up = times_up[times_up >= 0.0]
-            fit = interp1d(old_time_scale,eta_t,kind='linear',axis=0)
+            
+            for e in range(elements):
+                i = (indices[e])[0]
+                j = (indices[e])[1]
+                i_cart,j_cart = i % 3, j % 3
+                i_atom,j_atom = i // 3, j // 3
 
-            for ts, time_step in enumerate(inter_time_scale):
-                print(ts)
-                t_primes = inter_time_scale[inter_time_scale<=time_step]
-                time_axis = time_step - t_primes
-                eta_t_fit = fit(t_primes[time_axis<=mem_cutoff])
-                print('len: ' +str(len(eta_t_fit)))
-                integrand = np.zeros([len(t_primes),elements])
-
-                for tp,t_prime in enumerate(t_primes): 
-                    if time_step-t_prime > mem_cutoff:
-                        integrand[tp,:] = 0
-                    elif t_prime == time_step:
-                        integrand[tp,:] = eta_t_fit[ts,:,0]
-                    else:
-                        integrand[tp,:] = eta_t_fit[tp,:,ts-tp]
-                for e in range(elements):
-                    i = (indices[e])[0]
-                    j = (indices[e])[1]
-                    i_cart,j_cart = i % 3, j % 3
-                    i_atom,j_atom = i // 3, j // 3
-
-                    integrand[:,e] *= velocities_inter[:len(t_primes),j_atom,j_cart]
-                    force = np.trapz(integrand[:,e],time_axis)
-                    force_vec[co,ts,i_atom,i_cart] += force
-                    if i != j:
-                        force_vec[co,ts,j_atom,j_cart] += force
-    
-                for i in range(dimension):
-                    i_cart = i % 3
-                    i_atom = i // 3                
-                    nm_work[co,ts] += np.dot(velocities_inter[ts,i_atom,i_cart],force_vec[co,ts,i_atom,i_cart])
+                fit = interp1d(old_time_scale,eta_t[:,e,:],kind='linear',axis=0)
+                arr = fit(inter_time_scale)
+                arr *= velocities_inter[:,None,j_atom,j_cart] #multiply column wise
+                integrand = [np.sum(np.diag(np.fliplr(arr), d)) for d in range(len(arr) - 1, -len(arr), -1)]
+                integrand *= dt
+                force_vec[co,:,i_atom,i_cart] += integrand
+                if i != j:
+                    force_vec[co,:,j_atom,j_cart] += integrand  
+            for i in range(dimension):
+                i_cart = i % 3
+                i_atom = i // 3                
+                nm_work[co,:] += np.dot(velocities_inter[:,i_atom,i_cart],force_vec[co,:,i_atom,i_cart])
                 
-        self.nm_work = nm_work*(inter_time_scale[1]-inter_time_scale[0])
+        self.nm_work = nm_work*dt
         self.force_vec = force_vec
 
     def calculate_friction_force(self):
