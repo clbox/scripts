@@ -231,17 +231,9 @@ class Postprocessed_memory:
                 i_atom,j_atom = i // 3, j // 3
 
                 fit = interp1d(old_time_scale,eta_t[:,e,:],kind='linear',axis=0)
-                print('eta')
-                print(np.shape(eta_t[:,e,:]))
-                arr = fit(inter_time_scale)
-                print('fit')
-                print(np.shape(arr))
-                arr *= velocities_inter[:,None,j_atom,j_cart] #multiply column wise
-                print('vel')
-                print(np.shape(velocities_inter[:,None,j_atom,j_cart]))
-                integrand = (np.array([np.sum(np.diag(np.fliplr(arr), d)) for d in range(len(arr) - 1, -len(arr), -1)]))[:len(inter_time_scale)]*dt
-                print('integrand')
-                print(np.shape(integrand))
+                a = fit(inter_time_scale)
+                a *= velocities_inter[:,None,j_atom,j_cart] #multiply column wise
+                integrand = np.array([np.sum(np.diag(np.fliplr(a), d)) for d in range(np.shape(a)[1]-1,np.shape(a)[1]-np.shape(a)[0], -1)])*dt
                 force_vec[co,:,i_atom,i_cart] += integrand
                 if i != j:
                     force_vec[co,:,j_atom,j_cart] += integrand  
