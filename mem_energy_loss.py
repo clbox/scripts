@@ -233,7 +233,7 @@ class Postprocessed_memory:
                 fit = interp1d(old_time_scale,eta_t[:,e,:],kind='linear',axis=0)
                 a = fit(inter_time_scale)
                 a *= velocities_inter[:,None,j_atom,j_cart] #multiply column wise
-                integrand = np.array([np.sum(np.diag(np.fliplr(a), d)) for d in range(np.shape(a)[1]-1,np.shape(a)[1]-np.shape(a)[0], -1)])*dt
+                integrand = np.array([np.sum(np.diag(np.fliplr(a), d)) for d in range(np.shape(a)[1]-1,np.shape(a)[1]-np.shape(a)[0]-1, -1)])*dt
                 force_vec[co,:,i_atom,i_cart] += integrand
                 if i != j:
                     force_vec[co,:,j_atom,j_cart] += integrand  
