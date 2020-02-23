@@ -208,7 +208,6 @@ class Postprocessed_memory:
 
         old_time_scale = np.linspace(0,(self.steps-1)*self.time_step,self.steps)
         dimension = self.dimension
-        mem_cutoff = self.mem_cutoff
         inter_time_scale = self.inter_time_scale
         velocities_inter = self.velocities_inter
         force_vec = np.zeros((len(self.cutoffs),len(inter_time_scale),len(self.friction_indices),3))
@@ -227,6 +226,7 @@ class Postprocessed_memory:
             for e in range(elements):
                 i = (indices[e])[0]
                 j = (indices[e])[1]
+                print(i,j)
                 i_cart,j_cart = i % 3, j % 3
                 i_atom,j_atom = i // 3, j // 3
 
