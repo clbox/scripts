@@ -236,10 +236,14 @@ class Postprocessed_memory:
                 integrand = np.array([np.sum(np.diag(np.fliplr(a), d)) for d in range(np.shape(a)[1]-1,np.shape(a)[1]-np.shape(a)[0]-1, -1)])*dt
                 force_vec[co,:,i_atom,i_cart] += integrand
                 if i != j:
-                    force_vec[co,:,j_atom,j_cart] += integrand  
+                    force_vec[co,:,j_atom,j_cart] += integrand
+
             for i in range(dimension):
                 i_cart = i % 3
-                i_atom = i // 3                
+                i_atom = i // 3
+                print(i)
+                print(force_vec[co,:,i_atom,i_cart])
+                print(velocities_inter[:,i_atom,i_cart])
                 nm_work[co,:] += velocities_inter[:,i_atom,i_cart]*force_vec[co,:,i_atom,i_cart]
                 
         self.nm_work = nm_work*dt
