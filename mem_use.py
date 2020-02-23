@@ -129,4 +129,4 @@ fig.savefig(fig_path+'nm_cum_work.pdf')
 #print(pp.inter_time_scale)
 #print(nm_work)
 
-np.savetxt('nm_work.txt',(pp.inter_time_scale,nm_work))
+np.savetxt('nm_work.txt',(pp.inter_time_scale,nm_work),fmt='%s')
