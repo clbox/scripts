@@ -562,7 +562,7 @@ for co,cutoff in enumerate(cutoffs):
 plt.plot(times_up,convolute_factor)
 plt.plot(times_up,eta_bar_inter[0,0,0,:])
 plt.plot(times_up,eta_t[0,0,0,:])
-
+print(np.shape(data))
 
 # ## x Velocity to get force and x displacement vector to get work then integrate
 
@@ -629,9 +629,7 @@ for atom in range(2):
 plt.legend()
 
 plt.xlim(0,100)
-plt.xlabel('Time / fs',fontsize=20)
-plt.ylabel(r'Velocity / $\sqrt{\frac{eV}{amu}}$',fontsize=20)
-
+plt.xlabel('Time / fs',fontsize=20)print(np.shape(data))
 
 # ### Mem integral
 
