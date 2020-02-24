@@ -226,7 +226,6 @@ class Postprocessed_memory:
             for e in range(elements):
                 i = (indices[e])[0]
                 j = (indices[e])[1]
-                print(i,j)
                 i_cart,j_cart = i % 3, j % 3
                 i_atom,j_atom = i // 3, j // 3
 
@@ -241,9 +240,6 @@ class Postprocessed_memory:
             for i in range(dimension):
                 i_cart = i % 3
                 i_atom = i // 3
-                print(i)
-                print(force_vec[co,:,i_atom,i_cart])
-                print(velocities_inter[:,i_atom,i_cart])
                 nm_work[co,:] += velocities_inter[:,i_atom,i_cart]*force_vec[co,:,i_atom,i_cart]
                 
         self.nm_work = nm_work*dt
