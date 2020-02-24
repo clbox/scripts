@@ -219,14 +219,13 @@ class Postprocessed_memory:
 
         for co in range(len(self.cutoffs)):
             times_up = self.times_up_list[co]
-            eta_t = self.eta_t_list[co]*-1
+            eta_t = self.eta_t_list[co]#*-1
             eta_t = eta_t[:,:,times_up >= 0.0]
             times_up = times_up[times_up >= 0.0]
             
             for e in range(elements):
                 i = (indices[e])[0]
                 j = (indices[e])[1]
-                print(i,j)
                 i_cart,j_cart = i % 3, j % 3
                 i_atom,j_atom = i // 3, j // 3
 
@@ -241,11 +240,8 @@ class Postprocessed_memory:
             for i in range(dimension):
                 i_cart = i % 3
                 i_atom = i // 3
-                print(i)
-                print(force_vec[co,:,i_atom,i_cart])
-                print(velocities_inter[:,i_atom,i_cart])
                 nm_work[co,:] += velocities_inter[:,i_atom,i_cart]*force_vec[co,:,i_atom,i_cart]
-                
+
         self.nm_work = nm_work*dt
         self.force_vec = force_vec
 
