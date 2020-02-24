@@ -8,15 +8,15 @@ from ase.units import _hbar, J, s, fs
 from scipy.integrate import cumtrapz
 
 
-file_range = np.arange(1,501).tolist()
-raw_data,bins,dimension = mel.Parse_memory_kernels('./calcs',file_range,read=True) #parse all memory data, choose range of datapoints parse 
+file_range = np.arange(1,952).tolist()
+raw_data,bins= mel.Parse_memory_kernels('./calcs',file_range,read=True) #parse all memory data, choose range of datapoints parse 
 
 #assumes in directories ./dir/n where n = 1,2,3 etc
 
 con = connect('database.db') #connection to database that stores atoms objects and velocities
 
-cutoffs = np.linspace(0.4,2.4,4) #all cutoff energies in eV investigating
-#cutoffs = [2.4]
+#cutoffs = np.linspace(0.4,2.4,4) #all cutoff energies in eV investigating
+cutoffs = np.array([2.4])
 
 friction_indices = [64,65] #indices of friction atoms
 
@@ -31,6 +31,8 @@ nm_work = pp.calculate_work()
 nm_forces = pp.calculate_friction_force()
 
 fig_path = './figures/'
+
+dimension = len(friction_indices)*3
 
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
@@ -129,6 +131,7 @@ for co in range(len(cutoffs)):
 ax.legend()
 fig.savefig(fig_path+'nm_work.pdf')
 
+
 fig, ax = plt.subplots(1,1)
 for co in range(len(cutoffs)):
     ax.plot(pp.inter_time_scale/fs,np.cumsum(nm_work[co,:]),label=str(cutoffs[co]))
@@ -136,7 +139,14 @@ for co in range(len(cutoffs)):
 ax.legend()
 fig.savefig(fig_path+'nm_cum_work.pdf')
 
+
+
 #print(pp.inter_time_scale)
 #print(nm_work)
-
-np.savetxt('nm_work.txt',(pp.inter_time_scale,nm_work),fmt='%s')
+datafile_path = fig_path+"nm_cumwork.txt"
+cs_work = np.cumsum(nm_work[-1,:])
+data = np.hstack(((pp.inter_time_scale/fs)[:,None],(cs_work[:,None])))
+with open(datafile_path, 'w+') as datafile_id:
+    datafile_id.write('Cutoff / eV =  {:.3f} \n'.format(cutoffs[co]))
+    datafile_id.write('Time scale / fs, Work / eV \n')
+    np.savetxt(datafile_id, data, fmt=['%.6f','%.6f'])

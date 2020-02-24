@@ -325,7 +325,7 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
             raw_data[ts-1,:,:] = re
         np.save(filename,raw_data)
 
-    return raw_data,bins,dimension
+    return raw_data,bins
 
 def read_memory_kernel(path):
     head_count =0
@@ -353,8 +353,6 @@ def read_memory_kernel(path):
     with open(path, "r") as f:
         for line in f:
             if "Friction" in line:
-                i = int(line.split()[3])
-                j = int(line.split()[4])
                 c=0
                 e +=1
             if any(x in line for x in header):
@@ -365,3 +363,30 @@ def read_memory_kernel(path):
                 bins[c]=float(line.split()[0])
                 c +=1 
     return(bins,re_memory_kernel,im_memory_kernel,dimension,max_e)
+
+
+
+class Postprocessed_markov:
+
+    """ Takes Raw data, array of n_structures,dimension,dimension,energy_bins 
+        and calculates the spectral density, Fourier transform, with 
+        convolution and calculates energy loss due to friction including
+        the effects of memory 
+        
+        Can do this at multiple cutoff energies if supplied, or one
+        INPUT:
+        bins / eV
+        raw_data / ps-1
+        cutoffs / eV
+        mem_cutoff / fs
+        time_step / fs
+
+        self. all ase units
+        
+    """
+    
+    def __init__(self,friction_indices,time_step,con):
+        self.friction_indices = friction_indices
+        self.time_step = time_step * fs
+        self.con = con
+        self.dimension = len(friction_indices)*3
