@@ -180,7 +180,10 @@ class Postprocessed_memory:
         
         self.all_velocities = np.zeros((self.steps,len(self.friction_indices),3))
         for i in range(self.steps):
-            atoms = self.con.get_atoms(id=i+1)
+            try:
+                atoms = self.con.get_atoms(id=i+1)
+            except:
+                continue
             self.all_velocities[i,:,:] = atoms.get_velocities()[self.friction_indices,:]
 
     def velocity_interpolation(self):
@@ -396,15 +399,16 @@ class Postprocessed_markov:
         self.dimension = len(friction_indices)*3
         self.key = key
         self.steps = steps
+        self.time_scale = np.linspace(0,(self.steps-1)*self.time_step,self.steps)
 
     def get_all_tensors(self):
         dimension = self.dimension
-        final = self.steps+1
-        all_tensors = np.zeros((final,dimension,dimension))
-        for ts in range(final):
+        steps = self.steps
+        all_tensors = np.zeros((steps,dimension,dimension))
+        for ts in range(steps):
             row = self.con.get(id=ts+1)
             try:
-                tensor = string2array(row.get(self.key))
+                tensor = self.string2array(row.get(self.key))
             except: 
                 tensor = np.zeros((dimension,dimension))
             all_tensors[ts,:,:] = tensor / ps
@@ -418,31 +422,23 @@ class Postprocessed_markov:
         friction_masses = masses[friction_indices]
         return friction_masses
 
-    def calculate_work(self):
-        final = self.steps+1
+    def energy_loss(self):
+        steps = self.steps
         friction_indices = self.friction_indices
         dimension = self.dimension
         friction_masses = self.get_friction_masses()
 
-        self.m_work = np.zeros((self.steps))
-        self.m_forces = np.zeros((final,len(friction_indices),3))
+        self.m_work = np.zeros((steps))
+        self.m_forces = np.zeros((steps,len(friction_indices),3))
         Postprocessed_memory.get_velocities(self)
         all_tensors = self.get_all_tensors() 
     
-        for ts in range(self.steps):
-            atoms = self.con.get_atoms(id=ts+1)
-
-            if atoms.pbc[0] == False:
-                continue
-
+        for ts in range(steps):
             tensor = all_tensors[ts,:,:]
-            if np.amax(all_tensors[ts,:,:]) > 10:
-                continue
-                
-            
             vel = self.all_velocities[ts,:,:]
-            force_vec = np.zeros_like(vel)
-
+            if np.amax(all_tensors[ts,:,:]) > 10/ps:
+                continue
+      
             for i in range(dimension):
                 i_atom = i // 3
                 for j in range(dimension):
@@ -450,18 +446,26 @@ class Postprocessed_markov:
                     mass_factor=np.sqrt(friction_masses[i_atom])*np.sqrt(friction_masses[j_atom])
                     tensor[i,j]=tensor[i,j]*mass_factor 
         
-
-            force_vec=np.dot(tensor,vel.flatten())
+            forces=np.dot(tensor,vel.flatten())
             self.m_work[ts] = np.dot(vel.flatten(),np.dot(tensor,vel.flatten()))*self.time_step
-            self.m_forces[ts,:,:] = force_vec.reshape(len(friction_indices),3)
+            self.m_forces[ts,:,:] = forces.reshape(len(friction_indices),3)
+
 
     def calculate_friction_force(self):
 
         if not hasattr(self,'m_forces'):
-            self.calculate_work()
+            self.energy_loss()
             return(self.m_forces)
         else:
             return(self.m_forces)
+
+    def calculate_work(self):
+
+        if not hasattr(self,'m_work'):
+            self.energy_loss()
+            return(self.m_work)
+        else:
+            return(self.m_work)
 
     def string2array(self,string):
         """
