@@ -37,6 +37,7 @@ class Postprocessed_memory:
         self.bins = bins
         self.con = con
         self.dimension = len(friction_indices)*3
+
     def frequency_interpolate(self):
         """Add extra bins in frequency domain"""
         
@@ -205,6 +206,9 @@ class Postprocessed_memory:
         self.inter_time_scale = inter_time_scale
 
     def mem_integral(self):
+        """Purposefully ensured the interpolated nuclear and 'electronic' time step are equal such that 
+        the memory integral can be treated as summation of the reverse diagonals for each nuclear time
+        step (then multiplication by the delta t)"""
 
         old_time_scale = np.linspace(0,(self.steps-1)*self.time_step,self.steps)
         dimension = self.dimension
@@ -298,9 +302,7 @@ class Postprocessed_memory:
                 continue
             j+=1
         return(indices)
-            
-
-        
+                    
 
 def Parse_memory_kernels(path_to_calcs,file_range,read=False):
     filename  = 'raw_memory.npy'
@@ -368,25 +370,103 @@ def read_memory_kernel(path):
 
 class Postprocessed_markov:
 
-    """ Takes Raw data, array of n_structures,dimension,dimension,energy_bins 
-        and calculates the spectral density, Fourier transform, with 
-        convolution and calculates energy loss due to friction including
-        the effects of memory 
+    """ Takes connection to database containing each atoms object and 
+        friction tensor and calculates the post processed energy loss
+        due to (Markovian) electronic friction.
         
         Can do this at multiple cutoff energies if supplied, or one
         INPUT:
-        bins / eV
-        raw_data / ps-1
-        cutoffs / eV
-        mem_cutoff / fs
         time_step / fs
+        database (friction tensor ps^-1)
+
+        Requires the key the friction tensor is stored in the database
+        under as a string, e.g 'ft1' 
+
+        Requires the number of steps, the final point in the trajectory
+        should be saved in database as id=steps+1
 
         self. all ase units
         
     """
     
-    def __init__(self,friction_indices,time_step,con):
+    def __init__(self,steps,friction_indices,time_step,con,key):
         self.friction_indices = friction_indices
         self.time_step = time_step * fs
         self.con = con
         self.dimension = len(friction_indices)*3
+        self.key = key
+        self.steps = steps
+
+    def get_all_tensors(self):
+        dimension = self.dimension
+        final = self.steps+1
+        all_tensors = np.zeros((final,dimension,dimension))
+        for ts in range(final):
+            row = self.con.get(id=ts+1)
+            try:
+                tensor = string2array(row.get(self.key))
+            except: 
+                tensor = np.zeros((dimension,dimension))
+            all_tensors[ts,:,:] = tensor / ps
+        return all_tensors
+
+    def get_friction_masses(self):
+        friction_indices = self.friction_indices
+        atoms = self.con.get_atoms(id=1)
+        masses = atoms.get_masses()
+        friction_masses = masses[friction_indices]
+        return friction_masses
+
+    def calculate_work(self):
+        final = self.steps+1
+        friction_indices = self.friction_indices
+        dimension = self.dimension
+        friction_masses = self.get_friction_masses()
+
+        self.m_work = np.zeros((self.steps))
+        self.m_forces = np.zeros((final,len(friction_indices),3))
+        Postprocessed_memory.get_velocities(self)
+        all_tensors = self.get_all_tensors() 
+    
+        for ts in range(self.steps):
+            atoms = self.con.get_atoms(id=ts+1)
+
+            if atoms.pbc[0] == False:
+                continue
+
+            tensor = all_tensors[ts,:,:]
+            if np.amax(all_tensors[ts,:,:]) > 10:
+                continue
+                
+            
+            vel = self.all_velocities[ts,:,:]
+            force_vec = np.zeros_like(vel)
+
+            for i in range(dimension):
+                i_atom = i // 3
+                for j in range(dimension):
+                    j_atom = j // 3
+                    mass_factor=np.sqrt(friction_masses[i_atom])*np.sqrt(friction_masses[j_atom])
+                    tensor[i,j]=tensor[i,j]*mass_factor 
+        
+
+            force_vec=np.dot(tensor,vel.flatten())
+            self.m_work[ts] = np.dot(vel.flatten(),np.dot(tensor,vel.flatten()))*self.time_step
+            self.m_forces[ts,:,:] = force_vec.reshape(len(friction_indices),3)
+
+    def calculate_friction_force(self):
+
+        if not hasattr(self,'m_forces'):
+            self.calculate_work()
+            return(self.m_forces)
+        else:
+            return(self.m_forces)
+
+    def string2array(self,string):
+        """
+        Converts friction tensor that is stored as string in database to
+        a numpy array
+        """
+        dimension = len(string.split(']\n'))
+        onedarray = np.fromstring((string.replace('[',' ').replace(']\n',' ')),dtype=float,sep=' ')
+        return onedarray.reshape(dimension,dimension)
