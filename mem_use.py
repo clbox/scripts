@@ -5,7 +5,6 @@ import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from ase.units import _hbar, J, s, fs
-from scipy.integrate import cumtrapz
 
 
 file_range = np.arange(1,952).tolist()
