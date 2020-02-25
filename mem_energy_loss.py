@@ -120,8 +120,8 @@ class Postprocessed_memory:
 
         dt = (self.time_step/40)
         n_points = math.ceil(self.mem_cutoff/dt)
-        n_points = n_points + n_points-1
         time_e_max = dt * (n_points-1)
+        n_points = n_points + n_points-1
         times_forward = np.linspace(0,time_e_max,n_points)
         times_up = np.append(times_forward,-times_forward[1:])
         times_up = np.sort(times_up)
