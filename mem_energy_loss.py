@@ -326,6 +326,11 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
             except:
                 print('cannot get mem_kernel for '+str(ts)+' - continuing')
                 continue
+
+            if np.max(re) > 10:
+                print('Large max for id = ' + str(ts+1) + ' defaulting to zero')
+                re=np.zeros((elements,len(bins)))
+                im=np.zeros_like(re)
                     
             raw_data[ts-1,:,:] = re
         np.save(filename,raw_data)
@@ -366,7 +371,8 @@ def read_memory_kernel(path):
                 re_memory_kernel[e-1,c]=float(line.split()[1])
                 im_memory_kernel[e-1,c]=float(line.split()[2])
                 bins[c]=float(line.split()[0])
-                c +=1 
+                c +=1
+
     return(bins,re_memory_kernel,im_memory_kernel,dimension,max_e)
 
 
