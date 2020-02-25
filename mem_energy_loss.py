@@ -411,6 +411,7 @@ class Postprocessed_markov:
         return all_tensors
 
     def get_friction_masses(self):
+        """ assumes same atom order for all steps"""
         friction_indices = self.friction_indices
         atoms = self.con.get_atoms(id=1)
         masses = atoms.get_masses()
