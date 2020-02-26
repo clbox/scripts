@@ -33,11 +33,13 @@ fig_path = './figures/'
 
 dimension = len(friction_indices)*3
 
+e=0
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
-        ax[i,j].plot(pp.new_bins,(pp.new_data[0,i+j,:]),label='interpolated')
-        ax[i,j].plot(pp.bins, pp.raw_data[0,i+j,:],label='raw_data')
+        ax[i,j].plot(pp.new_bins,(pp.new_data[0,e,:]),label='interpolated')
+        ax[i,j].plot(pp.bins, pp.raw_data[0,e,:],label='raw_data')
+        e+=1
     
 ax[0,0].legend()
 fig.set_figheight(20)
@@ -57,12 +59,16 @@ fig.set_figheight(20)
 fig.set_figwidth(20)
 fig.savefig(fig_path+'eta_bar.pdf')
 
+
+times_up = pp.times_up_list[-1]
+times_up = times_up[times_up >= 0.0]
+times_up /= fs
 e=0
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-            ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,e,:],label=str(ts))
+            ax[i,j].plot(times_up,(pp.eta_bar_inter_list[-1])[ts,e,:],label=str(ts))
             e+=1
 ax[0,0].legend()
 fig.set_figheight(20)
@@ -74,7 +80,7 @@ fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-        ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,e,:],label=str(ts))
+        ax[i,j].plot(times_up,(pp.eta_bar_inter_list[-1])[ts,e,:],label=str(ts))
         e+=1
 ax[0,0].legend()
 fig.set_figheight(20)
@@ -86,7 +92,7 @@ fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-        ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_t_list[-1])[ts,e,:],label=str(ts))
+        ax[i,j].plot(times_up,(pp.eta_t_list[-1])[ts,e,:],label=str(ts))
         e+=1
 ax[0,0].legend()
 fig.set_figheight(20)
@@ -96,12 +102,15 @@ fig.savefig(fig_path+'eta_t.pdf')
 
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for co in range(len(cutoffs)):
+    times_up = pp.times_up_list[co]
+    times_up = times_up[times_up >= 0.0]
+    times_up /= fs
     e=0
     for i in range(dimension):
         for j in range(i,dimension):
             #for ts in range(pp.steps):
-            ax[i,j].plot(pp.times_up_list[co]/fs,(pp.eta_t_list[co])[ts,e,:],label='CO: ' + str(cutoffs[co])+'TS: '+ str(ts))
-            ax[i,j].set_xlim(0,5)
+            ax[i,j].plot(times_up,(pp.eta_t_list[co])[ts,e,:],label='CO: ' + str(cutoffs[co])+'TS: '+ str(ts))
+            ax[i,j].set_xlim(0,15)
             e+=1
 ax[0,0].legend()
 fig.set_figheight(20)

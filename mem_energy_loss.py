@@ -167,13 +167,13 @@ class Postprocessed_memory:
             exp_factor = np.cos(0.5*times_up*cutoff_freq)
 
             #eta_t = np.zeros((final,dimension,dimension,len(times_up)),dtype=complex)
-            eta_t = np.zeros((self.steps,self.elements,len(times_up)))
+            eta_t = np.zeros((self.steps,self.elements,len(times_up[times_up >= 0.0])))
             
             convolute_factor = sinc*exp_factor
             
             for ts in range(self.steps):
                 for e in range(self.elements):
-                    eta_t[ts,e,:] = np.convolve(eta_bar_inter[ts,e,:],convolute_factor,'same')*dx 
+                    eta_t[ts,e,:] = (np.convolve(eta_bar_inter[ts,e,:],convolute_factor,'same')*dx)[times_up >= 0.0]
             self.eta_t_list.append(eta_t)
 
     def get_velocities(self):
@@ -226,8 +226,7 @@ class Postprocessed_memory:
 
         for co in range(len(self.cutoffs)):
             times_up = self.times_up_list[co]
-            eta_t = self.eta_t_list[co]#*-1
-            eta_t = eta_t[:,:,times_up >= 0.0]
+            eta_t = self.eta_t_list[co]
             times_up = times_up[times_up >= 0.0]
             
             for e in range(elements):
