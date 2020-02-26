@@ -59,34 +59,21 @@ fig.set_figheight(20)
 fig.set_figwidth(20)
 fig.savefig(fig_path+'eta_bar.pdf')
 
-
-times_up = pp.times_up_list[-1]
-times_up = times_up[times_up >= 0.0]
-times_up /= fs
 e=0
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         #for ts in range(pp.steps):
-            ax[i,j].plot(times_up,(pp.eta_bar_inter_list[-1])[ts,e,:],label=str(ts))
-            e+=1
+        ax[i,j].plot(pp.times_up_list[-1]/fs,(pp.eta_bar_inter_list[-1])[ts,e,:],label=str(ts))
+        e+=1
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
 fig.savefig(fig_path+'eta_bar_inter.pdf')
 
-e=0
-fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
-for i in range(dimension):
-    for j in range(i,dimension):
-        #for ts in range(pp.steps):
-        ax[i,j].plot(times_up,(pp.eta_bar_inter_list[-1])[ts,e,:],label=str(ts))
-        e+=1
-ax[0,0].legend()
-fig.set_figheight(20)
-fig.set_figwidth(20)
-fig.savefig(fig_path+'eta_inter.pdf')
-
+times_up = pp.times_up_list[-1]
+times_up = times_up[times_up >= 0.0]
+times_up /= fs
 e=0
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
 for i in range(dimension):

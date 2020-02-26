@@ -26,7 +26,7 @@ class Postprocessed_memory:
         
     """
     
-    def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con):      
+    def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con,debug=False):      
         self.raw_data = raw_data / ps
         self.elements= np.shape(raw_data)[1]
         self.cutoffs = cutoffs
@@ -37,6 +37,7 @@ class Postprocessed_memory:
         self.bins = bins
         self.con = con
         self.dimension = len(friction_indices)*3
+        self.debug = debug
 
     def frequency_interpolate(self):
         """Add extra bins in frequency domain"""
@@ -441,7 +442,8 @@ class Postprocessed_markov:
         for ts in range(steps):
             tensor = all_tensors[ts,:,:]
             vel = self.all_velocities[ts,:,:]
-            if np.amax(all_tensors[ts,:,:]) > 10/ps:
+            if np.amax(all_tensors[ts,:,:]) > 8/ps:
+                print('id = ' + str(ts) + ' has tensor elements over 8 ps^-1 !, defaulting to zero')
                 continue
       
             for i in range(dimension):
