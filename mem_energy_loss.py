@@ -415,7 +415,8 @@ class Postprocessed_markov:
             row = self.con.get(id=ts+1)
             try:
                 tensor = self.string2array(row.get(self.key))
-            except: 
+            except:
+                'Cannot get tensor for id = ' + str(ts+1) + ' ,defaulting to zero' 
                 tensor = np.zeros((dimension,dimension))
             all_tensors[ts,:,:] = tensor / ps
         return all_tensors
