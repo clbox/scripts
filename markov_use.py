@@ -28,6 +28,14 @@ fig_path = './markov_figures/'
 
 dimension = len(friction_indices)*3
 
+all_velocities = pp.all_velocities
+
+fig, ax = plt.subplots(1,1)
+for atom in range(len(friction_indices)):       
+    for cart in range(3):
+        ax.plot(pp.time_scale/fs,all_velocities[:,atom,cart],label=str(atom)+str(cart))
+ax.legend()
+fig.savefig(fig_path+'all_velocities.pdf')
 
 fig, ax = plt.subplots(1,1)
 for atom in range(len(friction_indices)):       
