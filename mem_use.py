@@ -92,6 +92,30 @@ for co in range(len(cutoffs)):
     times_up = pp.times_up_list[co]
     times_up = times_up[times_up >= 0.0]
     times_up /= fs
+
+    e=0
+    for i in range(dimension):
+        for j in range(i,dimension):
+            eta_intgls = []
+            for ts in range(pp.steps):
+                eta_intgls.append(np.trapz((pp.eta_t_list[co])[ts,e,:],times_up))
+        ax[i,j].plot(pp.inter_time_scale/fs,eta_intgls[:],label='CO: ' + str(cutoffs[co]))
+        #ax[i,j].set_xlim(0,15)
+        e+=1
+ax[0,0].legend()
+fig.set_figheight(20)
+fig.set_figwidth(20)
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.savefig(fig_path+'eta_t_integral.pdf')
+
+
+
+
+fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
+for co in range(len(cutoffs)):
+    times_up = pp.times_up_list[co]
+    times_up = times_up[times_up >= 0.0]
+    times_up /= fs
     e=0
     for i in range(dimension):
         for j in range(i,dimension):
