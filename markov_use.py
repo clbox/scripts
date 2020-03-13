@@ -37,6 +37,18 @@ for atom in range(len(friction_indices)):
 ax.legend()
 fig.savefig(fig_path+'all_velocities.pdf')
 
+all_tensors = pp.get_all_tensors()
+fig, ax = plt.subplots(1,1)
+labels = ['C_x','C_y','C_z','O_x','O_y','O_z']
+for i in range(dimension):
+    for j in range(i,dimension):
+        if j != i:
+            continue
+        ax.plot(pp.time_scale/fs,all_tensors[:,i,j],label=str(labels[i])+' '+str(labels[j]))
+ax.legend()
+fig.savefig(fig_path+'all_tensors.pdf')
+
+
 fig, ax = plt.subplots(1,1)
 for atom in range(len(friction_indices)):       
     for cart in range(3):

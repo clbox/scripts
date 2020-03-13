@@ -26,7 +26,7 @@ class Postprocessed_memory:
         
     """
     
-    def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con,debug=False):      
+    def __init__(self,bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con,debug=False,treat_complex=False):      
         self.raw_data = raw_data / ps
         self.elements= np.shape(raw_data)[1]
         self.cutoffs = cutoffs
@@ -94,14 +94,27 @@ class Postprocessed_memory:
             func = np.zeros(len(frequencies))
             eta_bar_t = self.eta_bar_t_list[co]
             cos_factor = np.cos(frequencies*times[:,None])
-            for ts in range(self.steps):
-                lambda_omega = self.new_data[ts,:,0:len(frequencies)] #convert from ps-1
-                
-                for e in range(elements):
-                    i_atom,j_atom = (indices[e])[0] // 3, (indices[e])[1] // 3
-                    func = lambda_omega[e,None,:] * cos_factor * np.sqrt(masses[i_atom]*masses[j_atom])
-                    func[:,0]=0
-                    eta_bar_t[ts,e,:]=np.trapz(func,frequencies,1)
+
+            if treat_complex == False:
+                for ts in range(self.steps):
+                    lambda_omega = self.new_data[ts,:,0:len(frequencies)] #convert from ps-1
+                    
+                    for e in range(elements):
+                        i_atom,j_atom = (indices[e])[0] // 3, (indices[e])[1] // 3
+                        func = lambda_omega[e,None,:] * cos_factor * np.sqrt(masses[i_atom]*masses[j_atom])
+                        func[:,0]=0
+                        eta_bar_t[ts,e,:]=np.trapz(func,frequencies,1)
+            # else:
+            #TODO: FIGURE THIS OUT
+            #     for ts in range(self.steps):
+            #         lambda_omega = self.new_data[ts,:,0:len(frequencies)] #convert from ps-1
+                    
+            #         for e in range(elements):
+            #             i_atom,j_atom = (indices[e])[0] // 3, (indices[e])[1] // 3
+            #             func = lambda_omega[e,None,:] * cos_factor * np.sqrt(masses[i_atom]*masses[j_atom])
+            #             func[:,0]=0
+            #             eta_bar_t[ts,e,:]=np.trapz(func,frequencies,1)
+
 
             self.eta_bar_t_list[co]=eta_bar_t
 
@@ -455,7 +468,7 @@ class Postprocessed_markov:
                     tensor[i,j]=tensor[i,j]*mass_factor 
         
             forces=np.dot(tensor,vel.flatten())
-            self.m_work[ts] = np.dot(vel.flatten(),np.dot(tensor,vel.flatten()))*self.time_step
+            self.m_work[ts] = np.dot(vel.flatten(),forces)*self.time_step
             self.m_forces[ts,:,:] = forces.reshape(len(friction_indices),3)
 
 
