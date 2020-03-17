@@ -14,14 +14,14 @@ raw_data,bins= mel.Parse_memory_kernels('./calcs',file_range,read=True) #parse a
 
 con = connect('database.db') #connection to database that stores atoms objects and velocities
 
-#cutoffs = np.linspace(0.4,2.4,4) #all cutoff energies in eV investigating
-cutoffs = np.array([2.4])
+cutoffs = np.linspace(0.4,2.4,4) #all cutoff energies in eV investigating
+#cutoffs = np.array([2.4])
 
 friction_indices = [64,65] #indices of friction atoms
 
 time_step = 2 #fs nuclear time step
 
-mem_cutoff = 40 #fs dont include more the X fs back in time in the memory integral
+mem_cutoff = 5 #fs dont include more the X fs back in time in the memory integral
 
 pp = mel.Postprocessed_memory(bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con)
 
@@ -88,27 +88,24 @@ fig.savefig(fig_path+'eta_t.pdf')
 
 
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
+old_time_scale = np.linspace(0,(pp.steps-1)*pp.time_step,pp.steps)
 for co in range(len(cutoffs)):
     times_up = pp.times_up_list[co]
     times_up = times_up[times_up >= 0.0]
     times_up /= fs
-
     e=0
     for i in range(dimension):
         for j in range(i,dimension):
             eta_intgls = []
-            for ts in range(pp.steps):
+            for ts in range(len(old_time_scale)):
                 eta_intgls.append(np.trapz((pp.eta_t_list[co])[ts,e,:],times_up))
-        ax[i,j].plot(pp.inter_time_scale/fs,eta_intgls[:],label='CO: ' + str(cutoffs[co]))
-        #ax[i,j].set_xlim(0,15)
-        e+=1
+            ax[i,j].plot(old_time_scale/fs,eta_intgls[:],label='CO: ' + str(cutoffs[co]))
+            e+=1
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
 fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
 fig.savefig(fig_path+'eta_t_integral.pdf')
-
-
 
 
 fig, ax = plt.subplots(dimension,dimension,sharex='all', sharey='all')
