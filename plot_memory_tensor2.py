@@ -44,7 +44,7 @@ for path in sys.argv[1:]:
     bins=np.zeros((int(max_e/discretization)+1))
     print(len(bins))
     re_memory_kernel=np.zeros((dimension,dimension,len(bins)))
-    im_memory_kernel=np.zeros_like(re_memory_kernel)
+    #im_memory_kernel=np.zeros_like(re_memory_kernel)
     
     with open(path, "r") as f:
         for line in f:
@@ -57,7 +57,7 @@ for path in sys.argv[1:]:
                 continue
             else:
                 re_memory_kernel[i-1,j-1,c]=float(line.split()[1])
-                im_memory_kernel[i-1,j-1,c]=float(line.split()[2])
+                #im_memory_kernel[i-1,j-1,c]=float(line.split()[2])
                 bins[c]=float(line.split()[0])
                 c +=1
 
