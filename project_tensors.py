@@ -2,6 +2,7 @@ import numpy as np
 import sys
 from ase.io import read
 import glob
+from project_kernels import calc_modes
 
 def build_tensor(raw_tensor):
     a = len(raw_tensor[0].split())
@@ -74,64 +75,8 @@ for output_dir in sys.argv[1:]:
     friction_tensor,ndim = build_tensor(raw_tensor)
     friction_vecs, ndim = build_tensor(raw_vecs)
 
-    modes = np.zeros([ndim,ndim])
-
-    ###now we need to generate modes depending on the H2 geometry
     atoms = read(geo_file)
-    #the H atoms are 0 and 1
-    pos = atoms.positions
-
-    fa1 = friction_atoms[0]
-    fa2 = friction_atoms[1]
-
-    internals = np.zeros(6)
-    #com = (pos[0,:] + pos[1,:])/2.
-    #vec = pos[0,:] - pos[1,:]
-    com = (pos[fa1,:] + pos[fa2,:])/2.
-    vec = pos[fa1,:] - pos[fa2,:]
-
-
-    norm = vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]
-    internals[0] = np.sqrt(norm)
-    #phi
-    internals[1] = np.arccos((vec[0]/np.sqrt(vec[0]*vec[0]+vec[1]*vec[1])))
-    #theta
-    vx_tilde = np.cos(internals[1])*vec[0]+np.sin(internals[1])*vec[1]
-    internals[2] = np.arccos((vec[2]/np.sqrt(vec[2]*vec[2]+vx_tilde*vx_tilde)))
-    internals[3:] = com[:]
-    #mode 1 is the internal stretch
-    modes[0,:3] = vec
-    modes[0,3:] = -vec
-
-    #mode 2 is 1st rotation angle
-    # theta angle between molecular axis and z axis
-    modes[1,:] = [-vec[1],vec[0],0.,vec[1],-vec[0],0.]
-
-    #mode 3 is the 2nd rotation angle
-    #it is defined as the crossing line between 2 planes
-    #plane 1 is defined by the z-axis and the H2 axis
-    #plane 2 is defined with the H2 axis as the normal vector
-    vec2 = [0.,0.,0.]
-    vec2[0] = np.cos(internals[1])*vec[2]
-    vec2[1] = np.sin(internals[1])*vec[2]
-    vec2[2] = -vx_tilde
-
-    modes[2,:3] = np.array(vec2)
-    modes[2,3:] = -np.array(vec2)
-
-
-    #mode 4 is the x translation
-    modes[3,:] = [1.,0.,0.,1.,0.,0.]
-
-    #mode 5 is the y translation
-    modes[4,:] = [0.,1.,0.,0.,1.,0.]
-
-    #mode 6 is the z translation
-    modes[5,:] = [0.,0.,1.,0.,0.,1.]
-
-
-    for i in range(ndim):
-        modes[i,:]/=np.linalg.norm(modes[i,:])
+    modes = calc_modes(atoms,friction_atoms)
 
     E,V  = np.linalg.eig(friction_tensor[:,:])
     E = sorted(E)

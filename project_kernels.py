@@ -4,10 +4,23 @@ from ase.io import read
 import glob
 from mem_energy_loss import read_memory_kernel
 
-def calc_modes(pos1,pos2,ndim):
+def calc_modes(atoms,friction_atoms):
+
     modes = np.zeros([ndim,ndim])
     internals = np.zeros(6)
-    com = (pos1[:] + pos2[:])/2.
+    f1 = friction_atoms[0]
+    f2 = friction_atoms[1]
+
+    pos1 = atoms.positions[f1]
+    pos2 = atoms.positions[f2]
+
+    mass1 = atoms.get_masses[f1]
+    mass2 = atoms.get_masses[f2]
+    
+    com = (mass1(pos1[:]) + mass2(pos2[:]))/(mass1+mass2)
+
+
+
     vec = pos1[:] - pos2[:]
     norm = vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]
     internals[0] = np.sqrt(norm)
@@ -41,6 +54,7 @@ def calc_modes(pos1,pos2,ndim):
     #mode 6 is the z translation
     modes[5,:] = [0.,0.,1.,0.,0.,1.]
 
+    ndim = len(friction_atoms)*3
     for i in range(ndim):
         modes[i,:]/=np.linalg.norm(modes[i,:])
     return modes
@@ -80,11 +94,8 @@ for output_dir in sys.argv[1:]:
             else:
                 continue
     
-    pos = atoms.positions
-    pos1 = pos[friction_atoms[0]]
-    pos2 = pos[friction_atoms[1]]
 
-    modes = calc_modes(pos1,pos2,dimension)
+    modes = calc_modes(atoms,friction_atoms)
 
     re_tensor = np.zeros((len(bins),dimension,dimension))
     e=0
