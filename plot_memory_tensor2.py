@@ -89,5 +89,9 @@ fig6.set_figheight(20)
 fig6.set_figwidth(20)
 fig6.text(0.5, 0.01, "Excitation energy / eV", ha='center',fontsize=15)
 fig6.text(0.01, 0.5, r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=15)
-fig6.savefig('memory_kernel_tensor.pdf',transparent=True,bbox_inches='tight')
 fig6.savefig('memory_kernel_tensor.png',dpi=300,transparent=True,bbox_inches='tight')
+
+if len(sys.argv[1:]) > 100:
+    print('not saving pdf as over 100 plots')
+else:
+    fig6.savefig('memory_kernel_tensor.pdf',transparent=True,bbox_inches='tight')
