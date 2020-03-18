@@ -81,7 +81,7 @@ for ii,path in enumerate(sys.argv[1:]):
                 ax[i,j].set_ylim(min_value,max_value)
                 ax[i,j].xaxis.set_minor_locator(MultipleLocator(0.05))
 
-if len(sys,argv[1:]) > 10:
+if len(sys.argv[1:]) > 10:
     print('no legend as too many plots')
 else:
     ax[0,-1].legend()
