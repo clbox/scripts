@@ -15,8 +15,8 @@ def calc_modes(atoms,friction_atoms):
     pos1 = atoms.positions[f1]
     pos2 = atoms.positions[f2]
 
-    mass1 = atoms.get_masses[f1]
-    mass2 = atoms.get_masses[f2]
+    mass1 = atoms.get_masses()[f1]
+    mass2 = atoms.get_masses()[f2]
     
     com = (mass1(pos1[:]) + mass2(pos2[:]))/(mass1+mass2)
 
