@@ -29,6 +29,6 @@ fig, ax = plt.subplots(dimension, dimension, sharex='all', sharey='all')
 for i in range(dimension):
     for j in range(i,dimension):
         x = bins
-        y = 
+        #y = 
 
 
