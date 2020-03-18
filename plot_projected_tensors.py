@@ -36,7 +36,7 @@ n_files = len(sys.argv[1:])
 print('number of files: ' + str(n_files))
 test = np.loadtxt(sys.argv[1]+'projected_tensor.out',delimiter='  ')
 dim = np.shape(test)[0]
-time_step = 2
+time_step = 1 
 
 all_tensors = np.zeros((n_files,dim,dim))
 time_axis = np.zeros((n_files))
