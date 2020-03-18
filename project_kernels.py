@@ -6,6 +6,7 @@ from mem_energy_loss import read_memory_kernel
 
 def calc_modes(atoms,friction_atoms):
 
+    ndim = len(friction_atoms)*3
     modes = np.zeros([ndim,ndim])
     internals = np.zeros(6)
     f1 = friction_atoms[0]
@@ -54,7 +55,6 @@ def calc_modes(atoms,friction_atoms):
     #mode 6 is the z translation
     modes[5,:] = [0.,0.,1.,0.,0.,1.]
 
-    ndim = len(friction_atoms)*3
     for i in range(ndim):
         modes[i,:]/=np.linalg.norm(modes[i,:])
     return modes
