@@ -36,7 +36,7 @@ bins[bins>1] = np.nan
 for i in range(len(time_axis)):
     y = np.ones((len(bins)))*time_axis[i]
     
-    ax.plot(bins,y,time_re[i,0,:], color = plt.cm.cool(color_idx[i]),zorder=len(time_axis)-i)
+    ax.plot(bins,y,time_re[i,0,:], color = plt.cm.cool(color_idx[i]))#zorder=len(time_axis)-i)
 
 # # set the axis limits
 #ax.set_ylim(0,95)
