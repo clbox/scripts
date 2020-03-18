@@ -350,7 +350,7 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
 
     return raw_data,bins
 
-def read_memory_kernel(path):
+def read_memory_kernel(path,treat_complex=True):
     head_count =0
     header = ["No of","Discretization","Number of Bins","Excitation energy","==========","k-point","Friction"] #skip lines
     with open(path, "r") as f:
@@ -382,7 +382,8 @@ def read_memory_kernel(path):
                 continue
             else:
                 re_memory_kernel[e-1,c]=float(line.split()[1])
-                im_memory_kernel[e-1,c]=float(line.split()[2])
+                if treat_complex:
+                    im_memory_kernel[e-1,c]=float(line.split()[2])
                 bins[c]=float(line.split()[0])
                 c +=1
 
