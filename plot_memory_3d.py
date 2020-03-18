@@ -35,8 +35,9 @@ x_max = 1
 bins[bins>1] = np.nan
 for i in range(len(time_axis)):
     y = np.ones((len(bins)))*time_axis[i]
-    
-    ax.plot(bins,y,time_re[i,0,:], color = plt.cm.cool(color_idx[i]))#zorder=len(time_axis)-i)
+
+    ax.plot(bins,y,time_re[i,0,:], color = plt.cm.cool(color_idx[i]),zorder=len(time_axis)-i)
+
 
 # # set the axis limits
 #ax.set_ylim(0,95)
@@ -47,5 +48,5 @@ ax.set_ylabel('Time / fs')
 ax.set_zlabel(r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $')
 
 fig.savefig('time_3d_projected_kernel.pdf',transparent=True,bbox_inches='tight')
-#plt.show()
+plt.show()
 
