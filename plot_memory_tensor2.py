@@ -80,10 +80,14 @@ for ii,path in enumerate(sys.argv[1:]):
                 ax[i,j].set_xlim(0,1)
                 ax[i,j].set_ylim(min_value,max_value)
                 ax[i,j].xaxis.set_minor_locator(MultipleLocator(0.05))
-    
-ax[0,-1].legend()
+
+if len(sys,argv[1:]) > 10:
+    print('no legend as too many plots')
+else:
+    ax[0,-1].legend()
 fig6.set_figheight(20)
 fig6.set_figwidth(20)
 fig6.text(0.5, 0.01, "Excitation energy / eV", ha='center',fontsize=15)
 fig6.text(0.01, 0.5, r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=15)
 fig6.savefig('memory_kernel_tensor.pdf',transparent=True,bbox_inches='tight')
+fig6.savefig('memory_kernel_tensor.png',dpi=300,transparent=True,bbox_inches='tight')
