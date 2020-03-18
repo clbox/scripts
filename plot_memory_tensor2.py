@@ -7,6 +7,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 import sys
 
 
+color_idx = np.linspace(0, 1, len(sys.argv[1:]))
 
 path = sys.argv[1]
 head_count =0
@@ -20,7 +21,7 @@ with open(path, "r") as f:
 fig6, ax = plt.subplots(dimension, dimension, sharex='all', sharey='all')
 max_value = 0
 min_value = 0
-for path in sys.argv[1:]:
+for ii,path in enumerate(sys.argv[1:]):
     head_count =0
     header = ["No of","Discretization","Number of Bins","Excitation energy","==========","k-point","Friction"] #skip lines
     with open(path, "r") as f:
@@ -74,7 +75,8 @@ for path in sys.argv[1:]:
         for j in range(dimension):
             if j>=i:
                 ax[i,j].plot(bins,re_memory_kernel[i,j,:],'.',markersize=3,
-                        linestyle='-',linewidth=0.1, label=(str(path)))
+                        linestyle='-',linewidth=0.1, label=str(path),
+                        color = plt.cm.cool(color_idx[ii]))
                 ax[i,j].set_xlim(0,1)
                 ax[i,j].set_ylim(min_value,max_value)
                 ax[i,j].xaxis.set_minor_locator(MultipleLocator(0.05))
