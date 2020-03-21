@@ -12,8 +12,9 @@ hbar = _hbar * J * s
 ps = fs*1000
 labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
 line_settings = {
-    'marker' : 's',
-    'alpha' : 0.6,
+    #'marker' : 's',
+    'marker' : None,
+    'alpha' : 0.8,
     'markersize' : 2
     }
 
@@ -46,6 +47,8 @@ def parse_traj_summary(traj_no):
                     elif 'SCATTERING_ANG' in line:
                         scat_angle = float(line.split()[-2])
                         break
+                elif int(line.split()[1]) > traj_no:
+                    break
 
 
     return lifetime*fs,Nf,Jf,scat_angle
@@ -413,12 +416,13 @@ def plot_energy_loss(fig,ax,traj_no,friction_atoms):
 
     time_axis = np.arange(0,nsteps,1)*printed_time_step
 
-    ax.plot(time_axis/fs,total_work,**line_settings,label='Total',color='black')
+    ax.plot(time_axis/fs,total_work,**{**line_settings,'marker':None},label='Total',color='black')
     for j in range(ndim):
-        ax.plot(time_axis/fs,cumulative_work[:,j],**line_settings)#,label=labels[j])
+        ax.plot(time_axis/fs,cumulative_work[:,j],**{**line_settings,'marker':None})#,label=labels[j])
 
     plot_settings(ax)
-    fig.text(0.47, 0.7, r'Energy loss / eV', va='center', rotation='vertical',fontsize=20)
+    ax.set_ylim(0,1.5)
+    fig.text(0.47, 0.3, r'Energy loss / eV', va='center', rotation='vertical',fontsize=20)
 
     return
 
@@ -432,10 +436,10 @@ def plot_projected_velocities(fig,ax,traj_no,friction_atoms):
     time_axis = np.arange(0,nsteps,1)*printed_time_step
  
     for j in range(ndim):
-        ax.plot(time_axis/fs,friction_projected_velocities[:,j]*fs,label=labels[j],**line_settings)
+        ax.plot(time_axis/fs,friction_projected_velocities[:,j]*fs,label=labels[j],**{**line_settings,'marker':None})
     plot_settings(ax)
     ax.set_ylim(-0.05,0.05)
-    fig.text(0.47, 0.3, r'Velocity / $\AA{}$ / fs', va='center', rotation='vertical',fontsize=20)
+    fig.text(0.47, 0.7, r'Velocity / $\AA{}$ / fs', va='center', rotation='vertical',fontsize=20)
 
     return
 
@@ -449,21 +453,27 @@ def plot_traj_summary(traj_no,friction_atoms):
     fig_settings(fig)
     ax[0,1].tick_params(labelbottom=False)
     ax[0,1].get_legend().remove()
+    trapped = False
     try:
         lifetime,Nf,Jf,scat_angle = parse_traj_summary(traj_no)
     except:
-        print('Trajectory number {} was not analysed in fort.26, skipping!'.format(traj_no))
-        return
+        print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
+        trapped = True
     
     Ni,Ji = parse_input_parameters()
 
-    Nf = bin_quantum(Nf)
-    Jf = bin_quantum(Jf)
-    traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}""".format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+    if not trapped:
+        Nf = bin_quantum(Nf)
+        Jf = bin_quantum(Jf)
+        traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
+            .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+        fig.text(0.5,0.92,traj_text,ha='center',fontsize=15)
+        output_dir = 'Ni={}_Ji={}/Nf={}/Jf={}/'.format(str(Ni),str(Ji),str(Nf),str(Jf))
+    else:
+        fig.text(0.5,0.92,'Trapped',ha='center',fontsize=15)
+        output_dir = 'Ni={}_Ji={}/trapped/'.format(str(Ni),str(Ji))
+        ax[0,0].set_xlim(0,600)
 
-    fig.text(0.5,0.92,traj_text,ha='center',fontsize=15)
-
-    output_dir = 'Ni={}_Ji={}/Nf={}/Jf={}/'.format(str(Ni),str(Ji),str(Nf),str(Jf))  
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     fig.text(0.5, 0.03, "Time / fs", ha='center',fontsize=20)
