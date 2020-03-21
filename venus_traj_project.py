@@ -10,6 +10,12 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 hbar = _hbar * J * s 
 ps = fs*1000
+labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
+line_settings = {
+    'marker' : 's',
+    'alpha' : 0.6,
+    'markersize' : 2
+    }
 
 def get_natoms(traj_no):
 
@@ -70,7 +76,7 @@ def parse_traj_velocities(traj_no):
                 velocities[i,c-2,:] = vel
                 c+=1
                 continue
-    return velocities*10/fs
+    return velocities/(10*fs)
 
 def parse_traj_positions(traj_no):
     """reads in fort.(1000+traj_no) and returns positions for all atoms and 
@@ -205,7 +211,6 @@ def mass_weight(tensor,friction_masses):
 
     return tensor
 
-
 def project_tensor(tensor,atoms,friction_atoms):
 
     modes = calc_modes(atoms,friction_atoms)
@@ -256,82 +261,37 @@ def get_friction_masses(atoms,friction_atoms):
 
     return friction_masses
 
-def plot_relaxation_rates(traj_no,friction_atoms):
+def plot_relaxation_rates(fig,ax,traj_no,friction_atoms):
     """Plots relaxation rates of diagonal projected tensor elements
     across an entire trajectory. Saves to folder in cwd/N/J
     Also plots off_diagonals in separate file"""
 
-    print('Trajectory number = {}'.format(traj_no))
-    tensors = parse_traj_tensors(traj_no)
-    atoms_list = build_atoms_list(traj_no)
-
-    projected_tensors = np.zeros_like(tensors)
-    friction_masses = get_friction_masses(atoms_list[0],friction_atoms)
-
-    for i in range(np.shape(tensors)[0]):
-        tensors[i,:,:]=mass_weight(tensors[i,:,:],friction_masses)
-        projected_tensors[i,:,:] = project_tensor(tensors[i,:,:],atoms_list[i],friction_atoms)
-    
-    try:
-        lifetime,Nf,Jf,scat_angle = parse_traj_summary(traj_no)
-    except:
-        print('Trajectory number {} was not analysed in fort.26, skipping!'.format(traj_no))
-        return
-    Ni,Ji = parse_input_parameters()
-
-    Nf = bin_quantum(Nf)
-    Jf = bin_quantum(Jf)
-
-    output_dir = 'Ni={}_Ji={}/Nf={}/Jf={}/'.format(str(Ni),str(Ji),str(Nf),str(Jf))
-
-    
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-    line_settings = {
-        'marker' : 's',
-        'alpha' : 0.6,
-        'markersize' : 2
-        }
-    
-    traj_text = r"""
-    Lifetime = {:0.2f} fs
-    Scattering angle = {:0.2f}
-    N$_i$ = {}, N$_f$ = {}
-    J$_i$ = {}, J$_f$ = {}""".format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
-
+    projected_tensors = get_mass_weighted_projected_tensors(traj_no,friction_atoms)    
     printed_time_step = parse_printed_time_step(traj_no)
     nsteps = get_printed_nsteps(traj_no)
-    max_time = (nsteps-1)*printed_time_step
     time_axis = np.arange(0,nsteps,1)*printed_time_step
     ndim = np.shape(projected_tensors)[1]
 
-    fig, ax = plt.subplots(2, 1, sharex='all')
-    labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
     for i in range(ndim):
         ax[0].plot(time_axis/fs,projected_tensors[:,i,i]*ps,label=labels[i],**line_settings)
         for j in range(i,ndim):
             if i == j:
                 continue
             ax[1].plot(time_axis/fs,projected_tensors[:,i,j]*ps,label=labels[i]+labels[j],**line_settings)
-    ax[0].text(0.5,1.7,traj_text,fontsize=10)
+    
     ax[0].set_ylim(0,2.5)
     ax[1].set_ylim(0,1.)
     plot_settings(ax[0])
     ax[0].tick_params(labelbottom=False)    
     plot_settings(ax[1])
     ax[1].legend(fontsize=10,fancybox=True,framealpha=0,loc=0,ncol=3)
-    relaxation_fig_settings(fig)
-    fig.savefig(output_dir+'{:04d}_diagonal.pdf'.format(traj_no),transparent=True,bbox_inches='tight')
-    plt.close()
-
+    fig.text(-0.01, 0.5, r'Relaxation  rate / $\mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=20)
 
     return
 
-def relaxation_fig_settings(fig):
-    fig.set_figheight(15*0.393701)
-    fig.set_figwidth(15*0.393701)
-    fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=20)
-    fig.text(-0.05, 0.5, r'Relaxation  rate / $\mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=20)
+def fig_settings(fig):
+    fig.set_figheight(22*0.393701)
+    fig.set_figwidth(22*0.393701)
     return
 
 def plot_settings(ax):
@@ -345,7 +305,7 @@ def plot_settings(ax):
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
 
-    ax.legend(fontsize=fontsize,fancybox=True,framealpha=0,loc=0)
+    ax.legend(fontsize=15,fancybox=True,framealpha=0,loc=0)
     ax.set_xlim(0)
     ax.set_ylim(0)
     for tick in ax.xaxis.get_major_ticks():
@@ -357,27 +317,159 @@ def plot_settings(ax):
     ax.yaxis.set_minor_locator(MultipleLocator(0.1))
     return
 
-def calc_energy_loss(traj_no,friction_atoms):
+def get_mass_weighted_projected_tensors(traj_no,friction_atoms):
+    tensors = parse_traj_tensors(traj_no)
+    atoms_list = build_atoms_list(traj_no)
+
+    projected_tensors = np.zeros_like(tensors)
+    friction_masses = get_friction_masses(atoms_list[0],friction_atoms)
+
+    for i in range(np.shape(tensors)[0]):
+        tensors[i,:,:]=mass_weight(tensors[i,:,:],friction_masses)
+        projected_tensors[i,:,:] = project_tensor(tensors[i,:,:],atoms_list[i],friction_atoms)
+
+    return projected_tensors
+
+def get_projected_tensors(traj_no,friction_atoms):
+    tensors = parse_traj_tensors(traj_no)
+    atoms_list = build_atoms_list(traj_no)
+
+    projected_tensors = np.zeros_like(tensors)
+
+    for i in range(np.shape(tensors)[0]):
+        projected_tensors[i,:,:] = project_tensor(tensors[i,:,:],atoms_list[i],friction_atoms)
+
+    return projected_tensors
+
+def calc_work(traj_no,friction_atoms):
     """Calculates the energy loss across trajectory
     for each mode"""
+    ndim = len(friction_atoms)*3
+    friction_projected_velocities = get_friction_projected_velocities(traj_no,friction_atoms)
+    nsteps = get_printed_nsteps(traj_no)
+    work = np.zeros((nsteps,ndim))
 
-    projected_tensors = project_tensors(traj_no,friction_atoms)
-    velocities = parse_traj_velocities
 
+    friction_force_vecs = calculate_projected_forces(traj_no,friction_atoms)
 
+    for i in range(nsteps):
+        for j in range(ndim):
+        #work[i] = np.dot(friction_projected_velocities[i,:],friction_force_vecs[i,:])
+            work[i,j] = friction_projected_velocities[i,j]*friction_force_vecs[i,j]
 
+    return work
 
-    return energy_loss
+def get_friction_projected_velocities(traj_no,friction_atoms):
+    velocities = parse_traj_velocities(traj_no)
+    ndim = len(friction_atoms)*3
+    nsteps = get_printed_nsteps(traj_no)
+    friction_projected_velocities = np.zeros((nsteps,ndim))
+    atoms_list = build_atoms_list(traj_no)
+    for i in range(nsteps):
+        friction_projected_velocities[i,:] = velocity_transform(traj_no,atoms_list[i],velocities[i,friction_atoms,:],friction_atoms)
 
-def velocity_transform(traj_no):
+    return friction_projected_velocities
 
+def velocity_transform(traj_no,atoms,velocities,friction_atoms):
+    
+    ndim = len(friction_atoms)*3
+    velocity_tensor = np.zeros((ndim,ndim))
+
+    for i in range(ndim):
+        velocity_tensor[i,i]=velocities.flatten()[i]
+
+    modes = calc_modes(atoms,friction_atoms)
+    projected_tensor = np.dot(modes,np.dot(velocity_tensor,modes.transpose()))
+
+    transformed_velocities = np.zeros((ndim))
+    for i in range(ndim):
+        transformed_velocities[i] = projected_tensor[i,i]
     return transformed_velocities
 
-def plot_energy_loss(traj_no):
+def calculate_projected_forces(traj_no,friction_atoms):
+    ndim = len(friction_atoms)*3
+    projected_tensors = get_projected_tensors(traj_no,friction_atoms)
+    friction_projected_velocities = get_friction_projected_velocities(traj_no,friction_atoms)
+    nsteps = get_printed_nsteps(traj_no)
+    friction_force_vecs = np.zeros((nsteps,ndim))
 
-    energy_loss = calc_energy_loss
+    for i in range(nsteps):
+        friction_force_vecs[i,:] = np.dot(projected_tensors[i,:,:],friction_projected_velocities[i,:])
 
+    return friction_force_vecs
 
+def plot_energy_loss(fig,ax,traj_no,friction_atoms):
+
+    nsteps = get_printed_nsteps(traj_no)
+    printed_time_step = parse_printed_time_step(traj_no)
+    ndim = len(friction_atoms)*3
+    work = calc_work(traj_no,friction_atoms)
+    cumulative_work = np.zeros_like(work)
+    total_work = np.zeros((nsteps))
+
+    for j in range(ndim):
+        cumulative_work[:,j] = np.cumsum(work[:,j])
+        total_work[:] += cumulative_work[:,j]
+
+    time_axis = np.arange(0,nsteps,1)*printed_time_step
+
+    ax.plot(time_axis/fs,total_work,**line_settings,label='Total',color='black')
+    for j in range(ndim):
+        ax.plot(time_axis/fs,cumulative_work[:,j],**line_settings)#,label=labels[j])
+
+    plot_settings(ax)
+    fig.text(0.47, 0.7, r'Energy loss / eV', va='center', rotation='vertical',fontsize=20)
+
+    return
+
+def plot_projected_velocities(fig,ax,traj_no,friction_atoms):
+
+    friction_projected_velocities = get_friction_projected_velocities(traj_no,friction_atoms)
+
+    nsteps = get_printed_nsteps(traj_no)
+    printed_time_step = parse_printed_time_step(traj_no)
+    ndim = len(friction_atoms)*3
+    time_axis = np.arange(0,nsteps,1)*printed_time_step
+ 
+    for j in range(ndim):
+        ax.plot(time_axis/fs,friction_projected_velocities[:,j]*fs,label=labels[j],**line_settings)
+    plot_settings(ax)
+    ax.set_ylim(-0.05,0.05)
+    fig.text(0.47, 0.3, r'Velocity / $\AA{}$ / fs', va='center', rotation='vertical',fontsize=20)
+
+    return
+
+def plot_traj_summary(traj_no,friction_atoms):
+    print('Trajectory number = {}'.format(traj_no))
+    fig, ax = plt.subplots(2, 2, sharex='all')#,constrained_layout=True)
+
+    plot_relaxation_rates(fig,ax[:,0],traj_no,friction_atoms)
+    plot_energy_loss(fig,ax[1,1],traj_no,friction_atoms)
+    plot_projected_velocities(fig,ax[0,1],traj_no,friction_atoms)
+    fig_settings(fig)
+    ax[0,1].tick_params(labelbottom=False)
+    ax[0,1].get_legend().remove()
+    try:
+        lifetime,Nf,Jf,scat_angle = parse_traj_summary(traj_no)
+    except:
+        print('Trajectory number {} was not analysed in fort.26, skipping!'.format(traj_no))
+        return
+    
+    Ni,Ji = parse_input_parameters()
+
+    Nf = bin_quantum(Nf)
+    Jf = bin_quantum(Jf)
+    traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}""".format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+
+    fig.text(0.5,0.92,traj_text,ha='center',fontsize=15)
+
+    output_dir = 'Ni={}_Ji={}/Nf={}/Jf={}/'.format(str(Ni),str(Ji),str(Nf),str(Jf))  
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    fig.text(0.5, 0.03, "Time / fs", ha='center',fontsize=20)
+    plt.subplots_adjust(wspace=0.5)
+    fig.savefig(output_dir+'{:04d}_summary.pdf'.format(traj_no),transparent=True,bbox_inches='tight')
+    plt.close()
     return
 
 
