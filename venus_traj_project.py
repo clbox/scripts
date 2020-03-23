@@ -276,11 +276,11 @@ def plot_relaxation_rates(fig,ax,traj_no,friction_atoms):
     ndim = np.shape(projected_tensors)[1]
 
     for i in range(ndim):
-        ax[0].plot(time_axis/fs,projected_tensors[:,i,i]*ps,label=labels[i],**line_settings)
+        ax[0].plot(time_axis/ps,projected_tensors[:,i,i]*ps,label=labels[i],**line_settings)
         for j in range(i,ndim):
             if i == j:
                 continue
-            ax[1].plot(time_axis/fs,projected_tensors[:,i,j]*ps,label=labels[i]+labels[j],**line_settings)
+            ax[1].plot(time_axis/ps,projected_tensors[:,i,j]*ps,label=labels[i]+labels[j],**line_settings)
     
     ax[0].set_ylim(0,2.5)
     ax[1].set_ylim(0,1.)
@@ -316,7 +316,7 @@ def plot_settings(ax):
     for tick in ax.yaxis.get_major_ticks():
         tick.label.set_fontsize(fontsize)
 
-    ax.xaxis.set_minor_locator(MultipleLocator(50))
+    ax.xaxis.set_minor_locator(MultipleLocator(0.05))
     ax.yaxis.set_minor_locator(MultipleLocator(0.1))
     return
 
@@ -416,9 +416,9 @@ def plot_energy_loss(fig,ax,traj_no,friction_atoms):
 
     time_axis = np.arange(0,nsteps,1)*printed_time_step
 
-    ax.plot(time_axis/fs,total_work,**{**line_settings,'marker':None},label='Total',color='black')
+    ax.plot(time_axis/ps,total_work,**{**line_settings,'marker':None},label='Total',color='black')
     for j in range(ndim):
-        ax.plot(time_axis/fs,cumulative_work[:,j],**{**line_settings,'marker':None})#,label=labels[j])
+        ax.plot(time_axis/ps,cumulative_work[:,j],**{**line_settings,'marker':None})#,label=labels[j])
 
     plot_settings(ax)
     ax.set_ylim(0,1.5)
@@ -436,15 +436,16 @@ def plot_projected_velocities(fig,ax,traj_no,friction_atoms):
     time_axis = np.arange(0,nsteps,1)*printed_time_step
  
     for j in range(ndim):
-        ax.plot(time_axis/fs,friction_projected_velocities[:,j]*fs,label=labels[j],**{**line_settings,'marker':None})
+        ax.plot(time_axis/ps,friction_projected_velocities[:,j]*fs,label=labels[j],**{**line_settings,'marker':None})
     plot_settings(ax)
-    ax.set_ylim(-0.05,0.05)
+    ax.set_ylim(-0.04,0.04)
     fig.text(0.47, 0.7, r'Velocity / $\AA{}$ / fs', va='center', rotation='vertical',fontsize=20)
 
     return
 
 def plot_traj_summary(traj_no,friction_atoms):
     print('Trajectory number = {}'.format(traj_no))
+    instance_number = get_instance_number()
     fig, ax = plt.subplots(2, 2, sharex='all')#,constrained_layout=True)
 
     plot_relaxation_rates(fig,ax[:,0],traj_no,friction_atoms)
@@ -472,17 +473,28 @@ def plot_traj_summary(traj_no,friction_atoms):
     else:
         fig.text(0.5,0.92,'Trapped',ha='center',fontsize=15)
         output_dir = 'Ni={}_Ji={}/trapped/'.format(str(Ni),str(Ji))
-        ax[0,0].set_xlim(0,600)
+        ax[0,0].set_xlim(0,1)
 
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-    fig.text(0.5, 0.03, "Time / fs", ha='center',fontsize=20)
+    fig.text(0.5, 0.03, "Time / ps", ha='center',fontsize=20)
     plt.subplots_adjust(wspace=0.5)
-    fig.savefig(output_dir+'{:04d}_summary.pdf'.format(traj_no),transparent=True,bbox_inches='tight')
+    fig.savefig(output_dir+'{:03d}_{:04d}_summary.pdf'.format(instance_number,traj_no),transparent=True,bbox_inches='tight')
     plt.close()
     return
 
+#TODO: Write general information to file in order to calculate average stuff for each vib elastic, 1 quanta etc
+#TODO: Only produce images for scattering angle <20 though they said didnt see a difference in the state to state scattering
 
+def get_instance_number():
+
+    filename = glob.glob('out*')[0]
+
+    filename = filename.replace('out','')
+
+    instance_number = int(filename)
+
+    return instance_number
 def calc_modes(atoms,friction_atoms):
     """Calculates required transformation matrix to convert diatomic
     friction tensor to internal coordinates as defined in Maurer et al PRL 2017
