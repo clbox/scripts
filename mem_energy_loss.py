@@ -279,6 +279,7 @@ class Postprocessed_memory:
         m_work=np.zeros((len(self.cutoffs),len(inter_time_scale)))
         elements = self.elements
         indices = self.element_index()
+        friction_vals = np.zeros((len(self.cutoffs),elements,len(inter_time_scale)))
 
         dt = inter_time_scale[1]-inter_time_scale[0]
 
@@ -297,9 +298,9 @@ class Postprocessed_memory:
                 a = fit(inter_time_scale)
 
                 integrand = np.sum(a,axis=1)*dt
-                integrand = integrand * velocities_inter[:,j_atom,j_cart]
+                friction_vals[co,e,:] = integrand
 
-                force_vec[co,:,i_atom,i_cart] += integrand
+                force_vec[co,:,i_atom,i_cart] += integrand * velocities_inter[:,j_atom,j_cart]
                 if i != j:
                     force_vec[co,:,j_atom,j_cart] += integrand
 
@@ -310,6 +311,7 @@ class Postprocessed_memory:
 
         self.m_work = m_work*dt
         self.m_force_vec = force_vec
+        self.m_friction_vals = friction_vals
 
     def calculate_friction_force(self):
 
