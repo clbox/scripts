@@ -7,6 +7,7 @@ import math
 hbar = _hbar * J * s 
 ps = fs*1000
 
+#TODO: Add mode where integrate eta t function to get a 'markov' like tensor and plot energy loss from this
 class Postprocessed_memory:
 
     """ Takes Raw data, array of n_structures,dimension,dimension,energy_bins 
@@ -38,6 +39,7 @@ class Postprocessed_memory:
         self.con = con
         self.dimension = len(friction_indices)*3
         self.debug = debug
+        self.treat_complex = treat_complex
 
     def frequency_interpolate(self):
         """Add extra bins in frequency domain"""
@@ -95,7 +97,7 @@ class Postprocessed_memory:
             eta_bar_t = self.eta_bar_t_list[co]
             cos_factor = np.cos(frequencies*times[:,None])
 
-            if treat_complex == False:
+            if self.treat_complex == False:
                 for ts in range(self.steps):
                     lambda_omega = self.new_data[ts,:,0:len(frequencies)] #convert from ps-1
                     
@@ -265,6 +267,50 @@ class Postprocessed_memory:
         self.nm_work = nm_work*dt
         self.force_vec = force_vec
 
+    def markov_integral(self):
+        """Pseudo markov integral test where eta(t) is integrated for each nuclear time step
+        and treated as a markovian friction tensor """
+
+        old_time_scale = np.linspace(0,(self.steps-1)*self.time_step,self.steps)
+        dimension = self.dimension
+        inter_time_scale = self.inter_time_scale
+        velocities_inter = self.velocities_inter
+        force_vec = np.zeros((len(self.cutoffs),len(inter_time_scale),len(self.friction_indices),3))
+        m_work=np.zeros((len(self.cutoffs),len(inter_time_scale)))
+        elements = self.elements
+        indices = self.element_index()
+
+        dt = inter_time_scale[1]-inter_time_scale[0]
+
+        for co in range(len(self.cutoffs)):
+            times_up = self.times_up_list[co]
+            eta_t = self.eta_t_list[co]
+            times_up = times_up[times_up >= 0.0]
+            
+            for e in range(elements):
+                i = (indices[e])[0]
+                j = (indices[e])[1]
+                i_cart,j_cart = i % 3, j % 3
+                i_atom,j_atom = i // 3, j // 3
+
+                fit = interp1d(old_time_scale,eta_t[:,e,:],kind='linear',axis=0)
+                a = fit(inter_time_scale)
+
+                integrand = np.sum(a,axis=1)*dt
+                integrand = integrand * velocities_inter[:,j_atom,j_cart]
+
+                force_vec[co,:,i_atom,i_cart] += integrand
+                if i != j:
+                    force_vec[co,:,j_atom,j_cart] += integrand
+
+            for i in range(dimension):
+                i_cart = i % 3
+                i_atom = i // 3
+                m_work[co,:] += velocities_inter[:,i_atom,i_cart]*force_vec[co,:,i_atom,i_cart]
+
+        self.m_work = m_work*dt
+        self.m_force_vec = force_vec
+
     def calculate_friction_force(self):
 
         if not hasattr(self,'force_vec'):
@@ -303,6 +349,21 @@ class Postprocessed_memory:
             return(self.nm_work)
         else:
             return(self.nm_work)
+
+    def calculate_markov_work(self):
+        if not hasattr(self,'m_work'):
+            self.frequency_interpolate()
+            self.generate_domains()
+            self.fourier_transform()
+            self.time_interpolate()
+            self.convolute()
+            self.get_velocities()
+            self.velocity_interpolation()
+
+            self.markov_integral()
+            return(self.m_work)
+        else:
+            return(self.m_work)
 
     def element_index(self):
         "Returns list of indices for flattened triangular array"
@@ -367,7 +428,7 @@ def read_memory_kernel(path,treat_complex=True):
     elements = int((((dimension*dimension)-dimension)/2)+dimension)
     if elements < head_count:
         n_spin = 2 
-#        print("This system is spin unrestricted")
+        #print("This system is spin unrestricted")
 
     bins=np.zeros((int(max_e/discretization)+1))
     re_memory_kernel=np.zeros((elements,len(bins)))
