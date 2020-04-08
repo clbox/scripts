@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from ase.units import _hbar, J, s, fs
-
+ps = fs*1000
 
 file_range = np.arange(1,200).tolist()
 raw_data,bins= mel.Parse_memory_kernels('./calcs',file_range)#,read=True) #parse all memory data, choose range of datapoints parse 
