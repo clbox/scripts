@@ -69,6 +69,7 @@ for i in range(dimension):
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
 fig.savefig(fig_path+'eta_bar_inter.pdf')
 
 times_up = pp.times_up_list[-1]
@@ -84,6 +85,7 @@ for i in range(dimension):
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
 fig.savefig(fig_path+'eta_t.pdf')
 
 
@@ -129,8 +131,10 @@ fig.savefig(fig_path+'eta_t_close.pdf')
 fig, ax = plt.subplots(1,1)
 for atom in range(len(friction_indices)):       
     for cart in range(3):
-        ax.plot(pp.inter_time_scale/fs,pp.velocities_inter[:,atom,cart],label=str(atom)+str(cart))
+        ax.plot(pp.inter_time_scale/fs,pp.velocities_inter[:,atom,cart]*fs,label=str(atom)+str(cart))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'Velocity /  $\AA$ fs$^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'velocities_inter.pdf')
 
 fig, ax = plt.subplots(1,1)
@@ -138,6 +142,8 @@ for atom in range(len(friction_indices)):
     for cart in range(3):
         ax.plot(pp.inter_time_scale/fs,nm_forces[-1,:,atom,cart],label=str(atom)+str(cart))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'Friction force / eV $\AA^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'nm_forces.pdf')
 
 
@@ -145,14 +151,17 @@ fig, ax = plt.subplots(1,1)
 for co in range(len(cutoffs)):
     ax.plot(pp.inter_time_scale/fs,nm_work[co,:],label=str(cutoffs[co]))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, 'Work / eV', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'nm_work.pdf')
 
 
 fig, ax = plt.subplots(1,1)
 for co in range(len(cutoffs)):
     ax.plot(pp.inter_time_scale/fs,np.cumsum(nm_work[co,:]),label=str(cutoffs[co]))
-    #ax.plot(pp.inter_time_scale/fs,cumtrapz(nm_work[co,:],pp.inter_time_scale,initial=0),label=str(cutoffs[co]))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, 'Cumulative work / eV', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'nm_cum_work.pdf')
 
 
