@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from ase.units import _hbar, J, s, fs
+ps = fs*1000
 import os
 
 
@@ -33,8 +34,10 @@ all_velocities = pp.all_velocities
 fig, ax = plt.subplots(1,1)
 for atom in range(len(friction_indices)):       
     for cart in range(3):
-        ax.plot(pp.time_scale/fs,all_velocities[:,atom,cart],label=str(atom)+str(cart))
+        ax.plot(pp.time_scale/fs,all_velocities[:,atom,cart]*fs,label=str(atom)+str(cart))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'Velocity /  $\AA$ fs$^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'all_velocities.pdf')
 
 all_tensors = pp.get_all_tensors()
@@ -44,8 +47,10 @@ for i in range(dimension):
     for j in range(i,dimension):
         if j != i:
             continue
-        ax.plot(pp.time_scale/fs,all_tensors[:,i,j],label=str(labels[i])+' '+str(labels[j]))
+        ax.plot(pp.time_scale/fs,all_tensors[:,i,j]*ps,label=str(labels[i])+' '+str(labels[j]))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'$\Lambda_{ij}(0) $/ ps$^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'all_tensors.pdf')
 
 
@@ -54,17 +59,24 @@ for atom in range(len(friction_indices)):
     for cart in range(3):
         ax.plot(pp.time_scale/fs,m_forces[:,atom,cart],label=str(atom)+str(cart))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'Friction force / eV $\AA^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'m_forces.pdf')
 
 
 fig, ax = plt.subplots(1,1)
 ax.plot(pp.time_scale/fs,m_work[:])
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, 'Work / eV', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'m_work.pdf')
 
 
 fig, ax = plt.subplots(1,1)
 ax.plot(pp.time_scale/fs,np.cumsum(m_work[:]))
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, 'Cumulative work / eV', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'m_cum_work.pdf')
+
 
 
 datafile_path = fig_path+"m_cum_work.txt"
