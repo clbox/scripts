@@ -307,7 +307,7 @@ class Postprocessed_memory:
 
                 integrand = np.sum(a,axis=1)*dt
 
-                friction_vals[co,e,:] = integrand*np.sqrt(masses[i_atom]*masses[j_atom])
+                friction_vals[co,e,:] = integrand/np.sqrt(masses[i_atom]*masses[j_atom])
 
                 force_vec[co,:,i_atom,i_cart] += integrand * velocities_inter[:,j_atom,j_cart]
                 if i != j:
