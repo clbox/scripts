@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from ase.units import _hbar, J, s, fs
 ps = fs*1000
 
-file_range = np.arange(1,200).tolist()
+file_range = np.arange(1,952).tolist()
 raw_data,bins= mel.Parse_memory_kernels('./calcs',file_range)#,read=True) #parse all memory data, choose range of datapoints parse 
 
 #assumes in directories ./dir/n where n = 1,2,3 etc
@@ -21,7 +21,7 @@ friction_indices = [64,65] #indices of friction atoms
 
 time_step = 2 #fs nuclear time step
 
-mem_cutoff = 20 #fs dont include more the X fs back in time in the memory integral
+mem_cutoff = 15 #fs dont include more the X fs back in time in the memory integral
 
 pp = mel.Postprocessed_memory(bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con)
 
@@ -97,7 +97,6 @@ for co in range(len(cutoffs)):
     times_up = pp.times_up_list[co]
     times_up = times_up[times_up >= 0.0]
     times_up /= fs
-    print(times_up[1]-times_up[0])
     e=0
     for i in range(dimension):
         for j in range(i,dimension):
