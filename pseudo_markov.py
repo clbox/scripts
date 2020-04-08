@@ -21,7 +21,7 @@ friction_indices = [64,65] #indices of friction atoms
 
 time_step = 2 #fs nuclear time step
 
-mem_cutoff = 10 #fs dont include more the X fs back in time in the memory integral
+mem_cutoff = 20 #fs dont include more the X fs back in time in the memory integral
 
 pp = mel.Postprocessed_memory(bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con)
 
@@ -152,7 +152,7 @@ ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
 fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
-fig.text(0.01, 0.5, r'$\Lambda_{ij}(0) $/ ps$^{-1}$', va='center', rotation='vertical',fontsize=15)
+fig.text(0.01, 0.5, r'$\Lambda_{ij} $/ ps$^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'pseudo_friction_vals.pdf')
 
 
