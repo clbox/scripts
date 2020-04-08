@@ -78,17 +78,23 @@ class Postprocessed_memory:
 
         self.frequency_list = frequency_list
         self.times_list = times_list
-    
-    def fourier_transform(self):
-        """Fourier transform to time domain"""
+
+    def get_friction_masses(self):
+        """ assumes same atom order for all steps"""
         friction_indices = self.friction_indices
-        elements = self.elements
-        indices = self.element_index()
         try:
             atoms = self.con.get_atoms(id=1)
         except:
             print('cannot get atoms for id = '+str(1))
-        masses = atoms.get_masses()[friction_indices]
+        masses = atoms.get_masses()
+        friction_masses = masses[friction_indices]
+        return friction_masses
+
+    def fourier_transform(self):
+        """Fourier transform to time domain"""
+        elements = self.elements
+        indices = self.element_index()
+        masses = self.get_friction_masses()
 
         for co in range(len(self.cutoffs)):
             times = self.times_list[co]
@@ -283,6 +289,8 @@ class Postprocessed_memory:
 
         dt = inter_time_scale[1]-inter_time_scale[0]
 
+        masses = self.get_friction_masses()
+
         for co in range(len(self.cutoffs)):
             times_up = self.times_up_list[co]
             eta_t = self.eta_t_list[co]
@@ -298,7 +306,8 @@ class Postprocessed_memory:
                 a = fit(inter_time_scale)
 
                 integrand = np.sum(a,axis=1)*dt
-                friction_vals[co,e,:] = integrand
+
+                friction_vals[co,e,:] = integrand*np.sqrt(masses[i_atom]*masses[j_atom])
 
                 force_vec[co,:,i_atom,i_cart] += integrand * velocities_inter[:,j_atom,j_cart]
                 if i != j:

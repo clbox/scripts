@@ -44,6 +44,7 @@ for i in range(dimension):
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
+fig.text(0.5, 0.01, "Excitation energy / eV", ha='center',fontsize=15)
 fig.savefig(fig_path+'freq_compare.pdf')
 
 ts=0
@@ -57,6 +58,7 @@ for i in range(dimension):
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
 fig.savefig(fig_path+'eta_bar.pdf')
 
 e=0
@@ -69,6 +71,7 @@ for i in range(dimension):
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
 fig.savefig(fig_path+'eta_bar_inter.pdf')
 
 times_up = pp.times_up_list[-1]
@@ -84,6 +87,7 @@ for i in range(dimension):
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
 fig.savefig(fig_path+'eta_t.pdf')
 
 
@@ -130,8 +134,10 @@ fig.savefig(fig_path+'eta_t_close.pdf')
 fig, ax = plt.subplots(1,1)
 for atom in range(len(friction_indices)):       
     for cart in range(3):
-        ax.plot(pp.inter_time_scale/fs,pp.velocities_inter[:,atom,cart],label=str(atom)+str(cart))
+        ax.plot(pp.inter_time_scale/fs,pp.velocities_inter[:,atom,cart]*fs,label=str(atom)+str(cart))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'Velocity /  $\AA$ fs$^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'velocities_inter.pdf')
 
 
@@ -140,25 +146,31 @@ for co in range(len(cutoffs)):
     e=0
     for i in range(dimension):
         for j in range(i,dimension):
-            ax[i,j].plot(pp.inter_time_scale/fs,pp.m_friction_vals[co,e,:],label='CO: ' + str(cutoffs[co]))
+            ax[i,j].plot(pp.inter_time_scale/fs,pp.m_friction_vals[co,e,:]*ps,label='CO: ' + str(cutoffs[co]))
             e+=1
 ax[0,0].legend()
 fig.set_figheight(20)
 fig.set_figwidth(20)
 fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'$\Lambda_{ij}(0) $/ ps$^{-1}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'pseudo_friction_vals.pdf')
 
 
 fig, ax = plt.subplots(1,1)
 for atom in range(len(friction_indices)):    
         for cart in range(3):
-                    ax.plot(pp.inter_time_scale/fs,m_forces[-1,:,atom,cart],label=str(atom)+str(cart))
-                    ax.legend()
-                    fig.savefig(fig_path+'pseudo_m_forces.pdf')
+            ax.plot(pp.inter_time_scale/fs,m_forces[-1,:,atom,cart],label=str(atom)+str(cart))
+ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'Friction force / eV $\AA^{-1}$', va='center', rotation='vertical',fontsize=15)
+fig.savefig(fig_path+'pseudo_m_forces.pdf')
+
 
 fig, ax = plt.subplots(1,1)
 for co in range(len(cutoffs)):
     ax.plot(pp.inter_time_scale/fs,np.cumsum(m_work[co,:]),label=str(cutoffs[co]))
 ax.legend()
+fig.text(0.5, 0.01, "Time / fs", ha='center',fontsize=15)
+fig.text(0.01, 0.5, 'Cumulative work / eV', va='center', rotation='vertical',fontsize=15)
 fig.savefig(fig_path+'pseudo_markov_cum_work.pdf')
 
