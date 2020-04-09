@@ -21,7 +21,7 @@ friction_indices = [64,65] #indices of friction atoms
 
 time_step = 2 #fs nuclear time step
 
-mem_cutoff = 15 #fs dont include more the X fs back in time in the memory integral
+mem_cutoff = 5 #fs dont include more the X fs back in time in the memory integral
 
 pp = mel.Postprocessed_memory(bins,raw_data,cutoffs,mem_cutoff,friction_indices,time_step,con)
 
@@ -29,7 +29,7 @@ m_work = pp.calculate_markov_work()
 
 m_forces = pp.m_force_vec
 
-fig_path = './figures/'
+fig_path = './pseudo_markov_figures/'
 
 dimension = len(friction_indices)*3
 
