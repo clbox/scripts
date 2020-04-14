@@ -10,7 +10,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 hbar = _hbar * J * s 
 ps = fs*1000
-labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
+
 line_settings = {
     #'marker' : 's',
     'marker' : None,
@@ -25,6 +25,11 @@ class venus_analysis():
         self.friction_atoms = friction_atoms
         self.get_n_atoms()
         self.mode = mode
+
+        if mode == 1:
+            self.labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
+        elif mode == 2:
+            self.labels = [r'$d$',r'$\theta$',r'$\phi$',r'$X$',r'$Y$',r'$Z$']
 
     def get_n_atoms(self):
         traj_no = self.traj_no
@@ -284,11 +289,11 @@ class venus_analysis():
         ndim = np.shape(projected_tensors)[1]
 
         for i in range(ndim):
-            ax[0].plot(time_axis/ps,projected_tensors[:,i,i]*ps,label=labels[i],**line_settings)
+            ax[0].plot(time_axis/ps,projected_tensors[:,i,i]*ps,label=self.labels[i],**line_settings)
             for j in range(i,ndim):
                 if i == j:
                     continue
-                ax[1].plot(time_axis/ps,projected_tensors[:,i,j]*ps,label=labels[i]+labels[j],**line_settings)
+                ax[1].plot(time_axis/ps,projected_tensors[:,i,j]*ps,label=self.labels[i]+self.labels[j],**line_settings)
         
         ax[0].set_ylim(0,2.5)
         ax[1].set_ylim(0,1.)
@@ -413,7 +418,7 @@ class venus_analysis():
         time_axis = np.arange(0,nsteps,1)*printed_time_step
     
         for j in range(ndim):
-            ax.plot(time_axis/ps,friction_projected_velocities[:,j]*fs,label=labels[j],**{**line_settings,'marker':None})
+            ax.plot(time_axis/ps,friction_projected_velocities[:,j]*fs,label=self.labels[j],**{**line_settings,'marker':None})
         plot_settings(ax)
         ax.set_ylim(-0.04,0.04)
         fig.text(0.47, 0.7, r'Velocity / $\AA{}$ fs$^{-1}$', va='center', rotation='vertical',fontsize=20)
@@ -497,11 +502,17 @@ class venus_analysis():
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
 
-            f.write('Total energy loss / eV, d = {:0.3f}, phi = {:0.3f}, theta = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
-                .format(*total_work_dim,total_work))
-
-            f.write('Energy loss / %, d = {:0.1f}, phi = {:0.1f}, theta = {:0.1f}, X = {:0.1f}, Y = {:0.1f}, Z = {:0.1f}\n'\
-                .format(*fraction_energy_loss))
+            if self.mode == 1:
+                f.write('Total energy loss / eV, d = {:0.3f}, phi = {:0.3f}, theta = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
+                    .format(*total_work_dim,total_work))
+                f.write('Energy loss / %, d = {:0.1f}, phi = {:0.1f}, theta = {:0.1f}, X = {:0.1f}, Y = {:0.1f}, Z = {:0.1f}\n'\
+                    .format(*fraction_energy_loss))
+            elif self.mode ==2:
+                f.write('Total energy loss / eV, d = {:0.3f}, theta = {:0.3f}, phi = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
+                    .format(*total_work_dim,total_work))
+                f.write('Energy loss / %, d = {:0.1f}, theta = {:0.1f}, phi = {:0.1f}, X = {:0.1f}, Y = {:0.1f}, Z = {:0.1f}\n'\
+                    .format(*fraction_energy_loss))
+            
 
         return
 
