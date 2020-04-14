@@ -589,3 +589,71 @@ def calc_modes(atoms,friction_atoms):
         for i in range(ndim):
             modes[i,:]/=np.linalg.norm(modes[i,:])
         return modes
+
+def calc_modes2(atoms,friction_atoms):
+        """Calculates required transformation matrix to convert diatomic
+        friction tensor to internal coordinates as defined by B. Jiang
+        """
+
+        ndim = len(friction_atoms)*3
+        modes = np.zeros([ndim,ndim])
+        f1 = friction_atoms[0]
+        f2 = friction_atoms[1]
+
+        pos1 = atoms.positions[f1]
+        pos2 = atoms.positions[f2]
+
+        x1 = pos1[0]
+        y1 = pos1[1]
+        z1 = pos1[2]
+        x2 = pos2[0]
+        y2 = pos2[1]
+        z2 = pos2[2]
+
+        m1 = atoms.get_masses()[f1]
+        m2 = atoms.get_masses()[f2]
+
+        mt = m1 + m2
+
+        mr1 = m1/mt
+
+        mr2 = m2/mt
+
+        r = np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)
+        r1 = np.sqrt((x1-x2)**2 + (y1-y2)**2)
+
+        #mode 1 - r
+        modes[0,0] = ((x1-x2)*mr2)/r
+        modes[1,0] = ((y1-y2)*mr2)/r
+        modes[2,0] = ((z1-z2)*mr2)/r
+
+        modes[3,0] = ((x2-x1)*mr1)/r
+        modes[4,0] = ((y2-y1)*mr1)/r
+        modes[5,0] = ((z2-z1)*mr1)/r
+
+        #mode 2  - theta
+        modes[0,1] = ((x1-x2)*(z1-z2)*mr2)/r1
+        modes[1,1] = ((y1-y2)*(z1-z2)*mr2)/r1
+        modes[2,1] = -r1*mr2
+
+        modes[3,1] = ((x2-x1)*(z1-z2)*mr1)/r1
+        modes[4,1] = ((y2-y1)*(z1-z2)*mr1)/r1
+        modes[5,1] = r1*mr1
+
+        #mode 3 - phi
+        modes[0,2] = -(y1-y2)*mr2
+        modes[1,2] = (x1-x2)*mr2
+        modes[2,2] = 0
+
+        modes[3,2] = -(y2-y1)*mr1
+        modes[4,2] = (x2-x1)*mr1
+        modes[5,2] = 0
+
+        #mode 4 is the x translation
+        modes[:,3] = [1.,0.,0.,1.,0.,0.]
+        #mode 5 is the y translation
+        modes[:,4] = [0.,1.,0.,0.,1.,0.]
+        #mode 6 is the z translation
+        modes[:,5] = [0.,0.,1.,0.,0.,1.]
+
+        return modes
