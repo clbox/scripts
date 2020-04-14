@@ -20,10 +20,11 @@ line_settings = {
 
 class venus_analysis():
 
-    def __init__(self,traj_no,friction_atoms):
+    def __init__(self,traj_no,friction_atoms,mode=2):
         self.traj_no = traj_no
         self.friction_atoms = friction_atoms
         self.get_n_atoms()
+        self.mode = mode
 
     def get_n_atoms(self):
         traj_no = self.traj_no
@@ -223,7 +224,7 @@ class venus_analysis():
 
     def project_tensor(self,tensor,atoms):
         friction_atoms = self.friction_atoms
-        modes = calc_modes(atoms,friction_atoms)
+        modes = get_modes(atoms,friction_atoms,self.mode)
         projected_tensor = np.dot(modes,np.dot(tensor,modes.transpose()))
 
         return projected_tensor
@@ -358,7 +359,7 @@ class venus_analysis():
 
     def velocity_transform(self,atoms,velocities):
         friction_atoms = self.friction_atoms
-        modes = calc_modes(atoms,friction_atoms)
+        modes = get_modes(atoms,friction_atoms,self.mode)
         transformed_velocities = np.dot(modes,velocities.flatten())
 
         return transformed_velocities
@@ -533,6 +534,17 @@ def fig_settings(fig):
     fig.set_figwidth(22*0.393701)
     return
 
+
+def get_modes(atoms,friction_atoms,mode=2):
+
+    if mode == 1:
+        modes = calc_modes(atoms,friction_atoms)
+
+    elif mode == 2:
+        modes = calc_modes2(atoms,friction_atoms)
+
+    return modes
+    
 def calc_modes(atoms,friction_atoms):
         """Calculates required transformation matrix to convert diatomic
         friction tensor to internal coordinates as defined in Maurer et al PRL 2017
