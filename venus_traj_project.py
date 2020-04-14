@@ -397,7 +397,7 @@ class venus_analysis():
             ax.plot(time_axis/ps,cumulative_work[:,j],**{**line_settings,'marker':None})#,label=labels[j])
 
         plot_settings(ax)
-        ax.set_ylim(0,1.5)
+        ax.set_ylim(0,2.2)
         fig.text(0.47, 0.3, r'Energy loss / eV', va='center', rotation='vertical',fontsize=20)
 
         return
@@ -667,4 +667,4 @@ def calc_modes2(atoms,friction_atoms):
         #mode 6 is the z translation
         modes[:,5] = [0.,0.,1.,0.,0.,1.]
 
-        return modes
+        return modes.transpose()
