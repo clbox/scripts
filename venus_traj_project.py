@@ -534,7 +534,6 @@ def fig_settings(fig):
     fig.set_figwidth(22*0.393701)
     return
 
-
 def get_modes(atoms,friction_atoms,mode=2):
 
     if mode == 1:
