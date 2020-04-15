@@ -2,7 +2,8 @@ import numpy as np
 import sys
 from ase.io import read
 import glob
-from project_kernels import calc_modes
+import venus_traj_project as vjp
+
 
 def build_tensor(raw_tensor):
     a = len(raw_tensor[0].split())
@@ -76,7 +77,7 @@ for output_dir in sys.argv[1:]:
     friction_vecs, ndim = build_tensor(raw_vecs)
 
     atoms = read(geo_file)
-    modes = calc_modes(atoms,friction_atoms)
+    modes = vjp.get_modes(atoms,friction_atoms,mode=2)
 
     E,V  = np.linalg.eig(friction_tensor[:,:])
     E = sorted(E)
