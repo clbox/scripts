@@ -47,7 +47,8 @@ for i,output_dir in enumerate(sys.argv[1:]):
 
 #FIG: RELAXATION RATES
 fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
-labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
+#labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
+labels = [r'$d$',r'$\theta$',r'$\phi$',r'$X$',r'$Y$',r'$Z$']
 for i in range(dim):
     ax.plot(time_axis,all_tensors[:,i,i],label=labels[i],**line_settings)
 plot_settings(ax)
