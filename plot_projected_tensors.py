@@ -32,17 +32,20 @@ def plot_settings(ax):
     ax.yaxis.set_minor_locator(MultipleLocator(0.025))
     return
 
-n_files = len(sys.argv[1:])
+filename = sys.argv[1]
+
+
+n_files = len(sys.argv[2:])
 print('number of files: ' + str(n_files))
-test = np.loadtxt(sys.argv[1]+'projected_tensor.out',delimiter='  ')
+test = np.loadtxt(sys.argv[2]+filename,delimiter='  ')
 dim = np.shape(test)[0]
 time_step = 1 
 
 all_tensors = np.zeros((n_files,dim,dim))
 time_axis = np.zeros((n_files))
-for i,output_dir in enumerate(sys.argv[1:]):
+for i,output_dir in enumerate(sys.argv[2:]):
 
-    all_tensors[i,:,:] = np.loadtxt(output_dir+'projected_tensor.out',delimiter='  ')
+    all_tensors[i,:,:] = np.loadtxt(output_dir+filename,delimiter='  ')
     time_axis[i] = int(output_dir.replace('/',''))*time_step
 
 #FIG: RELAXATION RATES
@@ -64,4 +67,4 @@ fig, ax = plt.subplots(dim, dim, sharex='all', sharey='all')
 for i in range(dim):
     for j in range(i,dim):
         ax[i,j].plot(time_axis,all_tensors[:,i,j])
-fig.savefig('projected_tensors.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('tensors_plot.pdf',transparent=True,bbox_inches='tight')
