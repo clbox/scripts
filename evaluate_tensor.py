@@ -44,6 +44,6 @@ for filename in filenames:
             tensor[j,i] = tensor[i,j]
             e+=1
 
-    np.savetxt(output_dir+output_name,tensor,delimiter='  ',fmt='%.4e')
+    np.savetxt(output_dir+'/'+output_name,tensor,delimiter='  ',fmt='%.4e')
 
 
