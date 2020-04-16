@@ -115,4 +115,4 @@ for output_dir in sys.argv[1:]:
             string += ' {0:14.8f} '.format(A[i,j])
         print(string)
 
-    np.savetxt(output_dir+'/projected_tensor.out',A,delimiter='  ')
+    np.savetxt(output_dir+'/projected_tensor.out',A,delimiter='  ',fmt='%.4e')
