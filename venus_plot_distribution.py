@@ -36,7 +36,8 @@ filenames = sys.argv[2:]
 
 nstates = len(filenames)
 
-fig, ax = plt.subplots(nstates, 1, sharex='all')#,sharey='all')
+if mode == 2:
+    fig, ax = plt.subplots(nstates, 1, sharex='all')#,sharey='all')
 ymax=2.5
 
 empty_ones = []
