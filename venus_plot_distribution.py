@@ -93,22 +93,23 @@ for i,filename in enumerate(filenames):
     abs_e = np.array(abs_e)
     per_e = np.array(per_e)
 
-    if mode == 2:
-        if 'trapped' in filename:
+    if 'trapped' in filename:
+        if mode == 2:
             ax[0].boxplot(abs_e,showfliers=False)
             ax[0].text(s=filename,x=2,y=np.max(abs_e)-0.5*np.max(abs_e))
             ax[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(abs_e)-0.5*np.max(abs_e))
             ax[0].set_ylim(0,np.max(abs_e))
-        else:
+    else:
+        if mode == 2:
             ax[i+1].set_ylim(0,ymax)
             ax[i+1].boxplot(abs_e,showfliers=False)
             ax[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
             ax[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
-            print('Average lifetime / fs ' +str(np.average(misc[:,0])))
-            print('Average scattering angle ' + str(np.average(misc[:,1])))
-            print('Average final rotational state ' + str(np.average(misc[:,2])))
-            ntraj_list.append(ntrajs)
-            state_list.append(int(filename.split('.')[0]))
+        print('Average lifetime / fs ' +str(np.average(misc[:,0])))
+        print('Average scattering angle ' + str(np.average(misc[:,1])))
+        print('Average final rotational state ' + str(np.average(misc[:,2])))
+        ntraj_list.append(ntrajs)
+        state_list.append(int(filename.split('.')[0]))
 
 if mode == 2:
     plt.xticks([1,2,3,4,5,6,7],['d',r'$\theta$',r'$\phi$','X','Y','Z','Total'])
@@ -122,7 +123,10 @@ if mode == 2:
 
 ntraj_list = np.array(ntraj_list)
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
-ax.plot(state_list,ntraj_list/np.sum(ntraj_list),'.-',color='purple',label=r'TDPT $\times 2$')
+ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
+    #'.-',color='purple',label=r'TDPT $\times 2$')
+    #marker='^',linestyle='-',color='red',label=r'BOMD')
+    marker='s',linestyle='-',color='blue',label=r'LDFA $\times 2$')
 ax.bar(x_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.legend()
