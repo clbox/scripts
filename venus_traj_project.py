@@ -26,6 +26,8 @@ class venus_analysis():
         self.get_n_atoms()
         self.mode = mode
 
+        self.instance_number = self.get_instance_number()
+
         if mode == 1:
             self.labels = [r'$d$',r'$\phi$',r'$\theta$',r'$X$',r'$Y$',r'$Z$']
         elif mode == 2:
@@ -428,7 +430,7 @@ class venus_analysis():
     def plot_traj_summary(self):
         traj_no = self.traj_no
         print('Trajectory number = {}'.format(traj_no))
-        instance_number = self.get_instance_number()
+        instance_number = self.instance_number
         fig, ax = plt.subplots(2, 2, sharex='all')#,constrained_layout=True)
 
         self.plot_relaxation_rates(fig,ax[:,0])
