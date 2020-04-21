@@ -471,6 +471,41 @@ class venus_analysis():
 
         return
 
+    def plot_bomd_traj_summary(self):
+        traj_no = self.traj_no
+        print('Trajectory number = {}'.format(traj_no))
+
+        fig, ax = plt.subplots(2, 2, sharex='all')#,constrained_layout=True)
+
+        self.trapped = False
+        try:
+            lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
+        except:
+            print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
+            self.trapped = True
+        
+        Ni,Ji = self.parse_input_parameters()
+
+        if not self.trapped:
+            Nf = self.bin_quantum(Nf)
+            Jf = self.bin_quantum(Jf)
+            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
+                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+            fig.text(0.5,0.92,self.traj_text,ha='center',fontsize=15)
+            self.output_dir = 'Ni={}_Ji={}/Nf={}/Jf={}/'.format(str(Ni),str(Ji),str(Nf),str(Jf))
+            self.summary_dir = 'Ni={}_Ji={}/Nf={}/'.format(str(Ni),str(Ji),str(Nf))
+        else:
+            fig.text(0.5,0.92,'Trapped',ha='center',fontsize=15)
+            self.output_dir = 'Ni={}_Ji={}/trapped/'.format(str(Ni),str(Ji))
+            self.summary_dir = self.output_dir
+            ax[0,0].set_xlim(0,1)
+
+        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
+
+
+        self.write_bomd_summary_to_file()
+
+        return
     #TODO: Write general information to file in order to calculate average stuff for each vib elastic, 1 quanta etc
     #TODO: Only produce images for scattering angle <20 though they said didnt see a difference in the state to state scattering
     #TODO: Add incidence energy label to plot
@@ -516,6 +551,16 @@ class venus_analysis():
 
         return
 
+    def write_bomd_summary_to_file(self):
+        traj_no = self.traj_no
+
+        with open(self.summary_dir+"summary.dat","a+") as f:
+            f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
+            if not self.trapped:
+                f.write(self.traj_text.replace('$','')+'\n')
+            
+
+        return
 
 def plot_settings(ax):
     # Hide the right and top spines

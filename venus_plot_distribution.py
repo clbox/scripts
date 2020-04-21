@@ -7,8 +7,28 @@ import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
-                               AutoMinorLocator)
+                               AutoMinorLocator, MaxNLocator)
 import sys
+x_exp = np.arange(0,17,1)
+v16_exp = [
+0.0,
+0.0,
+0.04,
+0.08,
+0.13,
+0.15,
+0.19,
+0.11,
+0.12,
+0.07,
+0.04,
+0.02,
+0.03,
+0.02,
+0.01,
+0.02,
+0.02
+]
 
 filenames = sys.argv[1:]
 
@@ -99,9 +119,14 @@ fig.savefig('summary.pdf',transparent=True,bbox_inches='tight')
 
 ntraj_list = np.array(ntraj_list)
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
-ax.plot(state_list,ntraj_list/np.sum(ntraj_list),'.-')
+ax.plot(state_list,ntraj_list/np.sum(ntraj_list),'.-',color='purple',label='TDPT')
+ax.bar(x_exp,v16_exp,color='black',label='exp')
+ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+ax.legend()
+ax.set_xlim(0,20)
+ax.set_ylim(0,0.5)
 fig.set_figheight(4)
-fig.set_figwidth(7)
-fig.text(0.5, 0.05, "Nf", ha='center',fontsize=15)
-fig.text(0.01, 0.5, 'Probability', va='center', rotation='vertical',fontsize=15)
+fig.set_figwidth(5)
+fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
+fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('probability.pdf',transparent=True,bbox_inches='tight')
