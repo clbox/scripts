@@ -29,8 +29,10 @@ v16_exp = [
 0.02,
 0.02
 ]
+#mode 0 = bomd, mode 1 = ldfa, mode 2 = tdpt
+mode = int(sys.argv[1])
 
-filenames = sys.argv[1:]
+filenames = sys.argv[2:]
 
 nstates = len(filenames)
 
@@ -90,30 +92,30 @@ for i,filename in enumerate(filenames):
     abs_e = np.array(abs_e)
     per_e = np.array(per_e)
 
-    if 'trapped' in filename:
-        ax[0].boxplot(abs_e,showfliers=False)
-        ax[0].text(s=filename,x=2,y=np.max(abs_e)-0.5*np.max(abs_e))
-        ax[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(abs_e)-0.5*np.max(abs_e))
-        ax[0].set_ylim(0,np.max(abs_e))
-    else:
-        ax[i+1].set_ylim(0,ymax)
-        ax[i+1].boxplot(abs_e,showfliers=False)
-        ax[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
-        ax[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
-        print('Average lifetime / fs ' +str(np.average(misc[:,0])))
-        print('Average scattering angle ' + str(np.average(misc[:,1])))
-        print('Average final rotational state ' + str(np.average(misc[:,2])))
-        ntraj_list.append(ntrajs)
-        state_list.append(int(filename.split('.')[0]))
+    if mode == 2:
+        if 'trapped' in filename:
+            ax[0].boxplot(abs_e,showfliers=False)
+            ax[0].text(s=filename,x=2,y=np.max(abs_e)-0.5*np.max(abs_e))
+            ax[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(abs_e)-0.5*np.max(abs_e))
+            ax[0].set_ylim(0,np.max(abs_e))
+        else:
+            ax[i+1].set_ylim(0,ymax)
+            ax[i+1].boxplot(abs_e,showfliers=False)
+            ax[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
+            ax[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
+            print('Average lifetime / fs ' +str(np.average(misc[:,0])))
+            print('Average scattering angle ' + str(np.average(misc[:,1])))
+            print('Average final rotational state ' + str(np.average(misc[:,2])))
+            ntraj_list.append(ntrajs)
+            state_list.append(int(filename.split('.')[0]))
 
-plt.xticks([1,2,3,4,5,6,7],['d',r'$\theta$',r'$\phi$','X','Y','Z','Total'])
-
-
-fig.set_figheight(10*nstates/10)
-fig.set_figwidth(7)
-fig.text(0.5, 0.05, "Mode", ha='center',fontsize=15)
-fig.text(0.01, 0.5, 'Energy loss / eV', va='center', rotation='vertical',fontsize=15)
-fig.savefig('summary.pdf',transparent=True,bbox_inches='tight')
+if mode == 2:
+    plt.xticks([1,2,3,4,5,6,7],['d',r'$\theta$',r'$\phi$','X','Y','Z','Total'])
+    fig.set_figheight(10*nstates/10)
+    fig.set_figwidth(7)
+    fig.text(0.5, 0.05, "Mode", ha='center',fontsize=15)
+    fig.text(0.01, 0.5, 'Energy loss / eV', va='center', rotation='vertical',fontsize=15)
+    fig.savefig('summary.pdf',transparent=True,bbox_inches='tight')
 
 
 
