@@ -36,8 +36,12 @@ filenames = sys.argv[2:]
 
 nstates = len(filenames)
 
+#PLOT TDPT ENERGY LOSS 
 if mode == 2:
     fig, ax = plt.subplots(nstates, 1, sharex='all')#,sharey='all')
+
+#PLOT ENERGY REDISTRIBUTION
+fig2, ax2 = plt.subplots(nstates, 1, sharex='all')#,sharey='all')
 ymax=2.5
 
 empty_ones = []
@@ -51,6 +55,8 @@ for i,filename in enumerate(filenames):
     misc = []
     abs_e = []
     per_e = []
+    init_e = []
+    final_e = []
 
     with open(filename) as f:
         for line in f:
@@ -89,9 +95,29 @@ for i,filename in enumerate(filenames):
 
                 per_e.append([d,theta,phi,X,Y,Z])
 
+            elif 'Initial' in line:
+                numbers = line.replace(',','')
+                i_v = float(numbers.split()[8])
+                i_r = float(numbers.split()[9])
+                i_t = float(numbers.split()[10])
+
+                init_e.append([i_v,i_r,i_t])
+
+             elif 'Final' in line:
+                numbers = line.replace(',','')
+                f_v = float(numbers.split()[8])
+                f_r = float(numbers.split()[9])
+                f_t = float(numbers.split()[10])
+
+                final_e.append([f_v,f_r,f_t])
+
+
     misc = np.array(misc)
     abs_e = np.array(abs_e)
     per_e = np.array(per_e)
+    init_e = np.array(init_e)
+    final_e = np.array(final_e)
+    e_diff = init_e - final_e
 
     if 'trapped' in filename:
         if mode == 2:
@@ -99,12 +125,23 @@ for i,filename in enumerate(filenames):
             ax[0].text(s=filename,x=2,y=np.max(abs_e)-0.5*np.max(abs_e))
             ax[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(abs_e)-0.5*np.max(abs_e))
             ax[0].set_ylim(0,np.max(abs_e))
+
+            ax2[0].boxplot(e_diff,showfliers=False)
+            ax2[0].text(s=filename,x=2,y=np.max(e_diff)-0.5*np.max(e_diff))
+            ax2[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(e_diff)-0.5*np.max(e_diff))
+            ax2[0].set_ylim(0,np.max(e_diff))
     else:
         if mode == 2:
             ax[i+1].set_ylim(0,ymax)
             ax[i+1].boxplot(abs_e,showfliers=False)
             ax[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
             ax[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
+
+        ax2[i+1].set_ylim(0,ymax)
+        ax2[i+1].boxplot(e_diff,showfliers=False)
+        ax2[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
+        ax2[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
+
         print('Average lifetime / fs ' +str(np.average(misc[:,0])))
         print('Average scattering angle ' + str(np.average(misc[:,1])))
         print('Average final rotational state ' + str(np.average(misc[:,2])))
@@ -120,6 +157,12 @@ if mode == 2:
     fig.savefig('summary.pdf',transparent=True,bbox_inches='tight')
 
 
+plt.xticks([1,2,3],['vib','rot','tran')
+fig2.set_figheight(10*nstates/10)
+fig2.set_figwidth(7)
+fig2.text(0.5, 0.05, "Component", ha='center',fontsize=15)
+fig2.text(0.01, 0.5, 'Energy loss / eV', va='center', rotation='vertical',fontsize=15)
+fig2.savefig('energy_distribution.pdf',transparent=True,bbox_inches='tight')
 
 ntraj_list = np.array(ntraj_list)
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
@@ -137,3 +180,5 @@ fig.set_figwidth(5)
 fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
 fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('probability.pdf',transparent=True,bbox_inches='tight')
+
+

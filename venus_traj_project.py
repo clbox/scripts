@@ -594,7 +594,6 @@ class venus_analysis():
                 if 'RELATIVE TRANSLATIONAL ENERGY SELECTED' in line:
                     self.init_tran_e = float(line.split()[4])*kcal/mol
 
-        
         return
 
 def plot_settings(ax):
