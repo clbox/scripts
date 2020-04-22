@@ -29,6 +29,18 @@ v16_exp = [
 0.02,
 0.02
 ]
+
+x_exp = np.arange(0,7,1)
+v3_exp = [
+0.0,
+0.2195652173913044,
+0.42391304347826086,
+0.35434782608695653,
+0.0,
+0,
+0,
+]
+
 #mode 0 = bomd, mode 1 = ldfa, mode 2 = tdpt
 mode = int(sys.argv[1])
 
@@ -41,7 +53,7 @@ if mode == 2:
     fig, ax = plt.subplots(nstates, 1, sharex='all')#,sharey='all')
 
 #PLOT ENERGY REDISTRIBUTION
-fig2, ax2 = plt.subplots(nstates, 1, sharex='all')#,sharey='all')
+fig2, ax2 = plt.subplots(nstates-1, 1, sharex='all',sharey='all')
 ymax=2.5
 
 empty_ones = []
@@ -96,15 +108,15 @@ for i,filename in enumerate(filenames):
                 per_e.append([d,theta,phi,X,Y,Z])
 
             elif 'Initial' in line:
-                numbers = line.replace(',','')
+                numbers = line.replace(',',' ')
                 i_v = float(numbers.split()[8])
                 i_r = float(numbers.split()[9])
                 i_t = float(numbers.split()[10])
 
                 init_e.append([i_v,i_r,i_t])
 
-             elif 'Final' in line:
-                numbers = line.replace(',','')
+            elif 'Final' in line:
+                numbers = line.replace(',',' ')
                 f_v = float(numbers.split()[8])
                 f_r = float(numbers.split()[9])
                 f_t = float(numbers.split()[10])
@@ -126,10 +138,6 @@ for i,filename in enumerate(filenames):
             ax[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(abs_e)-0.5*np.max(abs_e))
             ax[0].set_ylim(0,np.max(abs_e))
 
-            ax2[0].boxplot(e_diff,showfliers=False)
-            ax2[0].text(s=filename,x=2,y=np.max(e_diff)-0.5*np.max(e_diff))
-            ax2[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(e_diff)-0.5*np.max(e_diff))
-            ax2[0].set_ylim(0,np.max(e_diff))
     else:
         if mode == 2:
             ax[i+1].set_ylim(0,ymax)
@@ -137,10 +145,11 @@ for i,filename in enumerate(filenames):
             ax[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
             ax[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
 
-        ax2[i+1].set_ylim(0,ymax)
-        ax2[i+1].boxplot(e_diff,showfliers=False)
-        ax2[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
-        ax2[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
+        ax2[i].set_xlim(0.5,3.5)
+        # ax2[i].set_ylim(0,ymax)
+        ax2[i].boxplot(e_diff,showfliers=False)
+        ax2[i].text(s=filename,x=0.5,y=0.8)
+        ax2[i].text(s='ntrajs = '+str(ntrajs),x=0.5,y=0.5)
 
         print('Average lifetime / fs ' +str(np.average(misc[:,0])))
         print('Average scattering angle ' + str(np.average(misc[:,1])))
@@ -157,7 +166,7 @@ if mode == 2:
     fig.savefig('summary.pdf',transparent=True,bbox_inches='tight')
 
 
-plt.xticks([1,2,3],['vib','rot','tran')
+plt.xticks([1,2,3],['vib','rot','tran'])
 fig2.set_figheight(10*nstates/10)
 fig2.set_figwidth(7)
 fig2.text(0.5, 0.05, "Component", ha='center',fontsize=15)
@@ -170,10 +179,12 @@ ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
     '.-',color='purple',label=r'TDPT')
     #marker='^',linestyle='-',color='red',label=r'BOMD')
     #marker='s',linestyle='-',color='blue',label=r'LDFA $\times 2$')
-ax.bar(x_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
+#ax.bar(x_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
+ax.bar(x_exp,v3_exp,color='black',label=r'$\nu_i=3$ exp')
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.legend()
-ax.set_xlim(0,20)
+#ax.set_xlim(0,20)
+ax.set_xlim(0,6)
 ax.set_ylim(0,0.5)
 fig.set_figheight(4)
 fig.set_figwidth(5)
