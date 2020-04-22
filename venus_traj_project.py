@@ -1,5 +1,5 @@
 import numpy as np
-from ase.units import _hbar, J, s, fs
+from ase.units import _hbar, J, s, fs, kcal, mol
 from ase import Atoms
 import glob
 from pathlib import Path
@@ -64,11 +64,11 @@ class venus_analysis():
                             break
 
                         elif 'TOTAL_ENERGY=' in line:
-                            self.vib_e = float(line.split()[5])
-                            self.rot_e = float(line.split()[7])
+                            self.vib_e = float(line.split()[5])*kcal/mol
+                            self.rot_e = float(line.split()[7])*kcal/mol
 
                         elif 'REL.TRANS.ENERGY=' in line:
-                            self.tran_e = float(line.split()[3])
+                            self.tran_e = float(line.split()[3])*kcal/mol
 
                     elif int(line.split()[1]) > traj_no:
                         break
@@ -533,6 +533,7 @@ class venus_analysis():
         total_work_dim = []
         total_work = 0
         fraction_energy_loss =[]
+        self.get_initial_energies()
         for j in range(ndim):
             total_work_dim.append(np.sum(self.work[:,j]))
             total_work += np.sum(self.work[:,j])
@@ -542,7 +543,8 @@ class venus_analysis():
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
-
+                f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
+                f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
             if self.mode == 1:
                 f.write('Total energy loss / eV, d = {:0.3f}, phi = {:0.3f}, theta = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
                     .format(*total_work_dim,total_work))
@@ -553,6 +555,7 @@ class venus_analysis():
                     .format(*total_work_dim,total_work))
                 f.write('Energy loss / %, d = {:0.1f}, theta = {:0.1f}, phi = {:0.1f}, X = {:0.1f}, Y = {:0.1f}, Z = {:0.1f}\n'\
                     .format(*fraction_energy_loss))
+            f.write('------------------------------------------------------')
             
 
         return
@@ -579,6 +582,8 @@ class venus_analysis():
         self.get_initial_energies()
         init_vib_e,init_rot_e,init_tran_e = self.init_vib_e,self.init_rot_e,self.init_tran_e
 
+
+
         return
 
     def get_initial_energies(self):
@@ -596,10 +601,15 @@ class venus_analysis():
                 if 'CHOSEN' in line:
                     if read:
                         if 'EROTA' in line:
-                            self.init_rot_e = float(line.split()[3])
+                            self.init_rot_e = float(line.split()[3])*kcal/mol
                         elif 'EVIBA' in line:
-                            self.init_vib_e = float(line.split()[3])
+                            self.init_vib_e = float(line.split()[3])*kcal/mol
                             break
+
+                if 'RELATIVE TRANSLATIONAL ENERGY SELECTED' in line:
+                    self.init_tran_e = float(line.split()[4])*kcal/mol
+
+        
         return
 
 def plot_settings(ax):
