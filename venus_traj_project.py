@@ -580,7 +580,7 @@ class venus_analysis():
                 if 'LIFETIME:' in line:
                     if int(line.split()[1]) == self.traj_no:
                         read = False
-                    elif int(line.split()[1]) > self.traj_no
+                    elif int(line.split()[1]) > self.traj_no:
                         break
 
                 #Before Lifetime string
