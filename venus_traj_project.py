@@ -571,21 +571,6 @@ class venus_analysis():
 
         return
 
-    def get_energy_redistribution(self):
-        #Need to read fort.26 for and parse energies for one specific trajectory
-        #Need initial energy of vibration, rotation and translation
-        #Need final energy of vibration, rotation and translation
-
-
-        vib_e,rot_e,tran_e = self.vib_e,self.rot_e,self.tran_e
-
-        self.get_initial_energies()
-        init_vib_e,init_rot_e,init_tran_e = self.init_vib_e,self.init_rot_e,self.init_tran_e
-
-
-
-        return
-
     def get_initial_energies(self):
         
         filename = glob.glob('out*')[0]
