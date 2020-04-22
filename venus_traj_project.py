@@ -555,7 +555,7 @@ class venus_analysis():
                     .format(*total_work_dim,total_work))
                 f.write('Energy loss / %, d = {:0.1f}, theta = {:0.1f}, phi = {:0.1f}, X = {:0.1f}, Y = {:0.1f}, Z = {:0.1f}\n'\
                     .format(*fraction_energy_loss))
-            f.write('------------------------------------------------------')
+            f.write('------------------------------------------------------\n')
             
 
         return
@@ -574,14 +574,14 @@ class venus_analysis():
     def get_initial_energies(self):
         
         filename = glob.glob('out*')[0]
-        read = False
+        read = True
         with open(filename) as f:
             for line in f:
                 if 'LIFETIME:' in line:
                     if int(line.split()[1]) == self.traj_no:
-                        read = True
-                    else:
                         read = False
+                    else:
+                        read = True
 
                 if 'CHOSEN' in line:
                     if read:
