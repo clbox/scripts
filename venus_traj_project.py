@@ -62,6 +62,14 @@ class venus_analysis():
                         elif 'SCATTERING_ANG' in line:
                             scat_angle = float(line.split()[-2])
                             break
+
+                        elif 'TOTAL_ENERGY=' in line:
+                            self.vib_e = float(line.split()[5])
+                            self.rot_e = float(line.split()[7])
+
+                        elif 'REL.TRANS.ENERGY=' in line:
+                            self.tran_e = float(line.split()[3])
+
                     elif int(line.split()[1]) > traj_no:
                         break
 
@@ -558,6 +566,40 @@ class venus_analysis():
                 f.write(self.traj_text.replace('$','')+'\n')
             
 
+        return
+
+    def get_energy_redistribution(self):
+        #Need to read fort.26 for and parse energies for one specific trajectory
+        #Need initial energy of vibration, rotation and translation
+        #Need final energy of vibration, rotation and translation
+
+
+        vib_e,rot_e,tran_e = self.vib_e,self.rot_e,self.tran_e
+
+        self.get_initial_energies()
+        init_vib_e,init_rot_e,init_tran_e = self.init_vib_e,self.init_rot_e,self.init_tran_e
+
+        return
+
+    def get_initial_energies(self):
+        
+        filename = glob.glob('out*')[0]
+        read = False
+        with open(filename) as f:
+            for line in f:
+                if 'LIFETIME:' in line:
+                    if int(line.split()[1]) == self.traj_no:
+                        read = True
+                    else:
+                        read = False
+
+                if 'CHOSEN' in line:
+                    if read:
+                        if 'EROTA' in line:
+                            self.init_rot_e = float(line.split()[3])
+                        elif 'EVIBA' in line:
+                            self.init_vib_e = float(line.split()[3])
+                            break
         return
 
 def plot_settings(ax):

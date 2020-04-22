@@ -124,9 +124,9 @@ if mode == 2:
 ntraj_list = np.array(ntraj_list)
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
-    #'.-',color='purple',label=r'TDPT $\times 2$')
+    '.-',color='purple',label=r'TDPT')
     #marker='^',linestyle='-',color='red',label=r'BOMD')
-    marker='s',linestyle='-',color='blue',label=r'LDFA $\times 2$')
+    #marker='s',linestyle='-',color='blue',label=r'LDFA $\times 2$')
 ax.bar(x_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.legend()
