@@ -580,17 +580,18 @@ class venus_analysis():
                 if 'LIFETIME:' in line:
                     if int(line.split()[1]) == self.traj_no:
                         read = False
-                    else:
-                        read = True
+                    elif int(line.split()[1]) > self.traj_no
+                        break
 
+                #Before Lifetime string
                 if 'CHOSEN' in line:
                     if read:
                         if 'EROTA' in line:
                             self.init_rot_e = float(line.split()[3])*kcal/mol
                         elif 'EVIBA' in line:
                             self.init_vib_e = float(line.split()[3])*kcal/mol
-                            break
 
+                #Before lifetime string
                 if 'RELATIVE TRANSLATIONAL ENERGY SELECTED' in line:
                     self.init_tran_e = float(line.split()[4])*kcal/mol
 
