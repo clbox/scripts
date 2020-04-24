@@ -9,37 +9,15 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 import sys
-x_exp = np.arange(0,17,1)
-v16_exp = [
-0.0,
-0.0,
-0.04,
-0.08,
-0.13,
-0.15,
-0.19,
-0.11,
-0.12,
-0.07,
-0.04,
-0.02,
-0.03,
-0.02,
-0.01,
-0.02,
-0.02
-]
+x16_exp = np.arange(0,17,1)
+v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
-x_exp = np.arange(0,7,1)
-v3_exp = [
-0.0,
-0.2195652173913044,
-0.42391304347826086,
-0.35434782608695653,
-0.0,
-0,
-0,
-]
+x3_exp = np.arange(0,7,1)
+v3_exp = [0.0,0.2195652173913044,0.42391304347826086,0.35434782608695653,0.0,0,0]
+
+x15_exp = np.arange(5,16)
+v15_exp = [0.115,0.1339,0.194,0.192,0.125,0.082,0.04,0.05,0.019,0.015,0.036]
+
 
 #mode 0 = bomd, mode 1 = ldfa, mode 2 = tdpt
 mode = int(sys.argv[1])
@@ -53,12 +31,13 @@ if mode == 2:
     fig, ax = plt.subplots(nstates, 1, sharex='all')#,sharey='all')
 
 #PLOT ENERGY REDISTRIBUTION
-fig2, ax2 = plt.subplots(nstates-1, 1, sharex='all',sharey='all')
+
 ymax=2.5
 
 empty_ones = []
 ntraj_list = []
 state_list=[]
+e_diff_list=[]
 for i,filename in enumerate(filenames):
 
     print(filename)
@@ -145,17 +124,14 @@ for i,filename in enumerate(filenames):
             ax[i+1].text(s=filename,x=2,y=ymax-0.5*ymax)
             ax[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
 
-        ax2[i].set_xlim(0.5,3.5)
-        # ax2[i].set_ylim(0,ymax)
-        ax2[i].boxplot(e_diff,showfliers=False)
-        ax2[i].text(s=filename,x=0.5,y=0.8)
-        ax2[i].text(s='ntrajs = '+str(ntrajs),x=0.5,y=0.5)
+        
 
         print('Average lifetime / fs ' +str(np.average(misc[:,0])))
         print('Average scattering angle ' + str(np.average(misc[:,1])))
         print('Average final rotational state ' + str(np.average(misc[:,2])))
         ntraj_list.append(ntrajs)
         state_list.append(int(filename.split('.')[0]))
+        e_diff_list.append(e_diff)
 
 if mode == 2:
     plt.xticks([1,2,3,4,5,6,7],['d',r'$\theta$',r'$\phi$','X','Y','Z','Total'])
@@ -166,26 +142,57 @@ if mode == 2:
     fig.savefig('summary.pdf',transparent=True,bbox_inches='tight')
 
 
-plt.xticks([1,2,3],['vib','rot','tran'])
+
+fig2, ax2 = plt.subplots(nstates-1, 1, sharex='all',sharey='all')
+for i,filename in enumerate(filenames):
+    if 'trapped' in filename:
+        continue
+    else:
+        ax2[i].set_xlim(0.5,3.5)
+        # ax2[i].set_ylim(0,ymax)
+        ax2[i].boxplot(e_diff_list[i],showfliers=False)
+        ax2[i].text(s=filename,x=0.5,y=0.8)
+        ax2[i].text(s='ntrajs = '+str(ntraj_list[i]),x=0.5,y=0.5)
+
+#Write energy distributions to file
+e_diff_list = np.array(e_diff_list)
+np.save('e_diff_list.npy',e_diff_list)
+
+
+
+plt.xticks([1,2,3],['Vibrational','Rotational','Translational'])
 fig2.set_figheight(10*nstates/10)
 fig2.set_figwidth(7)
 fig2.text(0.5, 0.05, "Component", ha='center',fontsize=15)
-fig2.text(0.01, 0.5, 'Energy loss / eV', va='center', rotation='vertical',fontsize=15)
+fig2.text(0.01, 0.5, r'E$_i$ - E$_f$ / eV', va='center', rotation='vertical',fontsize=15)
 fig2.savefig('energy_distribution.pdf',transparent=True,bbox_inches='tight')
 
 ntraj_list = np.array(ntraj_list)
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
-    '.-',color='purple',label=r'TDPT')
+    #'.-',color='purple',label=r'TDPT')# $\times 2$')
     #marker='^',linestyle='-',color='red',label=r'BOMD')
-    #marker='s',linestyle='-',color='blue',label=r'LDFA $\times 2$')
-#ax.bar(x_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
-ax.bar(x_exp,v3_exp,color='black',label=r'$\nu_i=3$ exp')
+    marker='s',linestyle='-',color='blue',label=r'LDFA $\times 4$')
+
+#V16
+ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
+ax.set_xlim(0,20)
+ax.set_ylim(0,0.5)
+
+#V3
+# ax.bar(x3_exp,v3_exp,color='black',label=r'$\nu_i=3$ exp')
+# ax.set_xlim(0,6)
+# ax.set_ylim(0,0.8)
+
+#V15
+# ax.bar(x15_exp,v15_exp,color='black',label=r'$\nu_i=15$ exp')
+# ax.set_xlim(0,17)
+# ax.set_ylim(0,0.8)
+
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.legend()
-#ax.set_xlim(0,20)
-ax.set_xlim(0,6)
-ax.set_ylim(0,0.5)
+
+
 fig.set_figheight(4)
 fig.set_figwidth(5)
 fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
