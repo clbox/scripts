@@ -173,8 +173,8 @@ fig2.savefig('energy_distribution.pdf',transparent=True,bbox_inches='tight')
 ntraj_list = np.array(ntraj_list)
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
-    #'.-',color='purple',label=r'TDPT $\times 2$')
-    marker='^',linestyle='-',color='red',label=r'BOMD')
+    '.-',color='purple',label=r'TDPT')# $\times 2$')
+    #marker='^',linestyle='-',color='red',label=r'BOMD')
     # marker='s',linestyle='-',color='blue',label=r'LDFA $\times 4$')
 
 
