@@ -563,13 +563,13 @@ class venus_analysis():
     def write_bomd_summary_to_file(self):
         traj_no = self.traj_no
         self.get_initial_energies()
-        
+
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
-            f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
-            f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
+                f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
+                f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
             f.write('------------------------------------------------------\n')
             
 
