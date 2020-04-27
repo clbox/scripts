@@ -562,7 +562,8 @@ class venus_analysis():
 
     def write_bomd_summary_to_file(self):
         traj_no = self.traj_no
-
+        self.get_initial_energies()
+        
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
             if not self.trapped:
