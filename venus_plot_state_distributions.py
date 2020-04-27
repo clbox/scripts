@@ -34,53 +34,55 @@ fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 for i,filename in enumerate(filenames):
     if 'v03' in os.path.abspath(filename) and not plotted_exp:
         ax.bar(x3_exp,v3_exp,color='black',label=r'$\nu_i=3$ exp')
+        ax.set_xlim(0,6)
+        ax.set_ylim(0,0.8)
         plotted_exp = True
 
     if 'v11' in os.path.abspath(filename) and not plotted_exp:
         ax.bar(x11_exp,v11_exp,color='black',label=r'$\nu_i=11$ exp')
+        ax.set_xlim(0,20)
+        ax.set_ylim(0,0.5)
         plotted_exp = True
 
     if 'v15' in os.path.abspath(filename) and not plotted_exp:
         ax.bar(x15_exp,v15_exp,color='black',label=r'$\nu_i=15$ exp')
+        ax.set_xlim(0,17)
+        ax.set_ylim(0,0.8)
         plotted_exp = True
 
     if 'v16' in os.path.abspath(filename) and not plotted_exp:
         ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
+        ax.set_ylim(0,0.5)
+        ax.set_xlim(0,20)
         plotted_exp = True
 
     dis = np.loadtxt(filename)
-
+    mode_args = None
     if 'tdpt' in os.path.abspath(filename):
-        mode_args = tdpt_args
+        mode_args = tdpt_args.copy()
 
     if 'bomd' in os.path.abspath(filename):
-        mode_args = bomd_args
+        mode_args = bomd_args.copy()
 
     if 'ldfa' in os.path.abspath(filename):
-        mode_args = ldfa_args
+        mode_args = ldfa_args.copy()
 
     if 'i2' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'$\times 2$'
         mode_args['linestyle'] = '--'
 
     if 'i3' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'$\times 2$'
-        mode_args['linestyle'] = '--'
+        mode_args['label'] = mode_args['label'] + r'$\times 3$'
+        mode_args['linestyle'] = ':'
     
     if 'i4' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'$\times 2$'
+        mode_args['label'] = mode_args['label'] + r'$\times 4$'
         mode_args['linestyle'] = '-.'
     
-
 
     a = ax.plot(dis[:,0],dis[:,1],**mode_args)
 
 
-
-    #if 'tdpt' in os.path.abspath(filename):
-    #    '.-',color='purple',label=r'TDPT')# $\times 2$')
-    #marker='^',linestyle='-',color='red',label=r'BOMD')
-    # marker='s',linestyle='-',color='blue',label=r'LDFA $\times 4$'))
 
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.legend()
