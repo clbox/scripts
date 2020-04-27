@@ -173,17 +173,17 @@ fig2.savefig('energy_distribution.pdf',transparent=True,bbox_inches='tight')
 ntraj_list = np.array(ntraj_list)
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
-    '.-',color='purple',label=r'TDPT')# $\times 3$')
-    #marker='^',linestyle='-',color='red',label=r'BOMD')
+    #'.-',color='purple',label=r'TDPT $\times 2$')
+    marker='^',linestyle='-',color='red',label=r'BOMD')
     # marker='s',linestyle='-',color='blue',label=r'LDFA $\times 4$')
 
 
 np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1.3f')
 
 #V16
-#ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
-#ax.set_ylim(0,0.5)
-#ax.set_xlim(0,20)
+ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
+ax.set_ylim(0,0.5)
+ax.set_xlim(0,20)
 
 #V3
 # ax.bar(x3_exp,v3_exp,color='black',label=r'$\nu_i=3$ exp')
@@ -196,9 +196,9 @@ np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1
 # ax.set_ylim(0,0.8)
 
 #V11
-ax.bar(x11_exp,v11_exp,color='black',label=r'$\nu_i=11$ exp')
-ax.set_xlim(0,20)
-ax.set_ylim(0,0.5)
+# ax.bar(x11_exp,v11_exp,color='black',label=r'$\nu_i=11$ exp')
+# ax.set_xlim(0,20)
+# ax.set_ylim(0,0.5)
 
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.legend()
