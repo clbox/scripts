@@ -111,7 +111,7 @@ for i,filename in enumerate(filenames):
     per_e = np.array(per_e)
     init_e = np.array(init_e)
     final_e = np.array(final_e)
-    e_diff = init_e - final_e
+
 
     if 'trapped' in filename:
         if mode == 2:
@@ -128,7 +128,7 @@ for i,filename in enumerate(filenames):
             ax[i+1].text(s='ntrajs = '+str(ntrajs),x=5,y=ymax-0.5*ymax)
 
         
-
+        e_diff = init_e - final_e
         print('Average lifetime / fs ' +str(np.average(misc[:,0])))
         print('Average scattering angle ' + str(np.average(misc[:,1])))
         print('Average final rotational state ' + str(np.average(misc[:,2])))
