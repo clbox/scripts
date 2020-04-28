@@ -11,6 +11,9 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 
 filenames = sys.argv[1:]
 
+x2_exp = np.arange(1,4,1)
+v2_exp = [0.33,0.66,0.00038]
+
 x3_exp = np.arange(0,7,1)
 v3_exp = [0.0,0.2195652173913044,0.42391304347826086,0.35434782608695653,0.0,0,0]
 
@@ -32,6 +35,13 @@ ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'EANN
 plotted_exp = False
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 for i,filename in enumerate(filenames):
+
+    if 'v02' in os.path.abspath(filename) and not plotted_exp:
+        ax.bar(x2_exp,v2_exp,color='black',label=r'$\nu_i=2$ exp')
+        ax.set_xlim(0,4)
+        ax.set_ylim(0,1.0)
+        plotted_exp = True
+    
     if 'v03' in os.path.abspath(filename) and not plotted_exp:
         ax.bar(x3_exp,v3_exp,color='black',label=r'$\nu_i=3$ exp')
         ax.set_xlim(0,6)
