@@ -15,16 +15,17 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 filenames = sys.argv[1:]
 outfile = 'energies.out'
 for i, filename in enumerate(filenames):
-
+    energy  = False
     with open(filename) as f:
         for line in f:
             if '************************FRICTION**********************************' in line:
                 break
-            if '   | Total energy corrected       ' in line:
+            if '   | Total energy corrected  ' in line:
                 e_corr = float(line.split()[5])
+                energy = True
                 break
+    if energy:
+        with open(outfile,'a') as f:
+            f.write(str(i)+'   '+ str(e_corr))
 
-    with open(outfile,'a') as f:
-        f.write(str(i)+'   '+e_corr)
-    
 
