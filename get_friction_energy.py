@@ -27,6 +27,6 @@ for i, filename in enumerate(filenames):
                 break
     if energy:
         with open(outfile,'a') as f:
-            f.write(str(i)+'   '+ str(e_corr))
+            f.write(str(i)+'   '+ str(e_corr)+'\n')
 
 
