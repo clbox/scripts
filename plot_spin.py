@@ -72,7 +72,7 @@ fig.text(0.5, 0.01, r'Height above the surface / $\AA$', ha='center',fontsize=15
 fig.text(0.01, 0.5, "Energy / eV", va='center',rotation='vertical',fontsize=15)
 fig.text(1.0, 0.5, r"$\Lambda_{ij}$ / ps$^{-1}$", va='center',rotation='vertical',fontsize=15)
 fig.set_figwidth(6)
-fig.set_figheight(8)
+fig.set_figheight(6)
 fig.savefig('energies.pdf',transparent=True,bbox_inches='tight')
 
 
