@@ -21,7 +21,6 @@ for i, filename in enumerate(filenames):
             if '************************FRICTION**********************************' in line:
                 break
             if '| Total energy corrected  ' in line:
-                print(line.split())
                 e_corr = float(line.split()[5])
                 energy = True
                 break
