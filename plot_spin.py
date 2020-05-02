@@ -28,7 +28,7 @@ for i,filename in enumerate(energy_files):
         y = [float(line.split()[1]) for line in lines]
         x = np.array(x)
         x = (x*0.5) + 0.1
-        ax.plot(x,y,marker='.',linestyle=linestyles[i],label=labels[i],color='gray',linewidth=2)
+        ax.plot(x,y,linestyle=linestyles[i],label=labels[i],color='gray',linewidth=2,marker='s')
 
 ax.set_ylim( -19287077.6, -19287077.1)
 
@@ -57,9 +57,9 @@ for i,dir in enumerate(dirs):
     # ax2.plot(heights,tensors[:,0,0],linestyle=linestyles[i],label=r'$\Lambda_{O_x O_x}(S=$'+spin+r'$)$',color='blue')
     # ax2.plot(heights,tensors[:,1,1],linestyle=linestyles[i],label=r'$\Lambda_{O_y O_y}(S=$'+spin+r'$)$',color='red')
     # ax2.plot(heights,tensors[:,2,2],linestyle=linestyles[i],label=r'$\Lambda_{O_z O_z}(S=$'+spin+r'$)$',color='green')
-    ax2.plot(heights,tensors[:,0,0],linestyle=linestyles[i],label=r'$\Lambda_{N_x N_x}(S=$'+spin+r'$)$',color='deepskyblue')
-    ax2.plot(heights,tensors[:,1,1],linestyle=linestyles[i],label=r'$\Lambda_{N_y N_y}(S=$'+spin+r'$)$',color='orangered')
-    ax2.plot(heights,tensors[:,5,5],linestyle=linestyles[i],label=r'$\Lambda_{N_z N_z}(S=$'+spin+r'$)$',color='palegreen')
+    ax2.plot(heights,tensors[:,0,0],linestyle=linestyles[i],label=r'$\Lambda_{N_x N_x}(S=$'+spin+r'$)$',color='deepskyblue',marker='.')
+    ax2.plot(heights,tensors[:,1,1],linestyle=linestyles[i],label=r'$\Lambda_{N_y N_y}(S=$'+spin+r'$)$',color='orangered',marker='.')
+    ax2.plot(heights,tensors[:,5,5],linestyle=linestyles[i],label=r'$\Lambda_{N_z N_z}(S=$'+spin+r'$)$',color='palegreen',marker='.')
 
 
 
@@ -72,7 +72,7 @@ fig.text(0.5, 0.01, r'Height above the surface / $\AA$', ha='center',fontsize=15
 fig.text(0.01, 0.5, "Energy / eV", va='center',rotation='vertical',fontsize=15)
 fig.text(1.0, 0.5, r"$\Lambda_{ij}$ / ps$^{-1}$", va='center',rotation='vertical',fontsize=15)
 fig.set_figwidth(6)
-fig.set_figheight(6)
+fig.set_figheight(5)
 fig.savefig('energies.pdf',transparent=True,bbox_inches='tight')
 
 
