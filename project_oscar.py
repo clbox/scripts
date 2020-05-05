@@ -2,7 +2,6 @@ import numpy as np
 import sys
 from ase.io import read
 import glob
-import venus_traj_project as vjp
 
 
 def build_tensor(raw_tensor):
@@ -28,7 +27,6 @@ def build_tensor(raw_tensor):
 
         for j in range(int(ndim/(lines_per_line+1))):
             if c ==0:
-                print(line.split())
                 friction_tensor[i,j]=float(line.split()[j+1])
             else:
                 friction_tensor[i,j+((int(ndim/(lines_per_line+1)))*c)]=float(line.split()[j])
@@ -203,12 +201,16 @@ for output_dir in sys.argv[1:]:
 
             elif '|------------------------------------' in line:
                 pvecs = False
+
+            elif 'Final output of selected total energy values:' in line:
+                raw_vecs.pop()
+                raw_vecs.pop()
+                break
             
             elif pvecs:
                 raw_vecs.append(line)
 
 
-    print(raw_vecs)
     friction_tensor,ndim = build_tensor(raw_tensor)
     friction_vecs, ndim = build_tensor(raw_vecs)
 
