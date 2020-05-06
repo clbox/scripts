@@ -34,6 +34,7 @@ def read_spectral_data(path):
             continue
 
     filenames.sort()
+    print(filenames)
         
     with open(path+filenames[0], "r") as f:
         for line in f:
