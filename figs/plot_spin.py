@@ -30,7 +30,10 @@ for i,filename in enumerate(energy_files):
         x = (x*0.5) + 0.1
         ax.plot(x,y,linestyle=linestyles[i],label=labels[i],color='gray',linewidth=2,marker='s')
 
+#PBE
 ax.set_ylim( -19287077.6, -19287077.1)
+#BEEF
+ax.set_ylim(-19298636,-19298630)
 
 ax2 = ax.twinx()
 for i,dir in enumerate(dirs):
