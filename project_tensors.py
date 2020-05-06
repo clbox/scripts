@@ -67,6 +67,11 @@ for output_dir in sys.argv[1:]:
 
             elif '|------------------------------------' in line:
                 pvecs = False
+
+            elif 'Final output of selected total energy values:' in line:
+                raw_vecs.pop()
+                raw_vecs.pop()
+                break
             
             elif pvecs:
                 raw_vecs.append(line)
