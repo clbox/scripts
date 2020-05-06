@@ -50,6 +50,8 @@ def read_spectral_data(path):
     if elements < head_count:
         n_spin = 2
         #print("This system is spin unrestricted")
+
+
     zpf = np.zeros((dimension,dimension),dtype=complex)
     file_counter = -1
 
