@@ -28,22 +28,29 @@ for ii,path in enumerate(sys.argv[1:]):
 
 xv, yv = np.meshgrid(bins,time_axis)
 
-
+dimension=1
 fig, ax = plt.subplots(dimension, dimension, sharex='all', sharey='all')
 e=0
 lvls = np.linspace(np.min(time_re),np.max(time_re),20)
 for i in range(dimension):
     for j in range(i,dimension):
-        im = ax[i,j].contourf(xv,yv,time_re[:,e,:],levels=lvls)
+        if dimension>1:
+            im = ax[i,j].contourf(xv,yv,time_re[:,e,:],levels=lvls)
+            ax[i,j].set_xlim(0,1)
+        else:
+            im = ax.contourf(xv,yv,time_re[:,e,:],levels=lvls)
+            ax.set_xlim(0,1)
+        for c in im.collections:
+            c.set_edgecolor("face")
         e+=1
 
-cbar = fig.colorbar(im, ax=ax.ravel().tolist(), shrink=0.95)
-
-cbar.set_ticks(np.arange(-0.5, np.max(lvls), 0.5))
+if dimension>1:
+    cbar = fig.colorbar(im, ax=ax.ravel().tolist(), shrink=0.95)
+    cbar.set_ticks(np.arange(-0.5, np.max(lvls), 0.5))
 
  
 fig.text(0.5, 0.01, "Excitation energy / eV", ha='center',fontsize=15)
 fig.text(0.01, 0.5, 'Time / fs', va='center', rotation='vertical',fontsize=15)
 fig.text(0.9, 0.5, r'Relaxation rate / $\mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=15)
-ax[0,0].set_xlim(0,1)
 fig.savefig('memory_kernel_map.png',dpi=300,bbox_inches='tight')
+fig.savefig('memory_kernel_map.pdf',dpi=300,bbox_inches='tight')
