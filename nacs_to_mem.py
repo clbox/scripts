@@ -67,8 +67,9 @@ def read_spectral_data(path):
                     file_data.append(line)
 
         a = np.loadtxt(file_data)
+
         if file_counter == 0:
-            data_sum = np.zeros([len(a[:,0])/n_spin,3])
+            data_sum = np.zeros([len(a[:,0])//n_spin,3])
         data_split = np.vsplit(a,elements*n_spin)
         c = 0
         i = 0
@@ -91,11 +92,11 @@ def read_spectral_data(path):
 
 paths = sys.argv[1:]
 for path in paths:
-    try:
-        data_split,dimension,max_e = read_spectral_data(path)
-    except:
-        print('Couldnt  read data - continuing')
-        continue
+    #try:
+    data_split,dimension,max_e = read_spectral_data(path)
+    #except:
+    #    print('Couldnt  read data - continuing')
+    #    continue
     print('max energy = {} eV'.format(max_e))
     c = -1
     i_cart = -1
