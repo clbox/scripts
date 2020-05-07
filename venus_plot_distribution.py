@@ -123,6 +123,8 @@ for i,filename in enumerate(filenames):
             ax[0].text(s='ntrajs = '+str(ntrajs),x=5,y=np.max(abs_e)-0.5*np.max(abs_e))
             ax[0].set_ylim(0,np.max(abs_e))
 
+        n_trapped = ntrajs
+
     else:
         if mode == 2:
             ax[i+1].set_ylim(0,ymax)
@@ -183,6 +185,10 @@ ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
 
 np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1.3f')
 
+state_list.append(-1)
+ntraj_list = np.append(ntraj_list,n_trapped)
+
+np.savetxt('absolute_pops.txt',np.c_[state_list,ntraj_list],fmt='%1.3f')
 #V16
 # ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
 # ax.set_ylim(0,0.5)
