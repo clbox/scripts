@@ -43,7 +43,11 @@ for traj_no in traj_nos:
             continue
 
     else:
-        lifetime,Nf,Jf,scat_angle = va.parse_traj_summary()
+        try:
+            lifetime,Nf,Jf,scat_angle = va.parse_traj_summary()
+        except:
+            #trappped
+            continue
         Nf = va.bin_quantum(Nf)
         if int(mode) != Nf:
             continue 
