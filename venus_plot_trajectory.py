@@ -18,6 +18,9 @@ from ase.visualize import view
 #get atoms_list for each trapped
 
 #and plot simple graph showing o and n positions?
+
+#TODO: plot the impact geometry . I.e when COM is lowest, plot geometry of NO (x vs z?)
+#TODO: add support for choosing final vib state, not just trapped
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 
 
