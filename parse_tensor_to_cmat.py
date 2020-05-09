@@ -57,11 +57,12 @@ for ii, line in enumerate(raw_lines):
         i+=1
         c=0
     
-    for j in range(ndim/(lines_per_line+1)):
+    for j in range(ndim//(lines_per_line+1)):
+
         if c ==0:
             friction_tensor[i,j]=float(line.split()[j+1])
         else:
-            friction_tensor[i,j+((ndim/(lines_per_line+1))*c)]=float(line.split()[j])
+            friction_tensor[i,j+((ndim//(lines_per_line+1))*c)]=float(line.split()[j])
     c+=1
 
 labels = []

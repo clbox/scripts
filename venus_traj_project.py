@@ -372,6 +372,20 @@ class venus_analysis():
 
         return friction_projected_velocities
 
+    def is_trajectory_trapped(self):
+        #If trapped return true, else return false
+        traj_no = self.traj_no
+
+        self.trapped = False
+        try:
+            lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
+        except:
+            print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
+            self.trapped = True
+
+
+        return self.trapped
+
     def velocity_transform(self,atoms,velocities):
         friction_atoms = self.friction_atoms
         modes = get_modes(atoms,friction_atoms,self.mode)
@@ -600,6 +614,7 @@ class venus_analysis():
                     self.init_tran_e = float(line.split()[4])*kcal/mol
 
         return
+
 
 def plot_settings(ax):
     # Hide the right and top spines
