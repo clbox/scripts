@@ -25,17 +25,30 @@ fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 
 
 label = True
-traj_nos = sys.argv[1:]
+
+mode = sys.argv[1]
+
+
+traj_nos = sys.argv[2:]
 for traj_no in traj_nos:
     O_pos = []
     N_pos = []
     traj_no = int(traj_no)
     va = vjp.venus_analysis(traj_no,[0,1],mode=2)
 
-    trapped = va.is_trajectory_trapped()
+    if mode == 'trapped':
+        trapped = va.is_trajectory_trapped()
 
-    if not trapped:
-        continue
+        if not trapped:
+            continue
+
+    else:
+        lifetime,Nf,Jf,scat_angle = va.parse_traj_summary()
+        Nf = va.bin_quantum(Nf)
+        if int(mode) != Nf:
+            continue 
+
+
     trajectory = va.build_atoms_list()
 
     for step in trajectory:
@@ -66,5 +79,5 @@ fig.set_figheight(4)
 fig.set_figwidth(5)
 fig.text(0.5, 0.00, r"Time / fs", ha='center',fontsize=15)
 fig.text(0.01, 0.5, r'$z$ / $\AA{}$', va='center', rotation='vertical',fontsize=15)
-fig.savefig('traj_plot.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('traj_plot_'+mode+'.pdf',transparent=True,bbox_inches='tight')
 
