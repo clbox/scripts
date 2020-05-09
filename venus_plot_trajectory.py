@@ -76,6 +76,7 @@ for traj_no in traj_nos:
 
 
 ax.set_xlim(0,60)
+ax.set_ylim(1,7)
 ax.legend()
 
 
