@@ -63,16 +63,16 @@ for traj_no in traj_nos:
     O_pos = np.array(O_pos)
     N_pos = np.array(N_pos)
 
-
+    print(len(O_pos))
     
-    ON_z_pos = np.column_stack((O_pos[:,2],N_pos[:,2]))
+    ON_z_pos = np.column_stack((O_pos[0:300,2],N_pos[0:300,2]))
 
-    print(np.shape(O_pos))
-    print(np.shape(N_pos))
-    print(np.shape(ON_z_pos))
+    idx = np.unravel_index(np.argmin(ON_z_pos, axis=None), ON_z_pos.shape)
+    idx = idx[0]
 
-    idx = np.argmin(ON_z_pos)
+    print(idx)
 
+    print('---')
 
     impact_geo.append([O_pos[idx],N_pos[idx]])
     
