@@ -95,7 +95,7 @@ for traj_no in traj_nos:
 
 
 ax.set_xlim(0,600)
-ax.set_ylim(1,7)
+ax.set_ylim(0,7)
 ax.legend(loc=1)
 
 fig.set_figheight(4)
@@ -114,7 +114,7 @@ ax.scatter(impact_geo[:,0,0],impact_geo[:,0,2],c='red',s=800,alpha=0.7,label='Ox
 ax.scatter(impact_geo[:,1,0],impact_geo[:,1,2],c='blue',s=800,alpha=0.7,label='Nitrogen')
 
 ax.set_xlim(-5,6)
-ax.set_ylim(1,7)
+ax.set_ylim(0,7)
 lgnd = ax.legend(loc=1)
 lgnd.legendHandles[0]._sizes = [200]
 lgnd.legendHandles[1]._sizes = [200]
