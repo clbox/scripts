@@ -95,7 +95,7 @@ for traj_no in traj_nos:
 
 
 ax.set_xlim(0,600)
-ax.set_ylim(0,7)
+ax.set_ylim(1,7)
 ax.legend(loc=1)
 
 fig.set_figheight(4)
@@ -124,7 +124,6 @@ fig.set_figwidth(5)
 fig.text(0.5, 0.00, r"$x$ / $\AA{}$", ha='center',fontsize=15)
 fig.text(0.01, 0.5, r'$z$ / $\AA{}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig('impact_'+mode+'.pdf',transparent=True,bbox_inches='tight')
-
 
 with open('impact_'+mode+'.txt', 'w') as outfile:
     outfile.write('# Array shape: {0}\n'.format(impact_geo.shape))
