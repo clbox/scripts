@@ -28,6 +28,7 @@ label = True
 
 mode = sys.argv[1]
 
+impact_geo = []
 
 traj_nos = sys.argv[2:]
 for traj_no in traj_nos:
@@ -62,8 +63,21 @@ for traj_no in traj_nos:
     O_pos = np.array(O_pos)
     N_pos = np.array(N_pos)
 
+    ON_z_pos = np.column_stack((O_pos[:,2],N_pos[:,2]))
+
+
+    idx = np.argmin(ON_z_pos)
+
+
+    impact_geo.append([O_pos[idx],N_pos[idx]])
+    
+    
+    #looking for where an atom gets closest to surface
+
+
+
     times = np.arange(1,len(O_pos)+1,1)
-    times = times/10
+    times = times #NIP = 10
 
     if label:
         ax.plot(times,O_pos[:,2],color='red',linewidth=0.5,label='Oxygen')
@@ -75,10 +89,9 @@ for traj_no in traj_nos:
 
 
 
-ax.set_xlim(0,60)
+ax.set_xlim(0,600)
 ax.set_ylim(1,7)
 ax.legend()
-
 
 fig.set_figheight(4)
 fig.set_figwidth(5)
@@ -86,3 +99,25 @@ fig.text(0.5, 0.00, r"Time / fs", ha='center',fontsize=15)
 fig.text(0.01, 0.5, r'$z$ / $\AA{}$', va='center', rotation='vertical',fontsize=15)
 fig.savefig('traj_plot_'+mode+'.pdf',transparent=True,bbox_inches='tight')
 
+
+
+fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
+
+impact_geo = np.array(impact_geo)
+
+ax.scatter(impact_geo[:,0,0],impact_geo[:,0,2],c='red',s=800,alpha=0.7,label='Oxygen')
+ax.scatter(impact_geo[:,1,0],impact_geo[:,1,2],c='blue',s=800,alpha=0.7,label='Nitrogen')
+
+ax.set_xlim(-5,6)
+ax.set_ylim(1,7)
+lgnd = ax.legend()
+lgnd.legendHandles[0]._sizes = [200]
+lgnd.legendHandles[1]._sizes = [200]
+
+fig.set_figheight(4)
+fig.set_figwidth(5)
+fig.text(0.5, 0.00, r"$x$ / $\AA{}$", ha='center',fontsize=15)
+fig.text(0.01, 0.5, r'$z$ / $\AA{}$', va='center', rotation='vertical',fontsize=15)
+fig.savefig('impact_'+mode+'.pdf',transparent=True,bbox_inches='tight')
+
+#ax.plot(impact_geo)
