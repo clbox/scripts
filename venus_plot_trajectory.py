@@ -63,8 +63,13 @@ for traj_no in traj_nos:
     O_pos = np.array(O_pos)
     N_pos = np.array(N_pos)
 
+
+    
     ON_z_pos = np.column_stack((O_pos[:,2],N_pos[:,2]))
 
+    print(np.shape(O_pos))
+    print(np.shape(N_pos))
+    print(np.shape(ON_z_pos))
 
     idx = np.argmin(ON_z_pos)
 
