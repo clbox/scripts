@@ -552,6 +552,7 @@ class venus_analysis():
         Ni,Ji = self.parse_input_parameters()
 
         if not self.trapped:
+            self.get_n_bounces()
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
             self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
@@ -623,6 +624,8 @@ class venus_analysis():
     def write_bomd_summary_to_file(self):
         traj_no = self.traj_no
         self.get_initial_energies()
+        if not self.trapped:
+            n_bounces = self.bounces
 
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
@@ -630,6 +633,7 @@ class venus_analysis():
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
+                f.write('Number of bounces : {:d}\n'.format(n_bounces))
             f.write('------------------------------------------------------\n')
             
 
