@@ -50,8 +50,11 @@ for traj_no in traj_nos:
             #trappped
             continue
         Nf = va.bin_quantum(Nf)
+        va.get_n_bounces()
+        n_bounces = va.bounces
         if int(mode) != Nf:
             continue 
+        print('n_bounces: ' + str(n_bounces))
 
 
     trajectory = va.build_atoms_list()
@@ -94,7 +97,7 @@ for traj_no in traj_nos:
 
 
 
-ax.set_xlim(0,600)
+ax.set_xlim(0,2600)
 ax.set_ylim(1,7)
 ax.legend(loc=1)
 

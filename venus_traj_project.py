@@ -282,6 +282,45 @@ class venus_analysis():
 
         return state
 
+    def get_n_bounces(self):
+        #Return number of bounces
+        #Criteria:
+        # Not trapped
+        # 
+
+        traj_no = self.traj_no
+        friction_atoms = self.friction_atoms
+        nsteps = self.get_printed_nsteps()
+        atoms_list = self.build_atoms_list()
+
+        friction_masses = self.get_friction_masses(atoms_list[0])
+
+        n_bounces = 0
+        close=False
+        for atoms_step in atoms_list:
+            
+            positions = atoms_step.get_positions()
+            f1_pos = positions[friction_atoms[0]]
+            f2_pos = positions[friction_atoms[1]]
+
+
+
+            COM_z = (friction_masses[friction_atoms[0]]*f1_pos[2] +\
+               friction_masses[friction_atoms[1]]*f2_pos[2]) \
+                   / (friction_masses[friction_atoms[0]]+friction_masses[friction_atoms[1]])
+
+            #if COM goes below 3 - close = True, 
+            if COM_z < 3:
+                close = True
+            #if COM goes above 3 - close = False, b+=1
+            if COM_z > 3 and close:
+                close = False
+                n_bounces +=1
+
+
+        
+        self.bounces = n_bounces
+
     def get_friction_masses(self,atoms):
         friction_atoms = self.friction_atoms
         friction_masses = atoms.get_masses()[friction_atoms]
@@ -454,13 +493,14 @@ class venus_analysis():
         print('Trajectory number = {}'.format(traj_no))
         instance_number = self.instance_number
         fig, ax = plt.subplots(2, 2, sharex='all')#,constrained_layout=True)
-
         self.plot_relaxation_rates(fig,ax[:,0])
         self.plot_energy_loss(fig,ax[1,1])
         self.plot_projected_velocities(fig,ax[0,1])
         fig_settings(fig)
         ax[0,1].tick_params(labelbottom=False)
         ax[0,1].get_legend().remove()
+
+
         self.trapped = False
         try:
             lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
@@ -473,6 +513,8 @@ class venus_analysis():
         if not self.trapped:
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
+            self.get_n_bounces()
+
             self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
                 .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
             fig.text(0.5,0.92,self.traj_text,ha='center',fontsize=15)
@@ -548,6 +590,9 @@ class venus_analysis():
         total_work = 0
         fraction_energy_loss =[]
         self.get_initial_energies()
+        if not self.trapped:
+            n_bounces = self.bounces
+
         for j in range(ndim):
             total_work_dim.append(np.sum(self.work[:,j]))
             total_work += np.sum(self.work[:,j])
@@ -559,6 +604,7 @@ class venus_analysis():
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
+                f.write('Number of bounces : {:d}\n'.format(n_bounces))
             if self.mode == 1:
                 f.write('Total energy loss / eV, d = {:0.3f}, phi = {:0.3f}, theta = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
                     .format(*total_work_dim,total_work))
