@@ -88,6 +88,17 @@ for i,filename in enumerate(filenames):
     if 'i4' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'$\times 4$'
         mode_args['linestyle'] = '-.'
+
+    if '_1' in os.path.abspath(filename):
+        mode_args['label'] = mode_args['label'] + ' SB'
+        mode_args['linestyle'] = '--'
+    if '_2' in os.path.abspath(filename):
+        mode_args['label'] = mode_args['label'] + ' DB'
+        mode_args['linestyle'] = ':'
+    if '_multi' in os.path.abspath(filename):
+        mode_args['label'] = mode_args['label'] + ' MB'
+        mode_args['linestyle'] = '-.'
+
     
 
     a = ax.plot(dis[:,0],dis[:,1],**mode_args)

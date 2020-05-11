@@ -214,6 +214,12 @@ np.savetxt('states_1.txt', np.c_[state_list,ntraj_single_list/np.sum(ntraj_singl
 np.savetxt('states_2.txt', np.c_[state_list,ntraj_double_list/np.sum(ntraj_double_list)],fmt='%1.3f')
 np.savetxt('states_multi.txt', np.c_[state_list,ntraj_multi_list/np.sum(ntraj_multi_list)],fmt='%1.3f')
 
+bounce_prob = []
+bounce_prob.append(np.sum(ntraj_single_list))
+bounce_prob.append(np.sum(ntraj_double_list))
+bounce_prob.append(np.sum(ntraj_multi_list))
+
+np.savetxt('absolute_bounce.txt',bounce_prob)
 
 state_list.append(-1)
 ntraj_list = np.append(ntraj_list,n_trapped)
