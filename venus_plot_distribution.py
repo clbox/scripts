@@ -42,6 +42,9 @@ ymax=2.5
 
 empty_ones = []
 ntraj_list = []
+ntraj_single_list = []
+ntraj_double_list = []
+ntraj_multi_list = []
 state_list=[]
 e_diff_list=[]
 for i,filename in enumerate(filenames):
@@ -49,11 +52,15 @@ for i,filename in enumerate(filenames):
     print(filename)
 
     ntrajs = 0
+    ntraj_single = 0
+    ntraj_double = 0
+    ntraj_multi = 0
     misc = []
     abs_e = []
     per_e = []
     init_e = []
     final_e = []
+    n_bounces = []
 
     with open(filename) as f:
         for line in f:
@@ -108,6 +115,9 @@ for i,filename in enumerate(filenames):
 
                 final_e.append([f_v,f_r,f_t])
 
+            elif 'bounces' in line:
+                n_bounces.append(int(line.split()[-1]))
+
 
     misc = np.array(misc)
     abs_e = np.array(abs_e)
@@ -140,6 +150,20 @@ for i,filename in enumerate(filenames):
         ntraj_list.append(ntrajs)
         state_list.append(int(filename.split('.')[0]))
         e_diff_list.append(e_diff)
+
+        for t in range(len(n_bounces)):
+            if n_bounces[t] == 1:
+                ntraj_single += 1
+
+            elif n_bounces[t] == 2:
+                ntraj_double += 1
+            
+            elif n_bounces[t] > 2:
+                ntraj_multi += 1
+
+        ntraj_single_list.append(ntraj_single)
+        ntraj_double_list.append(ntraj_double)
+        ntraj_multi_list.append(ntraj_multi)
 
 if mode == 2:
     plt.xticks([1,2,3,4,5,6,7],['d',r'$\theta$',r'$\phi$','X','Y','Z','Total'])
@@ -184,6 +208,12 @@ ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
 
 
 np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1.3f')
+
+
+np.savetxt('states_1.txt', np.c_[state_list,ntraj_single_list/np.sum(ntraj_single_list)],fmt='%1.3f')
+np.savetxt('states_2.txt', np.c_[state_list,ntraj_double_list/np.sum(ntraj_double_list)],fmt='%1.3f')
+np.savetxt('states_multi.txt', np.c_[state_list,ntraj_multi_list/np.sum(ntraj_multi_list)],fmt='%1.3f')
+
 
 state_list.append(-1)
 ntraj_list = np.append(ntraj_list,n_trapped)
