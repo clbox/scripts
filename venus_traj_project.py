@@ -240,7 +240,8 @@ class venus_analysis():
     def project_tensor(self,tensor,atoms):
         friction_atoms = self.friction_atoms
         modes = get_modes(atoms,friction_atoms,self.mode)
-        projected_tensor = np.dot(modes,np.dot(tensor,modes.transpose()))
+        projected_tensor = np.dot(modes.transpose(),np.dot(tensor,modes))
+        #projected_tensor = np.dot(modes,tensor)
 
         return projected_tensor
 
@@ -288,9 +289,7 @@ class venus_analysis():
         # Not trapped
         # 
 
-        traj_no = self.traj_no
         friction_atoms = self.friction_atoms
-        nsteps = self.get_printed_nsteps()
         atoms_list = self.build_atoms_list()
 
         friction_masses = self.get_friction_masses(atoms_list[0])
@@ -344,8 +343,8 @@ class venus_analysis():
                     continue
                 ax[1].plot(time_axis/ps,projected_tensors[:,i,j]*ps,label=self.labels[i]+self.labels[j],**line_settings)
         
-        ax[0].set_ylim(0,2.5)
-        ax[1].set_ylim(0,1.)
+        #ax[0].set_ylim(0,2.5)
+        #ax[1].set_ylim(0,1.)
         plot_settings(ax[0])
         ax[0].tick_params(labelbottom=False)    
         plot_settings(ax[1])
@@ -428,7 +427,7 @@ class venus_analysis():
     def velocity_transform(self,atoms,velocities):
         friction_atoms = self.friction_atoms
         modes = get_modes(atoms,friction_atoms,self.mode)
-        transformed_velocities = np.dot(modes,velocities.flatten())
+        transformed_velocities = np.dot(modes.transpose(),velocities.flatten())
 
         return transformed_velocities
 
@@ -827,4 +826,4 @@ def calc_modes2(atoms,friction_atoms):
         #mode 6 is the z translation
         modes[:,5] = [0.,0.,1.,0.,0.,1.]
 
-        return modes.transpose()
+        return modes
