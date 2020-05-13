@@ -43,7 +43,7 @@ for i,filename in enumerate(filenames):
 ax.set_yticks(np.arange(0, 2.5, 0.5))
 ax.set_ylim(bottom=0)
 ax.set_xlim(0,np.max(bins))
-ax.legend()
+ax.legend(loc=1)
 ax.set_xlabel("Excitation energy / eV",fontsize=15)
 ax.set_ylabel(r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $',fontsize=15)
 

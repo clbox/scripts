@@ -92,3 +92,14 @@ ax_marg_x.set_ylabel('Frequency')
 
 fig.savefig(outfile+'_hist.pdf',transparent=True,bbox_inches='tight')
 fig.savefig(outfile+'_hist.png',dpi=300,transparent=True,bbox_inches='tight')
+
+
+
+
+fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
+ax.hist(y1,bins_y,color='red',alpha=0.5,label='Oxygen')
+ax.hist(y2,bins_y,color='blue',alpha=0.5,label='Nitrogen')
+ax.legend(loc=1)
+ax.set_xlim(0.5,4.5)
+fig.savefig(outfile+'_histz.pdf',transparent=True,bbox_inches='tight')
+fig.savefig(outfile+'_histz.png',dpi=300,transparent=True,bbox_inches='tight')
