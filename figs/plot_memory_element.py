@@ -40,6 +40,14 @@ for i,filename in enumerate(filenames):
             arrowprops=dict(arrowstyle="->",color=colours[i]))
 
 
+#plot gaussian
+x0 = 0
+s = 0.6
+x = bins
+gauss = (np.exp(-0.5*((x-x0)*(x-x0))/(s*s))/(s*np.sqrt(np.pi)))*(1/np.sqrt(2))
+ax.plot(bins,gauss,'--',color='black')
+
+
 ax.set_yticks(np.arange(0, 2.5, 0.5))
 ax.set_ylim(bottom=0)
 ax.set_xlim(0,np.max(bins))
