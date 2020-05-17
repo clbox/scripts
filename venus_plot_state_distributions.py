@@ -89,6 +89,10 @@ for i,filename in enumerate(filenames):
         mode_args['label'] = mode_args['label'] + r'$\times 4$'
         mode_args['linestyle'] = '-.'
 
+    if 'd4' in os.path.abspath(filename):
+        mode_args['label'] = mode_args['label'] + r' r $\times 4$'
+        mode_args['linestyle'] = '-.'
+
     if '_1' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + ' SB'
         mode_args['linestyle'] = '--'
