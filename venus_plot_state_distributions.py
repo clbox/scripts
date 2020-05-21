@@ -77,6 +77,16 @@ for i,filename in enumerate(filenames):
     if 'ldfa' in os.path.abspath(filename):
         mode_args = ldfa_args.copy()
 
+    if '_1' in os.path.abspath(filename):
+        mode_args['label'] = mode_args['label'] + ' SB'
+        mode_args['linestyle'] = '--'
+        mode_args['marker'] = 'x'
+
+    if '_2' in os.path.abspath(filename):
+        mode_args['label'] = mode_args['label'] + ' DB'
+        mode_args['linestyle'] = ':'
+        mode_args['marker'] = 'v'
+
     if 'i2' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'$\times 2$'
         mode_args['linestyle'] = '--'
@@ -89,20 +99,14 @@ for i,filename in enumerate(filenames):
         mode_args['label'] = mode_args['label'] + r'$\times 4$'
         mode_args['linestyle'] = '-.'
 
-    if 'd4' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r' r $\times 4$'
-        mode_args['linestyle'] = '-.'
-
-    if '_1' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + ' SB'
-        mode_args['linestyle'] = '--'
-    if '_2' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + ' DB'
-        mode_args['linestyle'] = ':'
     if '_multi' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + ' MB'
         mode_args['linestyle'] = '-.'
 
+    if 'd4' in os.path.abspath(filename):
+        mode_args['label'] = mode_args['label'] + r' r $\times 4$'
+        mode_args['linestyle'] = ':'
+        mode_args['marker'] = '.'
     
 
     a = ax.plot(dis[:,0],dis[:,1],**mode_args)
