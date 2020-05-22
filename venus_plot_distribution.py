@@ -174,17 +174,24 @@ if mode == 2:
     fig.savefig('summary.pdf',transparent=True,bbox_inches='tight')
 
 
-
+print(nstates)
 fig2, ax2 = plt.subplots(nstates-1, 1, sharex='all',sharey='all')
 for i,filename in enumerate(filenames):
     if 'trapped' in filename:
         continue
     else:
-        ax2[i].set_xlim(0.5,3.5)
-        # ax2[i].set_ylim(0,ymax)
-        ax2[i].boxplot(e_diff_list[i],showfliers=False)
-        ax2[i].text(s=filename,x=0.5,y=0.8)
-        ax2[i].text(s='ntrajs = '+str(ntraj_list[i]),x=0.5,y=0.5)
+        if nstates-1 == 1:
+            ax2.set_xlim(0.5,3.5)
+            # ax2[i].set_ylim(0,ymax)
+            ax2.boxplot(e_diff_list[i],showfliers=False)
+            ax2.text(s=filename,x=0.5,y=0.8)
+            ax2.text(s='ntrajs = '+str(ntraj_list[i]),x=0.5,y=0.5)
+        else:
+            ax2[i].set_xlim(0.5,3.5)
+            # ax2[i].set_ylim(0,ymax)
+            ax2[i].boxplot(e_diff_list[i],showfliers=False)
+            ax2[i].text(s=filename,x=0.5,y=0.8)
+            ax2[i].text(s='ntrajs = '+str(ntraj_list[i]),x=0.5,y=0.5)
 
 #Write energy distributions to file
 e_diff_list = np.array(e_diff_list)
