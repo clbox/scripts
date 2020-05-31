@@ -21,7 +21,7 @@ labels = [r'C$_x$',r'C$_y$',r'C$_z$',r'O$_x$',r'O$_y$',r'O$_z$']
 
 colours = ['red','blue','purple','green','yellow','black','cyan','orange']
 
-bins,re_memory_kernel,im_memory_kernel,dimension,max_e = mea.read_memory_kernel(paths[0])
+bins,re_memory_kernel,im_memory_kernel,dimension,max_e = mea.read_memory_kernel(paths[0],treat_complex=False)
 fig, ax = plt.subplots(dimension,1,sharex='all',sharey='all')
 
 xmax = 1
@@ -29,10 +29,10 @@ ymax = np.max(re_memory_kernel[:,bins<xmax])
 ymin = np.min(re_memory_kernel[:,bins<xmax])
 
 for p,path in enumerate(paths):
-    bins,re_memory_kernel,im_memory_kernel,dimension,max_e = mea.read_memory_kernel(path)
+    bins,re_memory_kernel,im_memory_kernel,dimension,max_e = mea.read_memory_kernel(path,treat_complex=False)
     for i in range(dimension):
         ax[i].plot(bins,re_memory_kernel[i,:],'-',color=colours[p],label='Re '+path.split('/')[0])
-        ax[i].plot(bins,im_memory_kernel[i,:],'--',color=colours[p],label='Im '+path.split('/')[0])
+        #ax[i].plot(bins,im_memory_kernel[i,:],'--',color=colours[p],label='Im '+path.split('/')[0])
         ax[i].text(s=labels[i],x=0.1,y=0.55*ymax,fontsize=15)
 
 
