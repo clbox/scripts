@@ -28,7 +28,15 @@ fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
 
 for i,filename in enumerate(filenames):
     bins,re,im,dimension,max_e = read_memory_kernel(filename,treat_complex=False)
-    ax.plot(bins,re[element,:],linestyle='-',label=str(labels[i]),color=colours[i])
+
+    c=0
+    for ii in range(dimension):
+        for jj in range(ii):
+            if ii==jj==element:
+                break
+            c+=1
+
+    ax.plot(bins,re[c,:],linestyle='-',label=str(labels[i]),color=colours[i])
 
 
     output_dir = os.path.dirname(filename)
