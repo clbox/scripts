@@ -32,7 +32,10 @@ for i,filename in enumerate(filenames):
 
 
     output_dir = os.path.dirname(filename)
-    tensor_file = (glob.glob(output_dir+'/*projected_tensor.out'))[0]
+    if 'project' in filename:
+        tensor_file = (glob.glob(output_dir+'/*projected_tensor.out'))[0]
+    else:
+        tensor_file = (glob.glob(output_dir+'/*friction_tensor.out'))[0]
     tensor = np.loadtxt(tensor_file)
     element_val = tensor[element,element]
 
@@ -48,7 +51,7 @@ gauss = (np.exp(-0.5*((x-x0)*(x-x0))/(s*s))/(s*np.sqrt(np.pi)))*(1/np.sqrt(2))
 ax.plot(bins,gauss,'--',color='black')
 
 
-ax.set_yticks(np.arange(0, 2.5, 0.5))
+#ax.set_yticks(np.arange(0, 2.5, 0.5))
 ax.set_ylim(bottom=0)
 ax.set_xlim(0,np.max(bins))
 ax.legend(loc=1)
