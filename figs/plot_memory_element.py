@@ -13,6 +13,9 @@ from mem_energy_loss import read_memory_kernel
 
 
 labels = ['Reactant','Adsorption','Transition state','Dissociated']
+
+labels = list(range(0,15))
+
 colours = ['blue','red','green','orange']
 #labels = np.arange(0,15,1)
 
