@@ -35,11 +35,12 @@ v15_exp = [0.115,0.1339,0.194,0.192,0.125,0.082,0.04,0.05,0.019,0.015,0.036]
 x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'EANN-EFT', 'alpha' : 1.0}
-bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD PES', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'EANN-LDFA', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'TDPT', 'alpha' : 1.0}
+bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
 
 annotate_args = {'fontsize' : 12, 'xy' : (0.7,0.8), 'xycoords' : 'figure fraction'}
+
 
 
 plotted_exp = False
@@ -47,7 +48,7 @@ fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')#, constrained_layout=Tru
 for i,filename in enumerate(filenames):
 
     if 'v02' in os.path.abspath(filename) and not plotted_exp:
-        ax.bar(x2_exp,v2_exp,color='gold',edgecolor='black',label=r'$\nu_i=2$ exp')
+        ax.bar(x2_exp,v2_exp,color='gold',edgecolor='black',label='Exp')#label=r'$\nu_i=2$ exp')
         ax.set_xlim(0,4)
         ax.set_ylim(0,1.0)
         plotted_exp = True
@@ -159,8 +160,14 @@ fig.set_figwidth(3.25)
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
 ax.set_xlabel(r"Final vibrational state ($\nu_f$)",fontsize=12,fontname=font)
 #ax.set_ylabel('Population',fontsize=12,fontname=font)#,color='white')
-ax.set_ylabel('Population',fontsize=12,fontname=font,color='white')
+ax.set_ylabel('Population',fontsize=12,fontname=font,color='black')
 plt.gcf().subplots_adjust(left=0.2,bottom=0.2)
 #fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('state2state.pdf',transparent=True)#,bbox_inches='tight')
+
+
+fig.legend(ncol=4,fontsize=12,fancybox=True,framealpha=0)
+fig.set_figwidth(7)
+ax.remove()
+fig.savefig('legend.pdf',transparent=True)#,bbox_inches='tight')

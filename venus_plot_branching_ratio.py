@@ -23,10 +23,10 @@ filenames = sys.argv[2:]
 
 
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'EANN-EFT', 'alpha' : 1.0}
-bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD PES', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'EANN-LDFA', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EANN-LDFA', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'TDPT', 'alpha' : 1.0}
+bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 
@@ -58,8 +58,8 @@ exp_v3tov3 = np.array([[0.09586, 0.7539],
 [0.9347, 0.3186],
 [1.045, 0.3725]])
 
-ef_results = np.loadtxt('ef_'+str(final_state)+'.txt',delimiter=',')
-iesh_results = np.loadtxt('iesh_'+str(final_state)+'.txt',delimiter=',')
+
+
 
 plot_v02 = False
 plot_v03 = False
@@ -69,11 +69,16 @@ fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')#, constrained_layout=Tru
 
 if 'v03' in os.getcwd():
     plot_v03 = True
+    ef_results = np.loadtxt('ef_'+str(final_state)+'.txt',delimiter=',')
+    iesh_results = np.loadtxt('iesh_'+str(final_state)+'.txt',delimiter=',')
+    a = ax.plot(ef_results[:,0],ef_results[:,1],**ef_args)
+
+    a = ax.plot(iesh_results[:,0],iesh_results[:,1],**iesh_args)
+
+if 'v02' in os.getcwd():
+    plot_v02 = True
 
 
-a = ax.plot(ef_results[:,0],ef_results[:,1],**ef_args)
-
-a = ax.plot(iesh_results[:,0],iesh_results[:,1],**iesh_args)
 
 if plot_v03:
     if final_state ==3:
@@ -85,11 +90,25 @@ if plot_v03:
     if final_state == 1:
         a = ax.plot(exp_v3tov1[:,0],exp_v3tov1[:,1],**exp_args)
 
+
+if plot_v02:
+    exp_v2tov1 = np.loadtxt('exp.txt',delimiter=',')
+    a = ax.plot(exp_v2tov1[:,0],exp_v2tov1[:,1],**exp_args)
+
+
 for i,filename in enumerate(filenames):
     ei = float(os.path.basename(os.path.dirname(filename)))
     dis = np.loadtxt(filename)
     mode_args = None
-    index = np.argwhere(dis[:,0]==final_state)
+
+
+
+
+    try:
+        index = np.argwhere(dis[:,0]==final_state)
+    except:
+        dis = dis.reshape(1,2)
+        index = [[0]]
 
     try:
         index = index[0]
@@ -105,10 +124,33 @@ for i,filename in enumerate(filenames):
     if 'ldfa' in os.path.abspath(filename):
         mode = 'ldfa'
 
+    if plot_v02:
+        if ei not in[97,300,420,425,640]:
+            continue
+            
+        if mode == 'bomd' and ei <= 100:
+            continue
 
     results['mode'].append(mode)
     results['incidence_es'].append(ei/1000)
-    
+
+    if 'v02' in os.path.abspath(filename):
+        plot_v02 = True
+        try:
+            one_index = np.argwhere(dis[:,0]==1)
+            ratio_one = (dis[one_index,1])[0]
+        except:
+            ratio_one = 0
+
+        try:
+            two_index = np.argwhere(dis[:,0]==2)
+            ratio_two = (dis[two_index,1])[0]
+        except:
+            ratio_two = 0
+        
+        ratio = ratio_one / (ratio_two)
+        
+
     if 'v03' in os.path.abspath(filename):
         plot_v03 = True
         try:
@@ -130,9 +172,6 @@ for i,filename in enumerate(filenames):
             ratio_three = 0
 
         ratio = ratio_final / (ratio_one+ratio_two+ratio_three)
-
-    if 'v02' in os.path.abspath(filename):
-        plot_v02 = True
 
     results['ratios'].append(ratio)
 
@@ -186,8 +225,6 @@ if plot_v03:
         ax.yaxis.set_major_locator(MultipleLocator(0.1))
         ax.yaxis.set_minor_locator(MultipleLocator(0.05))
         ax.set_xlabel(r"Incidence energy / eV",fontsize=12,fontname=font)
-        
-
 
 ###########################
 font='Arial'
@@ -207,14 +244,41 @@ ax.xaxis.set_major_locator(MultipleLocator(0.2))
 
 
 #ax.set_ylim(0,1)
-ax.set_xlim(0,1.2)
+if plot_v03:
+    ax.set_xlim(0,1.2)
+    ax.set_ylabel('Ratio',fontsize=12,fontname=font,color='white')
+if plot_v02:
+    ax.annotate(r'$\nu_i = 2 \rightarrow \nu_f = $' + str(final_state), **annotate_args)
+    ax.set_xlim(0,0.7)
+    ax.set_yscale('log')  
+    labels= (1e-3,1e-2,1e-1,1)
+    ax.set_yticks(labels)
+    ax.set_yticklabels(labels)
+    ax.set_ylim(1e-3,1.9)
+
+    locmin = matplotlib.ticker.LogLocator(base=10.0,subs=(0.2,0.4,0.6,0.8),numticks=12)
+    ax.yaxis.set_minor_locator(locmin)
+    ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+    ax.set_ylabel('log($R_1\ /\ R_2$)',fontsize=12,fontname=font,color='black')
+    ax.set_xlabel(r"Incidence energy / eV",fontsize=12,fontname=font)
+
+
+
 fig.set_figheight(2.0)
 fig.set_figwidth(3.25)
+
+
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
 
 #ax.set_ylabel('Population',fontsize=12,fontname=font)#,color='white')
-ax.set_ylabel('Ratio',fontsize=12,fontname=font,color='white')
-plt.gcf().subplots_adjust(left=0.2,bottom=0.3)
+
+plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
+
 #fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('branching.pdf',transparent=True)#,bbox_inches='tight')
+
+# fig.legend(ncol=4,fontsize=12,fancybox=True,framealpha=0)
+# fig.set_figwidth(7)
+# ax.remove()
+# fig.savefig('legend.pdf',transparent=True)#,bbox_inches='tight')
