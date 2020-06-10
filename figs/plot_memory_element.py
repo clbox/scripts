@@ -63,7 +63,7 @@ ax.plot(bins,gauss,'--',color='black')
 
 
 #ax.set_yticks(np.arange(0, 2.5, 0.5))
-ax.set_ylim(bottom=0)
+ax.set_ylim(bottom=0,top=10)
 ax.set_xlim(0,np.max(bins))
 ax.legend(loc=1)
 ax.set_xlabel("Excitation energy / eV",fontsize=15)

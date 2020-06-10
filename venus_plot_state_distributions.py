@@ -120,7 +120,12 @@ for i,filename in enumerate(filenames):
     
     if 'i4' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'$\times 4$'
-        mode_args['linestyle'] = '-.'
+        mode_args['linestyle'] = '-'
+
+        if 'tdpt' in os.path.abspath(filename):
+            mode_args['color'] = 'mediumorchid'
+        if 'ldfa' in os.path.abspath(filename):
+            mode_args['color'] = 'dodgerblue'
 
     if '_multi' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + ' MB'
@@ -129,7 +134,7 @@ for i,filename in enumerate(filenames):
     if 'd4' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r' r $\times 4$'
         mode_args['linestyle'] = ':'
-        mode_args['marker'] = '.'
+        mode_args['marker'] = '^'
 
     
 
