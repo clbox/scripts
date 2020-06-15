@@ -92,8 +92,13 @@ if plot_v03:
 
 
 if plot_v02:
-    exp_v2tov1 = np.loadtxt('exp.txt',delimiter=',')
-    a = ax.plot(exp_v2tov1[:,0],exp_v2tov1[:,1],**exp_args)
+    if final_state ==1:
+        exp_v2tov1 = np.loadtxt('exp.txt',delimiter=',')
+        a = ax.plot(exp_v2tov1[:,0],exp_v2tov1[:,1],**exp_args)
+    if final_state == 3:
+        exp_v2tov3 = np.loadtxt('exp_v2tov3_300.txt',delimiter=',')
+        a = ax.plot(exp_v2tov3[0],exp_v2tov3[1],**exp_args)
+
 
 
 for i,filename in enumerate(filenames):
@@ -125,11 +130,19 @@ for i,filename in enumerate(filenames):
         mode = 'ldfa'
 
     if plot_v02:
-        if ei not in[97,300,420,425,640]:
-            continue
+        if final_state == 1:
+            if ei not in[97,300,420,425,640]:
+                continue
             
-        if mode == 'bomd' and ei <= 100:
-            continue
+            if mode == 'bomd' and ei <= 100:
+               continue
+
+        if final_state == 3:
+            if ei not in[97,300,420,425,640]:
+                continue
+            if mode == 'bomd' and ei <= 600:
+               continue
+
 
     results['mode'].append(mode)
     results['incidence_es'].append(ei/1000)
@@ -147,8 +160,17 @@ for i,filename in enumerate(filenames):
             ratio_two = (dis[two_index,1])[0]
         except:
             ratio_two = 0
+
+        try:
+            three_index = np.argwhere(dis[:,0]==3)
+            ratio_three = (dis[three_index,1])[0]
+        except:
+            ratio_three = 0
         
-        ratio = ratio_one / (ratio_two)
+        if final_state == 1:
+            ratio = ratio_one / (ratio_two)
+        elif final_state == 3:
+             ratio = ratio_three / (ratio_two)
         
 
     if 'v03' in os.path.abspath(filename):
@@ -180,7 +202,7 @@ all_eis = np.array(results['incidence_es'])
 all_ratios = np.array(results['ratios'])
 
 
-for mode in ['bomd','ldfa','tdpt']:
+for mode in ['ldfa','bomd','tdpt']:
     print(mode)
     idx = np.argwhere(all_modes==mode)
 
@@ -251,15 +273,16 @@ if plot_v02:
     ax.annotate(r'$\nu_i = 2 \rightarrow \nu_f = $' + str(final_state), **annotate_args)
     ax.set_xlim(0,0.7)
     ax.set_yscale('log')  
-    labels= (1e-3,1e-2,1e-1,1)
+    labels= (1e-4,1e-3,1e-2,1e-1,1)
     ax.set_yticks(labels)
     ax.set_yticklabels(labels)
-    ax.set_ylim(1e-3,1.9)
+    #ax.set_ylim(1e-3,1.9)
+    ax.set_ylim(1e-4,1)
 
     locmin = matplotlib.ticker.LogLocator(base=10.0,subs=(0.2,0.4,0.6,0.8),numticks=12)
     ax.yaxis.set_minor_locator(locmin)
     ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax.set_ylabel('log($R_1\ /\ R_2$)',fontsize=12,fontname=font,color='black')
+    ax.set_ylabel('log($R_{}\ /\ R_2$)'.format(final_state),fontsize=12,fontname=font,color='black')
     ax.set_xlabel(r"Incidence energy / eV",fontsize=12,fontname=font)
 
 

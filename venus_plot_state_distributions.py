@@ -81,8 +81,8 @@ for i,filename in enumerate(filenames):
             ax.annotate(r'$\nu_i = 15$', **annotate_args)
 
     if 'v16' in os.path.abspath(filename) and not plotted_exp:
-        ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
-        ax.bar(x16_exp,v16_exp,color='gold',edgecolor='black',label=r'$\nu_i=16$ exp')
+        #ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
+        ax.bar(x16_exp,v16_exp,color='gold',edgecolor='black',label='Exp')#,label=r'$\nu_i=16$ exp')
         ax.set_ylim(0,0.3)
         ax.set_xlim(0,20)
         plotted_exp = True
@@ -133,7 +133,7 @@ for i,filename in enumerate(filenames):
         mode_args['linestyle'] = '-.'
 
     if 'd4' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r' r $\times 4$'
+        mode_args['label'] = mode_args['label'] + r' (r) $\times 4$'
         mode_args['linestyle'] = ':'
         mode_args['marker'] = '^'
 
@@ -167,7 +167,7 @@ plt.gcf().subplots_adjust(left=0.2,bottom=0.2)
 fig.savefig('state2state.pdf',transparent=True)#,bbox_inches='tight')
 
 
-fig.legend(ncol=4,fontsize=12,fancybox=True,framealpha=0)
+fig.legend(ncol=2,fontsize=12,fancybox=True,framealpha=0)
 fig.set_figwidth(7)
 ax.remove()
 fig.savefig('legend.pdf',transparent=True)#,bbox_inches='tight')
