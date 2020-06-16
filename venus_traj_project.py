@@ -20,11 +20,12 @@ line_settings = {
 
 class venus_analysis():
 
-    def __init__(self,traj_no,friction_atoms,mode=2):
+    def __init__(self,traj_no,friction_atoms,mode=2,save=False):
         self.traj_no = traj_no
         self.friction_atoms = friction_atoms
         self.get_n_atoms()
         self.mode = mode
+        self.save = save
 
         self.instance_number = self.get_instance_number()
 
@@ -351,6 +352,10 @@ class venus_analysis():
         ax[1].legend(fontsize=10,fancybox=True,framealpha=0,loc=0,ncol=3)
         fig.text(-0.01, 0.5, r'Relaxation  rate / $\mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=20)
 
+        if self.save == True:
+            np.savetxt('timeaxis_'+str(self.traj_no)+'.txt',time_axis/ps)
+            write_array('projected_tensors'+str(self.traj_no)+'.txt',projected_tensors*ps)
+
         return
 
     def get_mass_weighted_projected_tensors(self):
@@ -485,6 +490,10 @@ class venus_analysis():
         ax.set_ylim(-0.04,0.04)
         fig.text(0.47, 0.7, r'Velocity / $\AA{}$ fs$^{-1}$', va='center', rotation='vertical',fontsize=20)
 
+        if self.save==True:
+            np.savetxt('timeaxis_'+str(self.traj_no)+'.txt',time_axis/ps)
+            write_array('projected_velocities_'+str(self.traj_no)+'.txt',friction_projected_velocities*fs)
+
         return
 
     def plot_traj_summary(self):
@@ -533,7 +542,8 @@ class venus_analysis():
         plt.close()
 
         self.write_summary_to_file()
-
+        if not self.trapped:
+            print(self.traj_text)
         return
 
     def plot_bomd_traj_summary(self):
@@ -827,3 +837,30 @@ def calc_modes2(atoms,friction_atoms):
         modes[:,5] = [0.,0.,1.,0.,0.,1.]
 
         return modes
+
+def write_array(filename,array):
+    with open(filename, 'w') as outfile:
+        outfile.write('# {0}\n'.format(array.shape))
+        for data_slice in array:
+            np.savetxt(outfile, data_slice, fmt='%-7.2f')
+            outfile.write('# New slice\n')
+
+def read_array(filename):
+    a = np.loadtxt(filename)
+
+    with open(filename) as f:
+        first_line = f.readline()
+    
+    first_line = first_line.replace('(','')
+    first_line = first_line.replace(')','')
+    first_line = first_line.replace(',','')
+    first_line = first_line.replace('#','')
+    
+    shape = np.zeros_like(first_line.split(),dtype=int)
+
+    for i,d in enumerate(first_line.split()):
+        shape[i] = d
+
+    a = a.reshape(shape)
+
+    return a

@@ -36,11 +36,15 @@ def build_tensor(raw_tensor):
     return friction_tensor,ndim
 
 for output_dir in sys.argv[1:]:
-    output = (glob.glob(output_dir+'/*aims.out'))[0]
-    print('-------------'+output+'----------------')
-    geo_file =  (glob.glob(output_dir+'/*geometry.in'))[0]
-    print('-------------'+geo_file+'----------------')
-
+    try:
+        output = (glob.glob(output_dir+'/*aims.out'))[0]
+        print('-------------'+output+'----------------')
+        geo_file =  (glob.glob(output_dir+'/*geometry.in'))[0]
+        print('-------------'+geo_file+'----------------')
+    except:
+        print(output_dir)
+        print('Could not glob an aims out and geometry.in - skipping')
+        continue
 
     friction_atoms = []
     raw_tensor = []
@@ -77,7 +81,9 @@ for output_dir in sys.argv[1:]:
                 raw_vecs.append(line)
 
 
-
+    if not raw_tensor:
+        print('No tensor read! - skipping')
+        continue
     friction_tensor,ndim = build_tensor(raw_tensor)
     friction_vecs, ndim = build_tensor(raw_vecs)
 
