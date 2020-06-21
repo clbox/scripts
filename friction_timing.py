@@ -23,7 +23,6 @@ for filename in filenames:
         for line in f:
 
             if 'Time     ' in line and read_time:
-                print(line)
                 time = line.split()[-1]
                 date = (line.replace(',','').split()[-4])
 
