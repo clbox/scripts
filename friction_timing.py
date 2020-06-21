@@ -47,6 +47,9 @@ for filename in filenames:
         finite_difference_time = times[-2]-times[1]
         tensor_time = times[-1] - times[-2]
 
+        key_times = np.array((ground_state_time,finite_difference_time,tensor_time))
+
+        np.savetxt(output_dir+'/timing.txt',times)
         print(output_dir)
         print(ground_state_time)
         print(finite_difference_time)
