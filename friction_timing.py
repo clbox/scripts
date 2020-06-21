@@ -49,7 +49,7 @@ for filename in filenames:
 
         key_times = np.array((ground_state_time.total_seconds(),finite_difference_time.total_seconds(),tensor_time.total_seconds()))
 
-        np.savetxt(output_dir+'/timing.txt',times)
+        np.savetxt(output_dir+'/timing.txt',key_times)
         print(output_dir)
         print(ground_state_time)
         print(finite_difference_time)
