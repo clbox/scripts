@@ -13,6 +13,7 @@ from matplotlib.lines import Line2D
 filenames = sys.argv[1:]
 linewidth = 3
 markersize = 12
+annotate=True
 
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')#, constrained_layout=True)
 
@@ -37,10 +38,14 @@ for i,filename in enumerate(filenames):
 
 
     timings = timings.reshape(n_calcs,3)
+    scfs = scfs.reshape(n_calcs,3)
 
     for ii in range(len(colours)):
         (args[0])['mfc'] = colours[ii]
 
+        if annotate and ii<2:
+            for c in range(n_calcs):
+                ax.annotate(str(int(scfs[c,ii])),xy=(x_scale[c], timings[c,ii])
         ax.plot(x_scale,timings[:,ii],color=colours[ii],**args[i])
 
     #(args[0])['mfc'] = 'black'
@@ -65,7 +70,7 @@ ax.set_ylabel('Total time / s',fontsize=fontsize,fontname=font,color='black')
 ax.set_xlabel(r"$N_k$",fontsize=fontsize,fontname=font)
 
 fig.set_figheight(5.0)
-fig.set_figwidth(5.0)
+fig.set_figwidth(7.0)
 
 plt.gcf().subplots_adjust(left=0.3,bottom=0.2)
 
