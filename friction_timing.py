@@ -18,9 +18,22 @@ for filename in filenames:
     times = []
     dates = []
     read_time = True
+    finite_scfs = []
+    fd_scf = 0
     with open(filename,'r') as f:
 
         for line in f:
+
+            if 'Begin self-consistency iteration' in line:
+                ground_state_scf = int(line.split()[-1])
+
+            if '  SCF   ' in line:
+
+                fd_scf = int(line.split()[1])
+
+            if 'Convergence:' in line and fd_scf > 0:
+                finite_scfs.append(fd_scf)
+
 
             if 'Time     ' in line and read_time:
                 time = line.split()[-1]
@@ -42,6 +55,10 @@ for filename in filenames:
         #penultimate is friction construct time
         #Last is end calc time
 
+        print(ground_state_scf)
+        print(finite_scfs)
+
+        scfs = np.array([ground_state_scf,sum(finite_scfs),-1])
 
         ground_state_time = times[1]-times[0]
         finite_difference_time = times[-2]-times[1]
@@ -49,7 +66,7 @@ for filename in filenames:
 
         key_times = np.array((ground_state_time.total_seconds(),finite_difference_time.total_seconds(),tensor_time.total_seconds()))
 
-        np.savetxt(output_dir+'/timing.txt',key_times)
+        np.savetxt(output_dir+'/timing.txt',np.c_[key_times,scfs])
         print(output_dir)
         print(ground_state_time)
         print(finite_difference_time)
