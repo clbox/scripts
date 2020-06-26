@@ -13,7 +13,8 @@ from matplotlib.lines import Line2D
 filenames = sys.argv[1:]
 linewidth = 3
 markersize = 12
-annotate=True
+#annotate=True
+annotate=False
 
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')#, constrained_layout=True)
 
