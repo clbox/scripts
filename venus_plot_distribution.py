@@ -47,6 +47,10 @@ ntraj_double_list = []
 ntraj_multi_list = []
 state_list=[]
 e_diff_list=[]
+angles = []
+single_bounce_angles = []
+double_bounce_angles = []
+multi_bounce_angles = []
 for i,filename in enumerate(filenames):
 
     print(filename)
@@ -154,16 +158,21 @@ for i,filename in enumerate(filenames):
         for t in range(len(n_bounces)):
             if n_bounces[t] == 1:
                 ntraj_single += 1
+                single_bounce_angles.append(misc[t,1])
 
             elif n_bounces[t] == 2:
                 ntraj_double += 1
+                double_bounce_angles.append(misc[t,1])
             
             elif n_bounces[t] > 2:
                 ntraj_multi += 1
+                multi_bounce_angles.append(misc[t,1])
 
         ntraj_single_list.append(ntraj_single)
         ntraj_double_list.append(ntraj_double)
         ntraj_multi_list.append(ntraj_multi)
+
+        angles.append(misc[:,1])
 
 if mode == 2:
     plt.xticks([1,2,3,4,5,6,7],['d',r'$\theta$',r'$\phi$','X','Y','Z','Total'])
@@ -269,3 +278,48 @@ fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('probability.pdf',transparent=True,bbox_inches='tight')
 
 
+
+
+#PLOT SCATTERING ANGULAR DISTRIBUTION
+import seaborn as sns
+#fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='polar')
+
+bins = np.linspace(0, 100, 100)
+theta = np.linspace(0,2*np.pi)
+rho = np.cos(theta)
+# for i,state in enumerate(angles):
+#         if i > 3:
+#             continue
+#         sns.distplot(state[:], bins = bins, hist = False, kde = True,
+#                  kde_kws = {'shade': False, 'linewidth': 1}, 
+#                   label = str(i))
+
+labels = ['Single', 'Double', 'Multi', 'Total']
+colours = ['maroon','navy','darkgreen','black']
+all_angles = np.array((single_bounce_angles,double_bounce_angles,multi_bounce_angles))
+print(np.shape(all_angles))
+list_of_angles = [single_bounce_angles,double_bounce_angles,multi_bounce_angles]
+for i in range(3):
+    sns.distplot(list_of_angles[i], bins = bins, hist = False, kde = True,
+                  kde_kws = {'shade': False, 'linewidth': 1}, 
+                   label = labels[i])
+# plt.polar(bins/np.pi,np.cos(bins*np.pi/180)/100,'black')
+# plt.polar(bins/np.pi,(np.cos(bins*np.pi/180)**14)/100,'black',linestyle=':')
+
+#plt.polar(theta,rho)
+ax.plot(theta,rho,linestyle='--',color='black')
+font='Arial'
+for tick in ax.get_xticklabels():
+    tick.set_fontname(font)
+for tick in ax.get_yticklabels():
+    tick.set_fontname(font)
+ax.legend()
+ax.set_xlim(0,np.pi/2)
+ax.set_ylim(0,1)
+fig.set_figheight(2.7)
+fig.set_figwidth(3.25)
+# ax.set_xlabel("Scattering angle",fontsize=12,fontname=font)
+# ax.set_ylabel(r'Density',fontsize=12,fontname=font)
+fig.savefig('angles.pdf',transparent=True,bbox_inches='tight')
