@@ -46,7 +46,7 @@ for i,filename in enumerate(filenames):
 
         if annotate and ii<2:
             for c in range(n_calcs):
-                ax.annotate(str(int(scfs[c,ii])),xy=(x_scale[c], timings[c,ii])
+                ax.annotate(str(int(scfs[c,ii])),xy=(x_scale[c], timings[c,ii]))
         ax.plot(x_scale,timings[:,ii],color=colours[ii],**args[i])
 
     #(args[0])['mfc'] = 'black'

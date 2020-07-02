@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 import sys
+import scipy
 x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
@@ -286,9 +287,19 @@ import seaborn as sns
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='polar')
 
-bins = np.linspace(0, 100, 100)
-theta = np.linspace(0,2*np.pi)
+
+
+def cosine_fit(x,m,x0):
+
+    y = np.cos(x-x0)**m
+
+    return y
+
+
+bins = np.linspace(0, 100, 20)
+theta = np.linspace(0,2*np.pi,200)
 rho = np.cos(theta)
+x = (bins[1:] + bins[:-1]) / 2
 # for i,state in enumerate(angles):
 #         if i > 3:
 #             continue
@@ -297,27 +308,51 @@ rho = np.cos(theta)
 #                   label = str(i))
 
 labels = ['Single', 'Double', 'Multi', 'Total']
-colours = ['maroon','navy','darkgreen','black']
-all_angles = np.array((single_bounce_angles,double_bounce_angles,multi_bounce_angles))
+colours = ['dodgerblue','maroon','navy','black']
+all_angles = single_bounce_angles+double_bounce_angles+multi_bounce_angles
 print(np.shape(all_angles))
-list_of_angles = [single_bounce_angles,double_bounce_angles,multi_bounce_angles]
-for i in range(3):
-    sns.distplot(list_of_angles[i], bins = bins, hist = False, kde = True,
-                  kde_kws = {'shade': False, 'linewidth': 1}, 
-                   label = labels[i])
+list_of_angles = [single_bounce_angles,double_bounce_angles,multi_bounce_angles,all_angles]
+
+
+for i in range(4):
+    #digitized = np.digitize(list_of_angles[i], bins)
+    if i in [1,2]:
+        continue
+    hist, bin_edges = np.histogram(list_of_angles[i],bins=bins)
+    hist = hist / np.max(hist)
+
+
+
+    ax.plot(x*np.pi/180,hist, '.',color=colours[i],label = labels[i])
+
+    popt, pcov = scipy.optimize.curve_fit(cosine_fit,x*np.pi/180,hist)
+    print(popt)
+    ax.plot(theta,cosine_fit(theta,*popt),'-',color=colours[i])
+
+    #ax.text(0,1.3+(0.05*i),r'$m = {:.2f}, \theta_0 = {:.2f}$'.format(popt[0],popt[1]*180/np.pi),color = colours[i])
+    #sns.distplot(list_of_angles[i], bins = bins, hist = False, kde = True,
+    #              kde_kws = {'shade': False, 'linewidth': 1}, 
+    #               label = labels[i])
 # plt.polar(bins/np.pi,np.cos(bins*np.pi/180)/100,'black')
 # plt.polar(bins/np.pi,(np.cos(bins*np.pi/180)**14)/100,'black',linestyle=':')
 
 #plt.polar(theta,rho)
-ax.plot(theta,rho,linestyle='--',color='black')
+ax.plot(theta,rho,linestyle='--',color='black',label=r'$cos(\theta)$')
 font='Arial'
 for tick in ax.get_xticklabels():
     tick.set_fontname(font)
 for tick in ax.get_yticklabels():
     tick.set_fontname(font)
-ax.legend()
-ax.set_xlim(0,np.pi/2)
+
+ax.tick_params(axis='both', which='major', labelsize=12)
+ax.set_theta_zero_location("N")
+ax.set_xticks(np.arange(-90, 100, 10)*np.pi/180)
+ax.set_yticks([])
+#ax.xaxis.set_minor_locator(MultipleLocator(5*np.pi/180))
+ax.legend(loc=8,ncol=3,fontsize=12,fancybox=True,framealpha=0)
+ax.set_xlim(-np.pi/2,np.pi/2)
 ax.set_ylim(0,1)
+plt.gcf().subplots_adjust(bottom=-1)
 fig.set_figheight(2.7)
 fig.set_figwidth(3.25)
 # ax.set_xlabel("Scattering angle",fontsize=12,fontname=font)
