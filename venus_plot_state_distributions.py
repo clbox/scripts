@@ -35,7 +35,7 @@ v15_exp = [0.115,0.1339,0.194,0.192,0.125,0.082,0.04,0.05,0.019,0.015,0.036]
 x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'TDPT', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
 
@@ -136,6 +136,10 @@ for i,filename in enumerate(filenames):
         mode_args['label'] = mode_args['label'] + r' (r) $\times 4$'
         mode_args['linestyle'] = ':'
         mode_args['marker'] = '^'
+    
+    if 'pes' in os.path.abspath(filename):
+        mode_args['color'] = 'grey'
+
 
     
 

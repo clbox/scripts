@@ -96,9 +96,13 @@ if plot_v02:
         exp_v2tov1 = np.loadtxt('exp.txt',delimiter=',')
         a = ax.plot(exp_v2tov1[:,0],exp_v2tov1[:,1],**exp_args)
     if final_state == 3:
-        exp_v2tov3 = np.loadtxt('exp_v2tov3_300.txt',delimiter=',')
-        a = ax.plot(exp_v2tov3[0],exp_v2tov3[1],**exp_args)
-
+        if '300K' in filenames[0]:
+            exp_v2tov3 = np.loadtxt('exp_v2tov3_300.txt',delimiter=',')
+            a = ax.plot(exp_v2tov3[0],exp_v2tov3[1],**exp_args)
+        elif '480K' in filenames[0]:
+            print('480K')
+            exp_v2tov3 = np.loadtxt('exp_v2tov3_480.txt',delimiter=',')
+            a = ax.plot(exp_v2tov3[:,0],exp_v2tov3[:,1],**exp_args)
 
 
 for i,filename in enumerate(filenames):

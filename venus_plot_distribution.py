@@ -10,6 +10,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 import sys
 import scipy
+from scipy import optimize
 x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
@@ -227,16 +228,18 @@ ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
 np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1.3f')
 
 
-np.savetxt('states_1.txt', np.c_[state_list,ntraj_single_list/np.sum(ntraj_single_list)],fmt='%1.3f')
-np.savetxt('states_2.txt', np.c_[state_list,ntraj_double_list/np.sum(ntraj_double_list)],fmt='%1.3f')
-np.savetxt('states_multi.txt', np.c_[state_list,ntraj_multi_list/np.sum(ntraj_multi_list)],fmt='%1.3f')
+if not mode==-1:
+    np.savetxt('states_1.txt', np.c_[state_list,ntraj_single_list/np.sum(ntraj_single_list)],fmt='%1.3f')
+    np.savetxt('states_2.txt', np.c_[state_list,ntraj_double_list/np.sum(ntraj_double_list)],fmt='%1.3f')
+    np.savetxt('states_multi.txt', np.c_[state_list,ntraj_multi_list/np.sum(ntraj_multi_list)],fmt='%1.3f')
 
-bounce_prob = []
-bounce_prob.append(np.sum(ntraj_single_list))
-bounce_prob.append(np.sum(ntraj_double_list))
-bounce_prob.append(np.sum(ntraj_multi_list))
 
-np.savetxt('absolute_bounce.txt',bounce_prob)
+    bounce_prob = []
+    bounce_prob.append(np.sum(ntraj_single_list))
+    bounce_prob.append(np.sum(ntraj_double_list))
+    bounce_prob.append(np.sum(ntraj_multi_list))
+
+    np.savetxt('absolute_bounce.txt',bounce_prob)
 
 state_list.append(-1)
 ntraj_list = np.append(ntraj_list,n_trapped)
@@ -281,8 +284,8 @@ fig.savefig('probability.pdf',transparent=True,bbox_inches='tight')
 
 
 
+
 #PLOT SCATTERING ANGULAR DISTRIBUTION
-import seaborn as sns
 #fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='polar')
@@ -324,7 +327,7 @@ for i in range(4):
 
 
     ax.plot(x*np.pi/180,hist, '.',color=colours[i],label = labels[i])
-
+    
     popt, pcov = scipy.optimize.curve_fit(cosine_fit,x*np.pi/180,hist)
     print(popt)
     ax.plot(theta,cosine_fit(theta,*popt),'-',color=colours[i])
