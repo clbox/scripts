@@ -23,7 +23,7 @@ class venus_analysis():
     def __init__(self,traj_no,friction_atoms,mode=2,save=False):
         self.traj_no = traj_no
         self.friction_atoms = friction_atoms
-        self.get_n_atoms()
+
         self.mode = mode
         self.save = save
 
@@ -497,6 +497,7 @@ class venus_analysis():
         return
 
     def plot_traj_summary(self):
+        self.get_n_atoms()
         traj_no = self.traj_no
         print('Trajectory number = {}'.format(traj_no))
         instance_number = self.instance_number
@@ -577,6 +578,40 @@ class venus_analysis():
 
         self.write_bomd_summary_to_file()
 
+        return
+
+    def process_traj_summary(self):
+        #if PRINT NCOOR = 0 so no fort.2XXX or fort.1XXX is present
+        #Only process scattering 
+
+        traj_no = self.traj_no
+        print('Trajectory number = {}'.format(traj_no))
+        instance_number = self.instance_number
+
+    
+        self.trapped = False
+        try:
+            lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
+        except:
+            print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
+            self.trapped = True
+        
+        Ni,Ji = self.parse_input_parameters()
+
+        if not self.trapped:
+            Nf = self.bin_quantum(Nf)
+            Jf = self.bin_quantum(Jf)
+            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
+                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+            self.summary_dir = 'Ni={}_Ji={}/Nf={}/'.format(str(Ni),str(Ji),str(Nf))
+        else:
+
+            self.summary_dir= 'Ni={}_Ji={}/trapped/'.format(str(Ni),str(Ji))
+
+        Path(self.summary_dir).mkdir(parents=True, exist_ok=True)
+        self.write_short_summary_to_file()
+        if not self.trapped:
+            print(self.traj_text)
         return
     #TODO: Write general information to file in order to calculate average stuff for each vib elastic, 1 quanta etc
     #TODO: Only produce images for scattering angle <20 though they said didnt see a difference in the state to state scattering
@@ -674,6 +709,24 @@ class venus_analysis():
 
         return
 
+    def write_short_summary_to_file(self):
+        traj_no = self.traj_no
+        ndim = len(self.friction_atoms)*3
+        fraction_energy_loss =[]
+        self.get_initial_energies()
+
+
+
+        with open(self.summary_dir+"summary.dat","a+") as f:
+            f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
+            if not self.trapped:
+                f.write(self.traj_text.replace('$','')+'\n')
+                f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
+                f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
+            f.write('------------------------------------------------------\n')
+            
+
+        return
 
 def plot_settings(ax):
     # Hide the right and top spines
