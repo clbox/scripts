@@ -20,7 +20,7 @@ matplotlib.rcParams['font.family'] = "sans-serif"
 
 filenames = sys.argv[1:]
 
-
+colours = ['indigo','maroon','darkgreen','navy']
 
 tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'ODF', 'alpha' : 1.0}
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF (r) $\times 4$', 'alpha' : 1.0}
@@ -30,23 +30,14 @@ exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 
-annotate_args = {'fontsize' : 12, 'xy' : (0.55,0.8), 'xycoords' : 'figure fraction'}
+annotate_args = {'fontsize' : 12, 'xy' : (0.32,0.8), 'xycoords' : 'figure fraction'}
 
 results = {'mode' : [], 'incidence_es' : [], 'ratios' : []}
 
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')#, constrained_layout=True)
 
-
-exp = np.loadtxt('v02_trapped.txt')
-def func(x, a, b, c):
-    return a * np.exp(-b * x) + c
-
-popt, pcov = curve_fit(func, exp[:,0], exp[:,1])
-
-
 #reads in multiple absolute_pop.txt 
 for i,filename in enumerate(filenames):
-    ei = float(os.path.basename(os.path.dirname(filename)))
     dis = np.loadtxt(filename)
     mode_args = None
 
@@ -58,66 +49,60 @@ for i,filename in enumerate(filenames):
     ratio = dis[-1,1]/np.sum(dis[:,1])
     
     if 'tdpt' in os.path.abspath(filename):
-        mode = 'tdpt'
+        mode = 'ODF'
 
     if 'bomd' in os.path.abspath(filename):
-        mode = 'bomd'
+        mode = 'BOMD'
 
     if 'ldfa' in os.path.abspath(filename):
-        mode = 'ldfa'
+        mode = 'LDFA'
 
     if 'd4' in os.path.abspath(filename):
-        mode = 'd4'
-
-
-    if ei not in[97,300,420,425,640]:
-        continue
-        
-    # if plot_v02:
-    #     if ei not in[97,300,420,425,640]:
-    #         continue
-            
-    #     if mode == 'bomd' and ei <= 100:
-    #         continue
+        mode = r'ODF (r) $\times 4$'
+    
+    if 'i4' in os.path.abspath(filename):
+        mode += r' $\times 4$'
 
     results['mode'].append(mode)
-    results['incidence_es'].append(ei/1000)
     results['ratios'].append(ratio)
 
 all_modes = np.array(results['mode'])
-all_eis = np.array(results['incidence_es'])
 all_ratios = np.array(results['ratios'])
 
-for mode in ['bomd','ldfa','tdpt','d4']:
-    print(mode)
-    idx = np.argwhere(all_modes==mode)
+# for mode in ['bomd','ldfa','tdpt','d4']:
+#     print(mode)
+#     idx = np.argwhere(all_modes==mode)
 
-    idx = idx[:,0]
+#     idx = idx[:,0]
 
 
     
-    incidence_es = all_eis[idx]
-    print(incidence_es)
-    ratios = all_ratios[idx]
+#     incidence_es = all_eis[idx]
+#     print(incidence_es)
+#     ratios = all_ratios[idx]
 
-    order = np.argsort(incidence_es)
-    incidence_es = incidence_es[order]
-    ratios = ratios[order]
+#     order = np.argsort(incidence_es)
+#     incidence_es = incidence_es[order]
+#     ratios = ratios[order]
 
-    if mode=='tdpt':
-        mode_args = tdpt_args.copy()
-    if mode=='bomd':
-        mode_args = bomd_args.copy()
-    if mode=='ldfa':
-        mode_args = ldfa_args.copy()
-    if mode=='d4':
-        mode_args = d4_args.copy()
+#     if mode=='tdpt':
+#         mode_args = tdpt_args.copy()
+#     if mode=='bomd':
+#         mode_args = bomd_args.copy()
+#     if mode=='ldfa':
+#         mode_args = ldfa_args.copy()
+#     if mode=='d4':
+#         mode_args = d4_args.copy()
 
-    mode_args['linestyle'] = 'None'
-    a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
-
-
-ax.plot(np.linspace(0,1,100), func(np.linspace(0,1,100), *popt), '--', color='black',label='Exp')
+#     mode_args['linestyle'] = 'None'
+#     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
+print(all_modes)
+for i,v in enumerate(['02','03','11','16']):
+    if v in filenames[0]:
+        bar_colour = colours[i]
+        vib_state = int(v)
+ax.bar(all_modes,all_ratios,color=bar_colour,edgecolor='black')
+ax.annotate(r'$\nu_i = {}$'.format(vib_state), **annotate_args)
 
 ###########################
 font='Arial'
@@ -128,17 +113,18 @@ for tick in ax.get_yticklabels():
 
 
 ax.tick_params(axis='both', which='major', labelsize=12)
-ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+ax.set_xticklabels(labels=all_modes,rotation='vertical')
+# ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 #ax.legend(fontsize=15)
 
-ax.xaxis.set_minor_locator(MultipleLocator(0.05))
-ax.xaxis.set_major_locator(MultipleLocator(0.2))
+# ax.xaxis.set_minor_locator(MultipleLocator(0.05))
+# ax.xaxis.set_major_locator(MultipleLocator(0.2))
 
-ax.yaxis.set_minor_locator(MultipleLocator(0.1))
-ax.yaxis.set_major_locator(MultipleLocator(0.2))
+ax.yaxis.set_minor_locator(MultipleLocator(0.05))
+# ax.yaxis.set_major_locator(MultipleLocator(0.2))
 
-ax.set_xlim(0,0.8)
-ax.set_ylim(0,1)
+#ax.set_xlim(0,0.8)
+ax.set_ylim(0,0.5)
 
 
 #ax.set_yscale('log')  
@@ -148,10 +134,10 @@ fig.set_figwidth(3.25)
 
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
 
-ax.set_xlabel('Incidence energy / eV',fontsize=12,fontname=font)#,color='white')
+ax.set_xlabel('Model',fontsize=12,fontname=font)#,color='white')
 ax.set_ylabel('Population',fontsize=12,fontname=font)#,color='white')
 
-plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
+plt.gcf().subplots_adjust(left=0.3,bottom=0.5)
 
 #fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
