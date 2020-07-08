@@ -91,6 +91,10 @@ for output_dir in sys.argv[1:]:
     atoms = read(geo_file)
     modes = vjp.get_modes(atoms,friction_atoms,mode=2)
 
+    print('---------Modes---------')
+    print(modes)
+    print('--------------------')
+
     E,V  = np.linalg.eig(friction_tensor[:,:])
     E = sorted(E)
     diag = np.diag(E)
