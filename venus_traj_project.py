@@ -109,7 +109,7 @@ class venus_analysis():
         time steps"""
         traj_no = self.traj_no
         filename = 'fort.{}'.format(1000+traj_no)
-
+        self.get_n_atoms()
         with open(filename) as f:
             n_atoms = self.n_atoms
             lines_per_traj = n_atoms + 2

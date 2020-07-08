@@ -34,7 +34,7 @@ fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
 x0 = 0
 s = 0.6
 x = np.linspace(0,6,5000)
-c1 = 'maroon'
+c1 = 'purple'
 gauss = (np.exp(-0.5*((x-x0)*(x-x0))/(s*s))/(s*np.sqrt(np.pi)))*(1/np.sqrt(2))
 ax.plot(x,gauss,'-',color=c1,linewidth=2)
 ax.fill_between(x, gauss,np.zeros_like(gauss),color=c1,alpha=0.4)
@@ -63,11 +63,11 @@ for i,filename in enumerate(filenames):
     element_val = tensor[element,element]
 
     ax.annotate('', xy=(0,element_val), xycoords='data', xytext=(-0.4, element_val), 
-            arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color='navy'),
+            arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color='purple'),
             #arrowprops=dict(width=0.5),
             color='red')
 
-    c2 = 'black'
+    c2 = 'darkgoldenrod'
     ax.axhline(y=(element_val*4), xmin=0, xmax=100,color=c2,linestyle='--',linewidth=1.5)
 
     ax.annotate('', xy=(2,4*element_val), xycoords='data', xytext=(2,element_val), 
@@ -104,7 +104,7 @@ if len(filenames) > 1:
     ax.legend(loc=1,ncol=1,fontsize=12,fancybox=True,framealpha=0)
 ax.set_xlabel("Excitation energy / eV",fontsize=12,fontname=font)
 ax.set_ylabel(r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $',fontsize=12,fontname=font)
-fig.set_figheight(2.7)
+fig.set_figheight(2.0)
 fig.set_figwidth(3.25)
 plt.gcf().subplots_adjust(left=0.2,bottom=0.2)
 #fig.text(0.01, 0.5, r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=15)
