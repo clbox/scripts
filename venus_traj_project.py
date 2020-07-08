@@ -888,6 +888,8 @@ def calc_modes2(atoms,friction_atoms):
         #mode 6 is the z translation
         modes[:,5] = [0.,0.,1.,0.,0.,1.]
 
+        print('Converting any NaNs to 0')
+        modes = np.nan_to_num(modes,nan=0)
         return modes
 
 def write_array(filename,array):
