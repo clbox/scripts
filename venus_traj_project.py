@@ -855,6 +855,8 @@ def calc_modes2(atoms,friction_atoms):
         r = np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)
         r1 = np.sqrt((x1-x2)**2 + (y1-y2)**2)
 
+        print('r' + str(r))
+        print('r1' + str(r1))
         #mode 1 - r
         modes[0,0] = ((x1-x2)*mr2)/r
         modes[1,0] = ((y1-y2)*mr2)/r
