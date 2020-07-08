@@ -80,7 +80,8 @@ for output_dir in sys.argv[1:]:
             elif pvecs:
                 raw_vecs.append(line)
 
-
+    print('Friction atoms:')
+    print(friction_atoms)
     if not raw_tensor:
         print('No tensor read! - skipping')
         continue
