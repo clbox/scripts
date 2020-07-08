@@ -67,8 +67,8 @@ for i,filename in enumerate(filenames):
             #arrowprops=dict(width=0.5),
             color='red')
 
-    c2 = 'saddlebrown'
-    ax.axhline(y=(element_val*4), xmin=0, xmax=100,color=c2,linestyle=':',linewidth=1.5)
+    c2 = 'black'
+    ax.axhline(y=(element_val*4), xmin=0, xmax=100,color=c2,linestyle='--',linewidth=1.5)
 
     ax.annotate('', xy=(2,4*element_val), xycoords='data', xytext=(2,element_val), 
             arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color=c2),

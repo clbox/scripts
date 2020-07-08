@@ -13,7 +13,7 @@ boundaries = True
 i = int(sys.argv[1])
 j = int(sys.argv[2])
 labels = ['Reactant','Adsorption','Transition state','Dissociation']
-colours = ['red','dodgerblue','black','magenta','orange','orange']
+colours = ['red','navy','black','orange','orange','orange']
 markers = ['.','s','o','^']
 filenames = sys.argv[3:]
 kgrid = False
@@ -68,8 +68,8 @@ for c,filename in enumerate(filenames):
         if broad:
             x_data = np.array(x_data)
             final = data[x_data==0.6,i,j]
-        ax.axhline(y=(final+0.1*final), xmin=0, xmax=100,color=colours[c],linestyle=':')
-        ax.axhline(y=(final-0.1*final), xmin=0, xmax=100,color=colours[c],linestyle=':')
+        ax.axhline(y=(final+0.1*final), xmin=0, xmax=100,color=colours[c],linestyle='--')
+        ax.axhline(y=(final-0.1*final), xmin=0, xmax=100,color=colours[c],linestyle='--')
     ax.plot(x_data,data[:,i,j],label=labels[c],color=colours[c],marker=markers[c])
 
 
@@ -110,7 +110,7 @@ plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
 
 ax.set_ylabel(r'$\Lambda_{ij}$ / ps$^{-1}$',fontsize=12,fontname=font)#,color='white')
 if kgrid:
-    ax.set_xlabel('$\mathrm{N_k}$',fontsize=12,fontname=font)#,color='white')
+    ax.set_xlabel('$N_k$',fontsize=12,fontname=font)#,color='white')
     fig.savefig('kgrid.pdf',transparent=True)#,bbox_inches='tight')
 elif broad:
     ax.set_xlabel(r'$\sigma$ / eV',fontsize=12,fontname=font)#,color='white')
