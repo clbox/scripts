@@ -94,7 +94,7 @@ else:
      ax.set_xlim(0,1)
      ax.xaxis.set_minor_locator(MultipleLocator(0.05))
      ax.xaxis.set_major_locator(MultipleLocator(0.2))
-     ax.set_ylim(bottom=0.0,top=0.6)
+     ax.set_ylim(bottom=0.3,top=0.6)
 
 # ax.xaxis.set_minor_locator(MultipleLocator(0.05))
 # ax.xaxis.set_major_locator(MultipleLocator(0.1))

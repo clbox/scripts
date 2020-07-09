@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 from matplotlib.gridspec import GridSpec
-
+from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 
 filenames = sys.argv[1:]
@@ -23,6 +23,7 @@ O_heights = []
 N_heights = []
 Coms_z = []
 bond_lengths = []
+thetas = []
 
 O_mass = 14.0067
 N_mass = 15.999
@@ -58,11 +59,15 @@ for i,filename in enumerate(filenames):
     centre_mass_z = (y1*O_mass + y2*N_mass) / (O_mass + N_mass)
     Coms_z.append(centre_mass_z)
 
+
     dx = impact_geos[:,0,0]-impact_geos[:,1,0]
     dy = impact_geos[:,0,1]-impact_geos[:,1,1]
     dz = impact_geos[:,0,2]-impact_geos[:,1,2]
     r = np.sqrt(dx**2 + dy**2 + dz**2)
     bond_lengths.append(r)
+
+    angle = np.arcsin((y1-y2)/r) * 180/np.pi
+    thetas.append(angle)
 
     bins_x = np.linspace(-5, 7, 100)
     bins_y = np.linspace(0, 7, 100)
@@ -136,7 +141,7 @@ plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
 fig.savefig('heights_correlation.pdf',transparent=True,bbox_inches='tight')
 
 
-fig.legend(ncol=3,fontsize=12,fancybox=True,framealpha=0)
+fig.legend(ncol=4,fontsize=12,fancybox=True,framealpha=0)
 fig.set_figwidth(5.25)
 fig.set_figheight(1.7)
 ax.remove()
@@ -168,7 +173,7 @@ ax_marg_x.set_xlim(0.5,4)
 ax_joint.set_xlim(0.5,4)
 ax_joint.set_ylim(0.5,4)
 
-ax_joint.legend(loc=0,ncol=1,fontsize=12,fancybox=True,framealpha=0)
+#ax_joint.legend(loc=0,ncol=1,fontsize=12,fancybox=True,framealpha=0)
 
 # Turn off tick labels on marginals
 plt.setp(ax_marg_x.get_xticklabels(), visible=False)
@@ -182,8 +187,8 @@ ax_joint.set_ylabel(r"Nitrogen impact height / $\mathrm{\AA{}}$")
 ax_marg_y.set_xlabel('Frequency')
 ax_marg_x.set_ylabel('Frequency')
 
-fig.set_figwidth(5.25)
-fig.set_figheight(4.7)
+fig.set_figwidth(3.25)
+fig.set_figheight(3.0)
 
 fig.savefig('height_corr_hist.pdf',transparent=True,bbox_inches='tight')
 
@@ -212,8 +217,8 @@ for i in range(len(filenames)):
 
 #Limits
 ax_marg_y.set_ylim(1.5,3)
-ax_marg_x.set_xlim(1,1.5)
-ax_joint.set_xlim(1,1.5)
+ax_marg_x.set_xlim(1.1,1.45)
+ax_joint.set_xlim(1.1,1.45)
 ax_joint.set_ylim(1.5,3)
 
 #ax_joint.legend(loc=0,ncol=1,fontsize=12,fancybox=True,framealpha=0)
@@ -234,3 +239,79 @@ fig.set_figwidth(3.25)
 fig.set_figheight(3.0)
 
 fig.savefig('com_r_corr_hist.pdf',transparent=True,bbox_inches='tight')
+
+
+
+
+#COM theta ########
+fig = plt.figure()
+
+gs = GridSpec(4,4)
+
+ax_joint = fig.add_subplot(gs[1:4,0:3])
+ax_marg_x = fig.add_subplot(gs[0,0:3])
+ax_marg_y = fig.add_subplot(gs[1:4,3])
+
+bins_x = np.linspace(-110, 110, 100)
+bins_y = np.linspace(1.5, 3, 100)
+for i in range(len(filenames)):
+    if i == 3:
+        zorder=6
+    else:
+        zorder=4-i
+    ax_joint.scatter(thetas[i],Coms_z[i],zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
+    ax_marg_x.hist(thetas[i],bins_x,color=colours[i],alpha=0.5,zorder=zorder)
+    ax_marg_y.hist(Coms_z[i],bins_y,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder)
+
+#Limits
+ax_marg_y.set_ylim(1.5,3)
+ax_marg_x.set_xlim(-90,90)
+ax_joint.set_xlim(-90,90)
+ax_joint.set_ylim(1.5,3)
+
+
+
+ax_joint.xaxis.set_minor_locator(MultipleLocator(5))
+ax_joint.xaxis.set_major_locator(MultipleLocator(30))
+ax_joint.yaxis.set_major_locator(MultipleLocator(0.25))
+ax_joint.yaxis.set_minor_locator(MultipleLocator(0.05))
+
+ax_marg_x.xaxis.set_minor_locator(MultipleLocator(5))
+ax_marg_x.xaxis.set_major_locator(MultipleLocator(30))
+ax_marg_y.yaxis.set_major_locator(MultipleLocator(0.25))
+ax_marg_y.yaxis.set_minor_locator(MultipleLocator(0.05))
+
+
+#ax_joint.legend(loc=0,ncol=1,fontsize=12,fancybox=True,framealpha=0)
+
+# Turn off tick labels on marginals
+plt.setp(ax_marg_x.get_xticklabels(), visible=False)
+plt.setp(ax_marg_y.get_yticklabels(), visible=False)
+
+# Set labels on joint
+ax_joint.set_xlabel(r"$\theta$")
+ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")
+
+# Set labels on marginals
+ax_marg_y.set_xlabel('Frequency')
+ax_marg_x.set_ylabel('Frequency')
+
+fig.set_figwidth(3.25)
+fig.set_figheight(3.0)
+
+fig.savefig('com_theta_corr_hist.pdf',transparent=True,bbox_inches='tight')
+
+
+
+
+# #3d
+# from matplotlib import pyplot
+# matplotlib.use( 'tkagg' )
+
+# fig = pyplot.figure()
+# ax = Axes3D(fig)
+
+# for i in range(len(filenames)):
+#     ax.scatter(thetas[i],bond_lengths[i],Coms_z[i],marker=markers[i],color=colours[i],label=labels[i])
+# ax.legend()
+# pyplot.show()

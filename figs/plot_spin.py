@@ -15,33 +15,42 @@ energy_files = ['./none/'+str(dir1)+'/energies.out','./collinear/'+str(dir1)+'/e
 
 linestyles = ['-',':']
 markers = ['o','^']
-labels = ['none','collinear - fixed 1']
+labels = [r'$E(S = 0)$',r'$E(S = 1)$']
 
 dirs = ['none','collinear']
 
 height_dirs = np.arange(0,15,1)
 
 fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
+
+with open(energy_files[1]) as f:
+    lines = f.readlines()
+    y = [float(line.split()[1]) for line in lines]
+    y = np.array(y)
+    lowest_energy = y[-1]
+
 for i,filename in enumerate(energy_files):
     with open(filename) as f:
         lines = f.readlines()
         x = [float(line.split()[0]) for line in lines]
         y = [float(line.split()[1]) for line in lines]
         x = np.array(x)
-        #x = x +2
+        if sys.argv[1]=='ndown' or sys.argv[1]=='odown':
+            x = x +2
         x = (x*0.5) + 0.1
         print(x)
         y = np.array(y)
-        normalise_y = y[-1]
+        #normalise_y = y[-1]
         #y = y-normalise_y
-        ax.plot(x,y,linestyle=linestyles[i],label=labels[i],color='gray',linewidth=2,marker='s')
+        y = y - lowest_energy
+        ax.plot(x,y,linestyle=linestyles[i],label=labels[i],color='gray',linewidth=2,marker=markers[i])
 
 #PBE
 ax.set_ylim( -19287077.6, -19287076.7)
 #BEEF
 #ax.set_ylim(-19298636,-19298630)
 #NORMALISE
-#ax.set_ylim(-0.3,0.3)
+ax.set_ylim(-0.1,1.3)
 
 
 ax2 = ax.twinx()
@@ -88,7 +97,7 @@ ax.set_xlim(0,7.1)
 ax.legend(loc=2)
 ax2.legend(loc=0,ncol=2)
 fig.text(0.5, 0.01, r'COM height above the surface / $\AA$', ha='center',fontsize=15)
-fig.text(0.01, 0.5, "Energy / eV", va='center',rotation='vertical',fontsize=15)
+fig.text(0.01, 0.5, r"$\mathrm{E_{ads}}$ / eV", va='center',rotation='vertical',fontsize=15)
 fig.text(1.0, 0.5, r"$\Lambda_{ij}$ / ps$^{-1}$", va='center',rotation='vertical',fontsize=15)
 fig.set_figwidth(6)
 fig.set_figheight(5)
