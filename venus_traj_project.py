@@ -1,6 +1,7 @@
 import numpy as np
 from ase.units import _hbar, J, s, fs, kcal, mol
 from ase import Atoms
+from ase.io import write
 import glob
 from pathlib import Path
 import matplotlib
@@ -321,6 +322,39 @@ class venus_analysis():
         
         self.bounces = n_bounces
 
+    def get_initial_orientation(self):
+        #Return number of bounces
+        #Criteria:
+        # Not trapped
+        # 
+
+        friction_atoms = self.friction_atoms
+        atoms_list = self.build_atoms_list()
+
+        friction_masses = self.get_friction_masses(atoms_list[0])
+
+
+        atoms = atom_list[0]
+        
+        symbols = atoms.get_chemical_symbols()[friction_atoms]
+
+        p1 = atoms.get_positions()[friction_atoms[0]]
+        p2 = atoms.get_positions()[friction_atoms[1]]
+        r = atoms.get_distance(friction_atoms[0],friction_atoms[1])
+
+        for i in range(len(friction_atoms)):
+            p = atoms.get_positions()[friction_atoms[i]]
+            if i == 0:
+                lowest_z = p[2]
+                lowest_atom = friction_atoms[i]
+            else:
+                if p[2] < lowest_z:
+                    lowest_z = p[2]
+                    lowest_atom = friction_atoms[i]
+        
+        self.first_atom = atoms.get_chemical_symbols()[lowest_atom]
+        self.initial_theta = np.arcsin((p1[2]-p2[2])/r) * 180/np.pi
+
     def get_friction_masses(self,atoms):
         friction_atoms = self.friction_atoms
         friction_masses = atoms.get_masses()[friction_atoms]
@@ -518,7 +552,8 @@ class venus_analysis():
             self.trapped = True
         
         Ni,Ji = self.parse_input_parameters()
-
+        self.get_initial_orientation()
+        
         if not self.trapped:
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
@@ -560,6 +595,7 @@ class venus_analysis():
             self.trapped = True
         
         Ni,Ji = self.parse_input_parameters()
+        self.get_initial_orientation()
 
         if not self.trapped:
             self.get_n_bounces()
@@ -645,6 +681,7 @@ class venus_analysis():
             fraction_energy_loss.append(total_work_dim[j]*100/total_work)
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
+            f.write(self.first_atom+' first, theta = '+str(self.initial_theta))
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
@@ -673,6 +710,7 @@ class venus_analysis():
 
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
+            f.write(self.first_atom+' first, theta = '+str(self.initial_theta))
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
@@ -727,6 +765,17 @@ class venus_analysis():
             
 
         return
+
+    def output_traj(self):
+        
+        atoms = self.build_atoms_list()
+
+        #for atom in atoms:
+
+        write('trajectory_{}.traj'.format(self.traj_no),atoms)
+
+        return
+
 
 def plot_settings(ax):
     # Hide the right and top spines

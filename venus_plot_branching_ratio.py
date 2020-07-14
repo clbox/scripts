@@ -22,15 +22,17 @@ final_state = int(sys.argv[1])
 filenames = sys.argv[2:]
 
 
+fontsize=10
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'TDPT', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'ODF', 'alpha' : 1.0}
+pes_args = {'marker' : 'v', 'linestyle' : 'None','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 
-annotate_args = {'fontsize' : 12, 'xy' : (0.55,0.8), 'xycoords' : 'figure fraction'}
+annotate_args = {'fontsize' : fontsize, 'xy' : (0.55,0.8), 'xycoords' : 'figure fraction'}
 
 results = {'mode' : [], 'incidence_es' : [], 'ratios' : []}
 exp_v3tov1 = np.array([[0.1131, 0.1048],
@@ -133,6 +135,9 @@ for i,filename in enumerate(filenames):
     if 'ldfa' in os.path.abspath(filename):
         mode = 'ldfa'
 
+    if 'pes' in os.path.abspath(filename):
+        mode = 'pes'
+
     if plot_v02:
         if final_state == 1:
             if ei not in[97,300,420,425,640]:
@@ -206,7 +211,7 @@ all_eis = np.array(results['incidence_es'])
 all_ratios = np.array(results['ratios'])
 
 
-for mode in ['ldfa','bomd','tdpt']:
+for mode in ['ldfa','bomd','tdpt','pes']:
     print(mode)
     idx = np.argwhere(all_modes==mode)
 
@@ -228,6 +233,8 @@ for mode in ['ldfa','bomd','tdpt']:
         mode_args = bomd_args.copy()
     if mode=='ldfa':
         mode_args = ldfa_args.copy()
+    if mode=='pes':
+        mode_args = pes_args.copy()
 
     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
 
@@ -250,7 +257,7 @@ if plot_v03:
         ax.set_ylim(0,0.5)
         ax.yaxis.set_major_locator(MultipleLocator(0.1))
         ax.yaxis.set_minor_locator(MultipleLocator(0.05))
-        ax.set_xlabel(r"Incidence energy / eV",fontsize=12,fontname=font)
+        ax.set_xlabel(r"Incidence energy / eV",fontsize=fontsize,fontname=font)
 
 ###########################
 font='Arial'
@@ -260,7 +267,7 @@ for tick in ax.get_yticklabels():
     tick.set_fontname(font)
 
 
-ax.tick_params(axis='both', which='major', labelsize=12)
+ax.tick_params(axis='both', which='major', labelsize=fontsize)
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 #ax.legend(fontsize=15)
 
@@ -272,7 +279,7 @@ ax.xaxis.set_major_locator(MultipleLocator(0.2))
 #ax.set_ylim(0,1)
 if plot_v03:
     ax.set_xlim(0,1.2)
-    ax.set_ylabel('Ratio',fontsize=12,fontname=font,color='white')
+    ax.set_ylabel('Ratio',fontsize=fontsize,fontname=font,color='white')
 if plot_v02:
     ax.annotate(r'$\nu_i = 2 \rightarrow \nu_f = $' + str(final_state), **annotate_args)
     ax.set_xlim(0,0.7)
@@ -281,18 +288,18 @@ if plot_v02:
     ax.set_yticks(labels)
     ax.set_yticklabels(labels)
     #ax.set_ylim(1e-3,1.9)
-    ax.set_ylim(1e-4,1)
+    ax.set_ylim(1e-3,1.9)
 
     locmin = matplotlib.ticker.LogLocator(base=10.0,subs=(0.2,0.4,0.6,0.8),numticks=12)
     ax.yaxis.set_minor_locator(locmin)
     ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax.set_ylabel('log($R_{}\ /\ R_2$)'.format(final_state),fontsize=12,fontname=font,color='black')
-    ax.set_xlabel(r"Incidence energy / eV",fontsize=12,fontname=font)
+    ax.set_ylabel('log($R_{}\ /\ R_2$)'.format(final_state),fontsize=fontsize,fontname=font,color='black')
+    ax.set_xlabel(r"Incidence energy / eV",fontsize=fontsize,fontname=font)
 
 
 
-fig.set_figheight(2.0)
-fig.set_figwidth(3.25)
+fig.set_figheight(1.6)
+fig.set_figwidth(1.6)
 
 
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)

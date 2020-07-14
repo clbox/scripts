@@ -29,7 +29,7 @@ ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
-
+pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
 annotate_args = {'fontsize' : 12, 'xy' : (0.55,0.8), 'xycoords' : 'figure fraction'}
 
 results = {'mode' : [], 'incidence_es' : [], 'ratios' : []}
@@ -69,6 +69,9 @@ for i,filename in enumerate(filenames):
     if 'd4' in os.path.abspath(filename):
         mode = 'd4'
 
+    if 'pes' in os.path.abspath(filename):
+        mode = 'pes'
+
 
     if ei not in[97,300,420,425,640]:
         continue
@@ -88,7 +91,7 @@ all_modes = np.array(results['mode'])
 all_eis = np.array(results['incidence_es'])
 all_ratios = np.array(results['ratios'])
 
-for mode in ['bomd','ldfa','tdpt','d4']:
+for mode in ['bomd','ldfa','tdpt','d4','pes']:
     print(mode)
     idx = np.argwhere(all_modes==mode)
 
@@ -112,6 +115,8 @@ for mode in ['bomd','ldfa','tdpt','d4']:
         mode_args = ldfa_args.copy()
     if mode=='d4':
         mode_args = d4_args.copy()
+    if mode=='pes':
+        mode_args = pes_args.copy()
 
     mode_args['linestyle'] = 'None'
     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
