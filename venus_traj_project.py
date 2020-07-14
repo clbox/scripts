@@ -330,14 +330,8 @@ class venus_analysis():
 
         friction_atoms = self.friction_atoms
         atoms_list = self.build_atoms_list()
-
-        friction_masses = self.get_friction_masses(atoms_list[0])
-
-
         atoms = atoms_list[0]
         
-        symbols = atoms.get_chemical_symbols()[friction_atoms]
-
         p1 = atoms.get_positions()[friction_atoms[0]]
         p2 = atoms.get_positions()[friction_atoms[1]]
         r = atoms.get_distance(friction_atoms[0],friction_atoms[1])
