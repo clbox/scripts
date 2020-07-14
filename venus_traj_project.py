@@ -334,7 +334,7 @@ class venus_analysis():
         friction_masses = self.get_friction_masses(atoms_list[0])
 
 
-        atoms = atom_list[0]
+        atoms = atoms_list[0]
         
         symbols = atoms.get_chemical_symbols()[friction_atoms]
 
@@ -553,7 +553,7 @@ class venus_analysis():
         
         Ni,Ji = self.parse_input_parameters()
         self.get_initial_orientation()
-        
+
         if not self.trapped:
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
