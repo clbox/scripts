@@ -675,7 +675,7 @@ class venus_analysis():
             fraction_energy_loss.append(total_work_dim[j]*100/total_work)
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
-            f.write(self.first_atom+' first, theta = '+str(self.initial_theta))
+            f.write(self.first_atom+' first, theta = '+str(self.initial_theta)+'\n')
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
@@ -704,7 +704,7 @@ class venus_analysis():
 
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
-            f.write(self.first_atom+' first, theta = '+str(self.initial_theta))
+            f.write(self.first_atom+' first, theta = '+str(self.initial_theta)+'\n')
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
