@@ -53,6 +53,14 @@ angles = []
 single_bounce_angles = []
 double_bounce_angles = []
 multi_bounce_angles = []
+
+orientated=False
+n_first_list = []
+o_first_list = []
+
+
+n_first_single_list = []
+o_first_single_list = []
 for i,filename in enumerate(filenames):
 
     print(filename)
@@ -61,12 +69,17 @@ for i,filename in enumerate(filenames):
     ntraj_single = 0
     ntraj_double = 0
     ntraj_multi = 0
+    ntraj_nfirst = 0
+    ntraj_ofirst = 0
+    ntraj_nfirst_single = 0
+    ntraj_ofirst_single = 0
     misc = []
     abs_e = []
     per_e = []
     init_e = []
     final_e = []
     n_bounces = []
+    atom_first = []
 
     with open(filename) as f:
         for line in f:
@@ -124,6 +137,24 @@ for i,filename in enumerate(filenames):
             elif 'bounces' in line:
                 n_bounces.append(int(line.split()[-1]))
 
+            elif 'first' in line:
+                orientated=True
+                if 'N first' in  line:
+                    ntraj_nfirst+=1
+                if 'O first' in  line:
+                    ntraj_ofirst+=1
+
+                atom_first.append(line.split()[0])
+
+
+    if 'trapped' not in filename:
+        for a,atom in enumerate(atom_first):
+            if n_bounces[a] == 1:
+                if atom =='N':
+                    ntraj_nfirst_single+=1
+                if atom =='O':
+                    ntraj_ofirst_single+=1
+
 
     misc = np.array(misc)
     abs_e = np.array(abs_e)
@@ -174,6 +205,11 @@ for i,filename in enumerate(filenames):
         ntraj_double_list.append(ntraj_double)
         ntraj_multi_list.append(ntraj_multi)
 
+        n_first_list.append(ntraj_nfirst)
+        o_first_list.append(ntraj_ofirst)
+
+        n_first_single_list.append(ntraj_nfirst_single)
+        o_first_single_list.append(ntraj_ofirst_single)
         angles.append(misc[:,1])
 
 if mode == 2:
@@ -232,6 +268,14 @@ if not mode==-1:
     np.savetxt('states_1.txt', np.c_[state_list,ntraj_single_list/np.sum(ntraj_single_list)],fmt='%1.3f')
     np.savetxt('states_2.txt', np.c_[state_list,ntraj_double_list/np.sum(ntraj_double_list)],fmt='%1.3f')
     np.savetxt('states_multi.txt', np.c_[state_list,ntraj_multi_list/np.sum(ntraj_multi_list)],fmt='%1.3f')
+
+    if orientated==True:
+        np.savetxt('states_n.txt', np.c_[state_list,n_first_list/np.sum(n_first_list)],fmt='%1.3f')
+        np.savetxt('states_o.txt', np.c_[state_list,o_first_list/np.sum(o_first_list)],fmt='%1.3f')
+
+
+        np.savetxt('states_1_n.txt', np.c_[state_list,n_first_single_list/np.sum(n_first_single_list)],fmt='%1.3f')
+        np.savetxt('states_1_o.txt', np.c_[state_list,o_first_single_list/np.sum(o_first_single_list)],fmt='%1.3f')
 
 
     bounce_prob = []

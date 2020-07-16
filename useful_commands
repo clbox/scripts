@@ -37,3 +37,5 @@ find . -path "*/conventional/kgrid*/friction_eigenvectors.jmol" -exec grep "Mode
 for f in $(find . -wholename "*/20/*aims.out"); do echo $f && sed '/\*FRICTION\*/q' $f | grep "Total\ energy\ corrected"  | tail -1; done >> energies_cor.dat
 
 sed '/^id/d' tensors.dat | tr ' ' '\n' | sort -g | tail # biggest number in file 
+
+for f in iesh*.txt; do mv "$f" "v03_$f"; done #rename many files, here prepend v03_ to all files matching iesh*txt
