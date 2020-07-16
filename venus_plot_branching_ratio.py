@@ -293,7 +293,7 @@ if plot_v02:
     locmin = matplotlib.ticker.LogLocator(base=10.0,subs=(0.2,0.4,0.6,0.8),numticks=12)
     ax.yaxis.set_minor_locator(locmin)
     ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax.set_ylabel('log($R_{}\ /\ R_2$)'.format(final_state),fontsize=fontsize,fontname=font,color='black')
+    ax.set_ylabel('($R_{}\ /\ R_2$)'.format(final_state),fontsize=fontsize,fontname=font,color='black')
     ax.set_xlabel(r"Incidence energy / eV",fontsize=fontsize,fontname=font)
 
 

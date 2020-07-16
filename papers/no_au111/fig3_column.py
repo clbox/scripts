@@ -8,7 +8,6 @@ matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
-import itertools
 SMALL_SIZE = 9.5
 MEDIUM_SIZE = 9.5
 BIGGER_SIZE = 9.5
@@ -33,11 +32,11 @@ tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'mediumorchid', 'label'
 pes_args = {'marker' : 'v', 'linestyle' : 'None','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
-ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF Ref', 'alpha' : 0.5}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 0.5}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
+ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 
-annotate_args = {'xy' : (0.05,0.90), 'xycoords' : 'axes fraction'}
+annotate_args = {'xy' : (0.05,0.80), 'xycoords' : 'axes fraction'}
 
 results = {'initial' : [], 'final' : [], 'mode' : [], 'incidence_e' : [], 'ratio' : []}
 exp_v3tov1 = np.array([[0.1131, 0.1048],
@@ -67,22 +66,21 @@ exp_v3tov3 = np.array([[0.09586, 0.7539],
 
 v3_exp = [exp_v3tov1,exp_v3tov2,exp_v3tov3]
 
-fig, ax = plt.subplots(2, 2)#, sharex='all',sharey='all')#, constrained_layout=True)
+fig, ax = plt.subplots(4, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 
 final_state = 1
-for i in range(2):
-    for j in range(2):
-        if i == 0 and j == 0:
+for i in range(4):
+        if i == 0:
             exp_v2tov1 = np.loadtxt('v02_exp_1.txt',delimiter=',')
-            a = ax[0,0].plot(exp_v2tov1[:,0],exp_v2tov1[:,1],markersize=4,**exp_args)
+            a = ax[0].plot(exp_v2tov1[:,0],exp_v2tov1[:,1],markersize=4,**exp_args)
         else:
             ef_results = np.loadtxt('v03_ef_'+str(final_state)+'.txt',delimiter=',')
             iesh_results = np.loadtxt('v03_iesh_'+str(final_state)+'.txt',delimiter=',')
-            a = ax[i,j].plot(ef_results[:,0],ef_results[:,1],markersize=4,**ef_args)
-            a = ax[i,j].plot(iesh_results[:,0],iesh_results[:,1],markersize=4,**iesh_args)
+            a = ax[i].plot(ef_results[:,0],ef_results[:,1],markersize=4,**ef_args)
+            a = ax[i].plot(iesh_results[:,0],iesh_results[:,1],markersize=4,**iesh_args)
 
             exp = v3_exp[final_state-1]
-            a = ax[i,j].plot(exp[:,0],exp[:,1],markersize=4,**exp_args)
+            a = ax[i].plot(exp[:,0],exp[:,1],markersize=4,**exp_args)
             final_state +=1
 
 
@@ -144,7 +142,7 @@ all_initials = np.array(results['initial'])
 all_finals = np.array(results['final'])
 
 
-map_plot = [(0,0),(0,1),(1,0),(1,1)]
+map_plot = [(0),(1),(2),(3)]
 c=0
 for initial_state in [2,3]:
     for final_state in [1,2,3]:
@@ -170,8 +168,8 @@ for initial_state in [2,3]:
             ratios = ratios[order]
             print(c)
             a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black')
-        # ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.9),xycoords='axes fraction')
-        ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
+        ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.8),xycoords='axes fraction')
+        #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
 
         c+=1
 
@@ -183,66 +181,54 @@ for initial_state in [2,3]:
 
 letters = [r'(a)',r'(b)',r'(c)',r'(d)']
 c=0
-for i in range(2):
-    for j in range(2):
-        ax[i,j].annotate(letters[c],ha="left", **annotate_args)
+for i in range(4):
+        ax[i].annotate(letters[c],ha="left", **annotate_args)
         c+=1
-        if i == 0 and j ==0:
-            ax[i,j].tick_params(axis='both', which='major')
-            ax[i,j].xaxis.set_major_locator(MaxNLocator(integer=True))
-            ax[i,j].xaxis.set_minor_locator(MultipleLocator(0.05))
-            ax[i,j].xaxis.set_major_locator(MultipleLocator(0.3))
+        if i == 0:
+            ax[i].tick_params(axis='both', which='major')
+            ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
+            ax[i].xaxis.set_minor_locator(MultipleLocator(0.05))
+            ax[i].xaxis.set_major_locator(MultipleLocator(0.3))
             continue
         font='Arial'
-        for tick in ax[i,j].get_xticklabels():
+        for tick in ax[i].get_xticklabels():
             tick.set_fontname(font)
-        for tick in ax[i,j].get_yticklabels():
+        for tick in ax[i].get_yticklabels():
             tick.set_fontname(font)
 
-        ax[i,j].set_xlim(0,1.2)
-        ax[i,j].tick_params(axis='both', which='major')
-        ax[i,j].xaxis.set_major_locator(MaxNLocator(integer=True))
-        ax[i,j].xaxis.set_minor_locator(MultipleLocator(0.05))
-        ax[i,j].xaxis.set_major_locator(MultipleLocator(0.3))
-        ax[i,j].yaxis.set_minor_locator(MultipleLocator(0.05))
+        ax[i].set_xlim(0,1.2)
+        ax[i].tick_params(axis='both', which='major')
+        ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
+        ax[i].xaxis.set_minor_locator(MultipleLocator(0.05))
+        ax[i].xaxis.set_major_locator(MultipleLocator(0.3))
+        ax[i].yaxis.set_minor_locator(MultipleLocator(0.05))
+        ax[i].yaxis.set_major_locator(MultipleLocator(0.3))
 
-        ax[i,j].yaxis.set_major_locator(MultipleLocator(0.2))
 
+ax[3].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 
-ax[0,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
-ax[1,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
-ax[1,1].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
+ax[0].set_ylabel(r'$P(1)/P(2)$',fontname=font,color='black')
+ax[1].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
+ax[2].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
 
-ax[0,0].set_ylabel(r'$P(1)/P(2)$',fontname=font,color='black')
-ax[0,1].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
-ax[1,0].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
+ax[1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+ax[2].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
-ax[0,1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
-ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+ax[1].set_ylim(0,0.6)
+ax[2].set_ylim(0,1.2)
+ax[3].set_ylim(0,1.2)
 
-ax[0,1].set_ylim(0,0.6)
-ax[1,0].set_ylim(0,1.2)
-ax[1,1].set_ylim(0,1.2)
-
-ax[0,0].set_xlim(0,0.7)
-ax[0,0].set_yscale('log')  
+ax[0].set_xlim(0,0.7)
+ax[0].set_yscale('log')  
 labels= (1e-4,1e-3,1e-2,1e-1,1)
-ax[0,0].set_yticks(labels)
+ax[0].set_yticks(labels)
 #ax[0,0].set_yticklabels(labels)
-ax[0,0].set_ylim(1e-3,1)
+ax[0].set_ylim(1e-3,1)
 
-
-labels= (0,0.2,0.4,0.6,0.8,1.0)
-ax[1,0].set_yticks(labels)
-
-handles,labels = ax[1,1].get_legend_handles_labels()
-
-handles = [handles[2], handles[4], handles[0], handles[3], handles[1], handles[5]]
-labels = [labels[2], labels[4], labels[0],labels[3], labels[1], labels[5]]
 
 fig.set_figheight(4.)
 fig.set_figwidth(3.25)
-plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 2.55), loc='center')
-plt.subplots_adjust(hspace=0.3,wspace=0.5)
+plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 5.55), loc='center')
+plt.subplots_adjust(hspace=0.3)
 fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight',dpi=300)
 fig.savefig('fig3.eps',transparent=False)#,bbox_inches='tight')

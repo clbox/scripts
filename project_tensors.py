@@ -57,19 +57,19 @@ for output_dir in sys.argv[1:]:
             if 'Found friction request for atom' in line:
                 friction_atoms.append(int(line.split()[-1])-1)
 
-            elif '********Printing Friction Tensor in 1/ps*********' in line:
+            elif 'Printing Friction Tensor in 1/ps' in line:
                 ptensor = True
                 continue
-            elif '**********END Printing Friction Tensor************' in line:
+            elif 'END Printing Friction Tensor' in line:
                 ptensor = False
 
             elif ptensor:
                 raw_tensor.append(line)
 
-            elif '****Diagonalized Lifetime Eigvecs****' in line:
+            elif 'Diagonalized Lifetime Eigvecs' in line:
                 pvecs = True
 
-            elif '|------------------------------------' in line:
+            elif '|------------------------------------' in line or "Starting with the calculation of the polarization:" in line:
                 pvecs = False
 
             elif 'Final output of selected total energy values:' in line:

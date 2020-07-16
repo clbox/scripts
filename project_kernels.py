@@ -17,7 +17,7 @@ Excitation energy in eV   Re(Coupling element)
 ============================================================================\n"""
 
 for output_dir in sys.argv[1:]:
-    mem_file = (glob.glob(output_dir+'/*friction_memory_kernel.out'))[0]
+    mem_file = (glob.glob(output_dir+'/*friction_gamma2.out'))[0]
     print('-------------'+mem_file+'----------------')
     bins,re,im,dimension,max_e = read_memory_kernel(mem_file)
 
