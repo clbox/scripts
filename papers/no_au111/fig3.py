@@ -170,8 +170,8 @@ for initial_state in [2,3]:
             ratios = ratios[order]
             print(c)
             a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black')
-        # ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.9),xycoords='axes fraction')
-        ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
+        ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.9),xycoords='axes fraction')
+        #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
 
         c+=1
 
@@ -232,6 +232,11 @@ ax[0,0].set_yticks(labels)
 ax[0,0].set_ylim(1e-3,1)
 
 
+ax[0,1].yaxis.set_label_position("right")
+ax[0,1].yaxis.tick_right()
+# ax[1,1].yaxis.set_label_position("right")
+# ax[1,1].yaxis.tick_right()
+
 labels= (0,0.2,0.4,0.6,0.8,1.0)
 ax[1,0].set_yticks(labels)
 
@@ -242,7 +247,7 @@ labels = [labels[2], labels[4], labels[0],labels[3], labels[1], labels[5]]
 
 fig.set_figheight(4.)
 fig.set_figwidth(3.25)
-plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 2.55), loc='center')
-plt.subplots_adjust(hspace=0.3,wspace=0.5)
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.55), loc='center')
+plt.subplots_adjust(hspace=0.3,wspace=0.2)
 fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight',dpi=300)
-fig.savefig('fig3.eps',transparent=False)#,bbox_inches='tight')
+fig.savefig('fig3.eps',transparent=False,bbox_inches='tight')

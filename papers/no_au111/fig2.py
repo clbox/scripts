@@ -193,4 +193,4 @@ plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=
 plt.subplots_adjust(hspace=0.45)
 #plt.gcf().subplots_adjust(right=0.01)
 fig.savefig('fig2.pdf',transparent=True,bbox_inches='tight')
-fig.savefig('fig2.eps',transparent=False)#,bbox_inches='tight')
+fig.savefig('fig2.eps',transparent=False,bbox_inches='tight')

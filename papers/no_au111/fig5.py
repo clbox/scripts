@@ -79,7 +79,7 @@ ax = np.array(([None,ax0],[ax1,ax2]))
 x0 = 0
 s = 0.6
 x = np.linspace(0,6,5000)
-c1 = 'purple'
+c1 = 'grey'
 gauss = (np.exp(-0.5*((x-x0)*(x-x0))/(s*s))/(s*np.sqrt(np.pi)))*(1/np.sqrt(2))
 ax[0,1].plot(x,gauss,'--',color=c1,linewidth=2)
 # ax[0,1].fill_between(x, gauss,np.zeros_like(gauss),color=c1,alpha=0.4)
@@ -103,11 +103,11 @@ tensor = np.loadtxt(tensor_file)
 element_val = tensor[element,element]
 
 ax[0,1].annotate('', xy=(0,element_val), xycoords='data', xytext=(-0.3, element_val), 
-        arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color='purple'),
+        arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color=c1),
         #arrowprops=dict(width=0.5),
         color='red')
 
-c2 = 'black'
+c2 = 'mediumorchid'
 ax[0,1].axhline(y=(element_val*4), xmin=0, xmax=100,color=c2,linestyle=':',linewidth=1.5)
 
 # ax[0,1].annotate('', xy=(2,4*element_val), xycoords='data', xytext=(2,element_val), 
@@ -238,11 +238,11 @@ for i in [1]:
 
 
 ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
-fig.set_figheight(3.)
+fig.set_figheight(3.25)
 fig.set_figwidth(3.25)
 plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 1.1), loc='center')
 #plt.tight_layout()
 plt.subplots_adjust(hspace=0.8)
 #plt.gcf().subplots_adjust(right=0.01)
 fig.savefig('fig5.pdf',transparent=True,bbox_inches='tight')
-fig.savefig('fig5.eps',transparent=False)#,bbox_inches='tight')
+fig.savefig('fig5.eps',transparent=False,bbox_inches='tight')

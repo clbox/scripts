@@ -58,21 +58,27 @@ fig.delaxes(ax[0,0])
 
 #v03 - ISO
 exp = np.loadtxt('v03_iso_950.txt')
-p1 = ax[0,1].bar(exp[:,0],exp[:,1],color=exp_colour,edgecolor='black')#,label=r'EXPT')
+err = np.array([0.189,0.206,0.473,0.306])-exp[:,1]
+p1 = ax[0,1].bar(exp[:,0],exp[:,1],color=exp_colour,edgecolor='black'
+        ,yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT')
 ax[0,1].set_xlim(-0.5,3.5)
 ax[0,1].set_ylim(0,0.9)
 ax[0,1].annotate(r'Isotropic',ha="left",**annotate_args)
 
 #v03 - N frst
 exp = np.loadtxt('v03_nfirst_950.txt')
-p2 = ax[1,0].bar(exp[:,0],exp[:,1],color='cornflowerblue',edgecolor='black')#,label=r'EXPT')
+err = np.array([0.232,0.262,0.646,0.180])-exp[:,1]
+p2 = ax[1,0].bar(exp[:,0],exp[:,1],color='cornflowerblue',edgecolor='black',
+        yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT')
 ax[1,0].set_xlim(-0.5,3.5)
 ax[1,0].set_ylim(0,0.9)
 ax[1,0].annotate(r'N$\downarrow$', ha="left",**annotate_args)
 
 #v03 - O first
 exp = np.loadtxt('v03_ofirst_950.txt')
-p3 = ax[1,1].bar(exp[:,0],exp[:,1],color="lightcoral",edgecolor='black')#,label=r'EXPT')
+err = np.array([0.143,0.165,0.401,0.456])-exp[:,1]
+p3 = ax[1,1].bar(exp[:,0],exp[:,1],color="lightcoral",edgecolor='black',
+        yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT'))#,label=r'EXPT')
 ax[1,1].set_xlim(-0.5,3.5)
 ax[1,1].set_ylim(0,0.9)
 ax[1,1].annotate(r'O$\downarrow$', ha="left",**annotate_args)
@@ -152,7 +158,7 @@ for i,filename in enumerate(filenames):
     if 'tdpt' in os.path.abspath(filename):
         t = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
     elif 'ldfa' in os.path.abspath(filename):
-         l = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
+        l = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
     elif 'bomd' in os.path.abspath(filename):
         b = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
 
@@ -194,13 +200,16 @@ labels.append('EXPT')
 ax[0,1].legend(handles,labels,numpoints=1,
                 handler_map={tuple: HandlerTuple(ndivide=None)},
                 ncol=4,handletextpad=0.15,columnspacing=0.6,
-                fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 1.1), loc='center')
+                fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 1.1), loc='center')
+
+ax[0,1].yaxis.set_label_position("right")
+ax[0,1].yaxis.tick_right()
 
 fig.set_figheight(3.)
 fig.set_figwidth(3.25)
 # plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 2.25), loc='center')
 #plt.tight_layout()
-plt.subplots_adjust(hspace=0.1)
+plt.subplots_adjust(hspace=0.1,wspace=0.1)
 #plt.gcf().subplots_adjust(right=0.01)
 fig.savefig('fig4.pdf',transparent=True,bbox_inches='tight',dpi=300)
-fig.savefig('fig4.eps',transparent=False)#,bbox_inches='tight')
+fig.savefig('fig4.eps',transparent=False,bbox_inches='tight')
