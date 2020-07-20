@@ -37,7 +37,7 @@ exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF Ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 0.5}
 
-annotate_args = {'xy' : (0.05,0.90), 'xycoords' : 'axes fraction'}
+annotate_args = {'xy' : (0.03,0.90), 'xycoords' : 'axes fraction'}
 
 results = {'initial' : [], 'final' : [], 'mode' : [], 'incidence_e' : [], 'ratio' : []}
 exp_v3tov1 = np.array([[0.1131, 0.1048],
@@ -64,8 +64,24 @@ exp_v3tov3 = np.array([[0.09586, 0.7539],
 [0.7988, 0.4178],
 [0.9347, 0.3186],
 [1.045, 0.3725]])
-
+v3to3_err = np.array([0.829,0.737,0.875,0.612,0.500,0.493,0.336,0.454])-exp_v3tov3[:,1]
+v3to2_err = np.array([0.151,0.270,0.309,0.395,0.454,0.507,0.520,0.539])-exp_v3tov2[:,1]
+v3to1_err = np.array([0.0987,0.0724,0.0592,0.118,0.184,0.191,0.237,0.243])-exp_v3tov1[:,1]
+errs = [v3to1_err,v3to2_err,v3to3_err]
 v3_exp = [exp_v3tov1,exp_v3tov2,exp_v3tov3]
+
+iesh3to3_pos = np.array([0.356,0.401,0.461,0.531,0.572,0.591,0.632,0.638,0.616,0.677,0.670,0.673])
+iesh3to2_pos = np.array([0.294,0.345,0.371,0.336,0.317,0.342,0.329,0.332,0.358,0.317,0.320,0.307])
+iesh3to1_pos = np.array([0.483,0.379,0.274,0.236,0.207,0.156,0.122,0.112,0.109,0.0835,0.0899,0.103])
+iesh_pos = [iesh3to1_pos,iesh3to2_pos,iesh3to3_pos]
+
+ef3to3_pos = np.array([0.369,0.207,0.166,0.204,0.229,0.277,0.293,0.305,0.353,0.347,0.369,0.397])
+ef3to2_pos = np.array([0.421,0.615,0.650,0.650,0.685,0.694,0.707,0.726,0.697,0.707,0.688,0.662])
+ef3to1_pos = np.array([0.407,0.309,0.299,0.252,0.182,0.122,0.0835,0.0359,0.0137,0.0105,0.00736,0.00419])
+ef_pos = [ef3to1_pos,ef3to2_pos,ef3to3_pos]
+
+
+
 
 fig, ax = plt.subplots(2, 2)#, sharex='all',sharey='all')#, constrained_layout=True)
 
@@ -78,11 +94,21 @@ for i in range(2):
         else:
             ef_results = np.loadtxt('v03_ef_'+str(final_state)+'.txt',delimiter=',')
             iesh_results = np.loadtxt('v03_iesh_'+str(final_state)+'.txt',delimiter=',')
-            a = ax[i,j].plot(ef_results[:,0],ef_results[:,1],markersize=4,**ef_args)
-            a = ax[i,j].plot(iesh_results[:,0],iesh_results[:,1],markersize=4,**iesh_args)
+            err = iesh_pos[final_state-1] - iesh_results[:,1]
+            a = ax[i,j].errorbar(iesh_results[:,0],iesh_results[:,1],markersize=4,
+                yerr=err,capsize=3,elinewidth=1,zorder=-11,**iesh_args)
+
+            err = ef_pos[final_state-1] - ef_results[:,1] 
+            a = ax[i,j].errorbar(ef_results[:,0],ef_results[:,1],markersize=4,
+                    yerr=err,capsize=3,elinewidth=1,zorder=-10,**ef_args)
+
 
             exp = v3_exp[final_state-1]
-            a = ax[i,j].plot(exp[:,0],exp[:,1],markersize=4,**exp_args)
+            err = errs[final_state-1]
+
+
+            a = ax[i,j].errorbar(exp[:,0],exp[:,1],markersize=4,
+                yerr=err,capsize=3,elinewidth=1,zorder=-9,**exp_args)
             final_state +=1
 
 
@@ -156,10 +182,13 @@ for initial_state in [2,3]:
         for mode in ['ldfa','bomd','tdpt']:
             if mode=='tdpt':
                 mode_args = tdpt_args.copy()
+                zorder=3
             if mode=='bomd':
                 mode_args = bomd_args.copy()
+                zorder=1
             if mode=='ldfa':
                 mode_args = ldfa_args.copy()
+                zorder=2
 
             idx = np.argwhere((all_modes==mode) & (all_initials == initial_state) & (all_finals == final_state)).flatten()
             incidence_es = all_eis[idx]
@@ -169,7 +198,7 @@ for initial_state in [2,3]:
             incidence_es = incidence_es[order]
             ratios = ratios[order]
             print(c)
-            a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black')
+            a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black',zorder=zorder)
         ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.9),xycoords='axes fraction')
         #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
 
@@ -213,7 +242,7 @@ ax[0,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 ax[1,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 ax[1,1].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 
-ax[0,0].set_ylabel(r'$P(1)/P(2)$',fontname=font,color='black')
+ax[0,0].set_ylabel(r'$P(1)\ /\ P(2)$',fontname=font,color='black')
 ax[0,1].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
 ax[1,0].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
 
@@ -242,8 +271,12 @@ ax[1,0].set_yticks(labels)
 
 handles,labels = ax[1,1].get_legend_handles_labels()
 
-handles = [handles[2], handles[4], handles[0], handles[3], handles[1], handles[5]]
-labels = [labels[2], labels[4], labels[0],labels[3], labels[1], labels[5]]
+handles = [handles[1], handles[4], 
+            handles[0], handles[3], 
+            handles[2], handles[5]]
+labels = [labels[1], labels[4], 
+            labels[0],labels[3], 
+            labels[2], labels[5]]
 
 fig.set_figheight(4.)
 fig.set_figwidth(3.25)

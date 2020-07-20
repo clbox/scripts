@@ -22,12 +22,12 @@ final_state = int(sys.argv[1])
 filenames = sys.argv[2:]
 
 
-fontsize=10
+fontsize=9.5
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'ODF', 'alpha' : 1.0}
-pes_args = {'marker' : 'v', 'linestyle' : 'None','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
+pes_args = {'marker' : 'v', 'linestyle' : ':','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
@@ -288,29 +288,29 @@ if plot_v02:
     ax.set_yticks(labels)
     ax.set_yticklabels(labels)
     #ax.set_ylim(1e-3,1.9)
-    ax.set_ylim(1e-3,1.9)
+    # ax.set_ylim(1e-3,1.9)
 
     locmin = matplotlib.ticker.LogLocator(base=10.0,subs=(0.2,0.4,0.6,0.8),numticks=12)
     ax.yaxis.set_minor_locator(locmin)
     ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax.set_ylabel('($R_{}\ /\ R_2$)'.format(final_state),fontsize=fontsize,fontname=font,color='black')
+    ax.set_ylabel('$P({})\ /\ P(2)$'.format(final_state),fontsize=fontsize,fontname=font,color='black')
     ax.set_xlabel(r"Incidence energy / eV",fontsize=fontsize,fontname=font)
 
 
 
 fig.set_figheight(1.6)
-fig.set_figwidth(1.6)
+fig.set_figwidth(3.25)
 
 
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
 
 #ax.set_ylabel('Population',fontsize=12,fontname=font)#,color='white')
 
-plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
+plt.gcf().subplots_adjust(left=0.4,bottom=0.3)
 
 #fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
-fig.savefig('branching.pdf',transparent=True)#,bbox_inches='tight')
+fig.savefig('branching.pdf',transparent=True,bbox_inches='tight')
 
 # fig.legend(ncol=4,fontsize=12,fancybox=True,framealpha=0)
 # fig.set_figwidth(7)

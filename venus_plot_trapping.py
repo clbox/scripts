@@ -9,10 +9,17 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 from scipy.optimize import curve_fit
-# from matplotlib import rc
-# #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-# rc('font',**{'family':'serif','serif':['Times']})
-# rc('text', usetex=True)
+SMALL_SIZE = 9.5
+MEDIUM_SIZE = 9.5
+BIGGER_SIZE = 9.5
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 annotate=True
 matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
@@ -22,15 +29,15 @@ filenames = sys.argv[1:]
 
 
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'ODF', 'alpha' : 1.0}
-d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF (r) $\times 4$', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
+d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'indigo', 'label' : r'ODF (r) $\times 4$', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
-annotate_args = {'fontsize' : 12, 'xy' : (0.55,0.8), 'xycoords' : 'figure fraction'}
+annotate_args = {'xy' : (0.55,0.8), 'xycoords' : 'figure fraction'}
 
 results = {'mode' : [], 'incidence_es' : [], 'ratios' : []}
 
@@ -122,7 +129,7 @@ for mode in ['bomd','ldfa','tdpt','d4','pes']:
     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
 
 
-ax.plot(np.linspace(0,1,100), func(np.linspace(0,1,100), *popt), '--', color='black',label='Exp')
+ax.plot(np.linspace(0,1,100), func(np.linspace(0,1,100), *popt), '--', color='black',label='EXPT')
 
 ###########################
 font='Arial'
@@ -132,7 +139,7 @@ for tick in ax.get_yticklabels():
     tick.set_fontname(font)
 
 
-ax.tick_params(axis='both', which='major', labelsize=12)
+ax.tick_params(axis='both', which='major')
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 #ax.legend(fontsize=15)
 
@@ -153,15 +160,15 @@ fig.set_figwidth(3.25)
 
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
 
-ax.set_xlabel('Incidence energy / eV',fontsize=12,fontname=font)#,color='white')
-ax.set_ylabel('Population',fontsize=12,fontname=font)#,color='white')
+ax.set_xlabel('Incidence energy / eV',fontname=font)#,color='white')
+ax.set_ylabel('Population',fontname=font)#,color='white')
 
-plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
+#plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
 
 #fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
-fig.savefig('trapped.pdf',transparent=True)#,bbox_inches='tight')
+fig.savefig('trapped.pdf',transparent=True,bbox_inches='tight')
 
-fig.legend(ncol=2,fontsize=12,fancybox=True,framealpha=0)
+fig.legend(ncol=2,fancybox=True,framealpha=0)
 ax.remove()
 fig.savefig('legend.pdf',transparent=True)#,bbox_inches='tight')
