@@ -349,6 +349,46 @@ class venus_analysis():
         self.first_atom = atoms.get_chemical_symbols()[lowest_atom]
         self.initial_theta = np.arcsin((p1[2]-p2[2])/r) * 180/np.pi
 
+
+    def get_impact_geometry(self):
+        #Get geometry of closest approach
+        #NOTE!!!!!: The timeframe of single bounce is dependent on the initial 
+        #Criteria:
+        # Not trapped
+        # 
+
+        friction_atoms = self.friction_atoms
+        atoms_list = self.build_atoms_list()
+        
+        O_pos = []
+        N_pos = []
+        height = 3
+        impact=False
+        for i,step in enumerate(atoms_list):
+            opos = step.get_positions()[friction_atoms[0]]
+            npos = step.get_positions()[friction_atoms[1]]
+            if (npos[2]+opos[2])/2 < height:                
+                impact = True
+
+            if (npos[2]+opos[2])/2 > height and impact:
+                self.sbt = i
+                break   
+
+            O_pos.append(opos)
+            N_pos.append(npos)
+
+        O_pos = np.array(O_pos)
+        N_pos = np.array(N_pos)
+        
+        ON_z_pos = np.column_stack((O_pos[:,2],N_pos[:,2]))
+
+        idx = np.unravel_index(np.argmin(ON_z_pos, axis=None), ON_z_pos.shape)
+        idx = idx[0]
+
+        self.impact_geo = np.array([O_pos[idx],N_pos[idx]])
+        self.impact_time = idx
+
+
     def get_friction_masses(self,atoms):
         friction_atoms = self.friction_atoms
         friction_masses = atoms.get_masses()[friction_atoms]
@@ -552,7 +592,7 @@ class venus_analysis():
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
             self.get_n_bounces()
-
+            self.get_impact_geometry()
             self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
                 .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
             fig.text(0.5,0.92,self.traj_text,ha='center',fontsize=15)
@@ -681,6 +721,10 @@ class venus_analysis():
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
                 f.write('Number of bounces : {:d}\n'.format(n_bounces))
+                f.write('SBT: ' + str(self.sbt) + '\n')
+                f.write('Impact time: ' + str(self.impact_time) + '\n') 
+                f.write('Impact 0: ' + str(self.impact_geo[0,0]) +' '+str(self.impact_geo[0,1])+' '+str(self.impact_geo[0,2])+ '\n')
+                f.write('Impact 1: ' + str(self.impact_geo[1,0]) +' '+str(self.impact_geo[1,1])+' '+str(self.impact_geo[1,2])+ '\n')
             if self.mode == 1:
                 f.write('Total energy loss / eV, d = {:0.3f}, phi = {:0.3f}, theta = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
                     .format(*total_work_dim,total_work))
@@ -931,7 +975,7 @@ def calc_modes2(atoms,friction_atoms):
         #mode 6 is the z translation
         modes[:,5] = [0.,0.,1.,0.,0.,1.]
 
-        print('Converting any NaNs to 0')
+        #print('Converting any NaNs to 0')
         modes = np.nan_to_num(modes,nan=0)
         return modes
 
