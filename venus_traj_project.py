@@ -587,12 +587,12 @@ class venus_analysis():
         
         Ni,Ji = self.parse_input_parameters()
         self.get_initial_orientation()
-
+        self.get_impact_geometry()
         if not self.trapped:
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
             self.get_n_bounces()
-            self.get_impact_geometry()
+            
             self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
                 .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
             fig.text(0.5,0.92,self.traj_text,ha='center',fontsize=15)
@@ -716,15 +716,16 @@ class venus_analysis():
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
             f.write(self.first_atom+' first, theta = '+str(self.initial_theta)+'\n')
+            f.write('Impact time: ' + str(self.impact_time) + '\n') 
+            f.write('Impact 0: ' + str(self.impact_geo[0,0]) +' '+str(self.impact_geo[0,1])+' '+str(self.impact_geo[0,2])+ '\n')
+            f.write('Impact 1: ' + str(self.impact_geo[1,0]) +' '+str(self.impact_geo[1,1])+' '+str(self.impact_geo[1,2])+ '\n')
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
                 f.write('Number of bounces : {:d}\n'.format(n_bounces))
                 f.write('SBT: ' + str(self.sbt) + '\n')
-                f.write('Impact time: ' + str(self.impact_time) + '\n') 
-                f.write('Impact 0: ' + str(self.impact_geo[0,0]) +' '+str(self.impact_geo[0,1])+' '+str(self.impact_geo[0,2])+ '\n')
-                f.write('Impact 1: ' + str(self.impact_geo[1,0]) +' '+str(self.impact_geo[1,1])+' '+str(self.impact_geo[1,2])+ '\n')
+
             if self.mode == 1:
                 f.write('Total energy loss / eV, d = {:0.3f}, phi = {:0.3f}, theta = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
                     .format(*total_work_dim,total_work))
