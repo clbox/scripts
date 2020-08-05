@@ -111,7 +111,7 @@ bins_x = np.linspace(1, 1.5, 100)
 bins_y = np.linspace(1.5, 3, 100)
 
 
-# for i in range(5):
+# for i in [2,3]:
 #     zorder=5-i
 
 #     if orientation=='n':
@@ -126,20 +126,23 @@ bins_y = np.linspace(1.5, 3, 100)
 #     pos1 = np.array((results['pos1']))[indices,:]
 #     pos2 = np.array((results['pos2']))[indices,:]
 
-#     ax_joint.scatter(pos1[:,2],pos2[:,2],zorder=zorder,s=10,label=i,marker=markers[i],facecolors="None",edgecolors=colours[i])
-#     ax_marg_y.hist(pos2[:,2],color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder)
-#     ax_marg_x.hist(pos1[:,2],color=colours[i],alpha=0.5,zorder=zorder)
+#     COM = (pos1*O_mass + pos2*N_mass) / (O_mass + N_mass)
+#     ax_joint.scatter(COM[:,0],COM[:,1],zorder=zorder,s=10,label=str(i),marker=markers[i],facecolors="None",edgecolors=colours[i])
+#     ax_marg_x.hist(COM[:,0],color=colours[i],alpha=0.5,zorder=zorder)
+#     ax_marg_y.hist(COM[:,1],color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder)
 
 labels = [r'N $\downarrow$',r'O $\downarrow$']
 for i,atom in enumerate(['n','o']):
     zorder=5-i
-    indices = (np.where((np.array(results['final_v'])==-1) & (np.array(results['atom_first'])==atom)))[0]
+    indices = (np.where((np.array(results['final_v'])==3) & (np.array(results['atom_first'])==atom)))[0]
     pos1 = np.array((results['pos1']))[indices,:]
     pos2 = np.array((results['pos2']))[indices,:]
 
     y1 = pos1[:,2]
     y2 = pos2[:,2]
     centre_mass_z = (y1*O_mass + y2*N_mass) / (O_mass + N_mass)
+
+    COM = (pos1*O_mass + pos2*N_mass) / (O_mass + N_mass)
 
 
     dx = pos1[:,0]-pos2[:,0]
@@ -152,11 +155,6 @@ for i,atom in enumerate(['n','o']):
     ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
     ax_marg_y.hist(centre_mass_z,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder)
     ax_marg_x.hist(angle,color=colours[i],alpha=0.5,zorder=zorder)
-
-    # ax_joint.scatter(pos1[:,2],pos2[:,2],zorder=zorder,s=10,label=atom,marker=markers[i],facecolors="None",edgecolors=colours[i])
-    # ax_marg_y.hist(pos2[:,2],color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder)
-    # ax_marg_x.hist(pos1[:,2],color=colours[i],alpha=0.5,zorder=zorder)
-
 
 
 
