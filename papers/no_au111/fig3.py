@@ -29,15 +29,15 @@ matplotlib.rcParams['font.family'] = "sans-serif"
 
 filenames = sys.argv[1:]
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
 pes_args = {'marker' : 'v', 'linestyle' : 'None','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
-ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF Ref', 'alpha' : 0.5}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 0.5}
+ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF Ref', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 1.0}
 
-annotate_args = {'xy' : (0.03,0.90), 'xycoords' : 'axes fraction'}
+annotate_args = {'xy' : (0.03,0.91), 'xycoords' : 'axes fraction'}
 
 results = {'initial' : [], 'final' : [], 'mode' : [], 'incidence_e' : [], 'ratio' : []}
 exp_v3tov1 = np.array([[0.1131, 0.1048],
@@ -70,15 +70,17 @@ v3to1_err = np.array([0.0987,0.0724,0.0592,0.118,0.184,0.191,0.237,0.243])-exp_v
 errs = [v3to1_err,v3to2_err,v3to3_err]
 v3_exp = [exp_v3tov1,exp_v3tov2,exp_v3tov3]
 
-iesh3to3_pos = np.array([0.356,0.401,0.461,0.531,0.572,0.591,0.632,0.638,0.616,0.677,0.670,0.673])
-iesh3to2_pos = np.array([0.294,0.345,0.371,0.336,0.317,0.342,0.329,0.332,0.358,0.317,0.320,0.307])
-iesh3to1_pos = np.array([0.483,0.379,0.274,0.236,0.207,0.156,0.122,0.112,0.109,0.0835,0.0899,0.103])
-iesh_pos = [iesh3to1_pos,iesh3to2_pos,iesh3to3_pos]
 
-ef3to3_pos = np.array([0.369,0.207,0.166,0.204,0.229,0.277,0.293,0.305,0.353,0.347,0.369,0.397])
-ef3to2_pos = np.array([0.421,0.615,0.650,0.650,0.685,0.694,0.707,0.726,0.697,0.707,0.688,0.662])
-ef3to1_pos = np.array([0.407,0.309,0.299,0.252,0.182,0.122,0.0835,0.0359,0.0137,0.0105,0.00736,0.00419])
-ef_pos = [ef3to1_pos,ef3to2_pos,ef3to3_pos]
+#All bounce
+# iesh3to3_pos = np.array([0.356,0.401,0.461,0.531,0.572,0.591,0.632,0.638,0.616,0.677,0.670,0.673])
+# iesh3to2_pos = np.array([0.294,0.345,0.371,0.336,0.317,0.342,0.329,0.332,0.358,0.317,0.320,0.307])
+# iesh3to1_pos = np.array([0.483,0.379,0.274,0.236,0.207,0.156,0.122,0.112,0.109,0.0835,0.0899,0.103])
+#iesh_pos = [iesh3to1_pos,iesh3to2_pos,iesh3to3_pos]
+
+# ef3to3_pos = np.array([0.369,0.207,0.166,0.204,0.229,0.277,0.293,0.305,0.353,0.347,0.369,0.397])
+# ef3to2_pos = np.array([0.421,0.615,0.650,0.650,0.685,0.694,0.707,0.726,0.697,0.707,0.688,0.662])
+# ef3to1_pos = np.array([0.407,0.309,0.299,0.252,0.182,0.122,0.0835,0.0359,0.0137,0.0105,0.00736,0.00419])
+# ef_pos = [ef3to1_pos,ef3to2_pos,ef3to3_pos]
 
 
 
@@ -92,13 +94,17 @@ for i in range(2):
             exp_v2tov1 = np.loadtxt('v02_exp_1.txt',delimiter=',')
             a = ax[0,0].plot(exp_v2tov1[:,0],exp_v2tov1[:,1],markersize=4,**exp_args)
         else:
-            ef_results = np.loadtxt('v03_ef_'+str(final_state)+'.txt',delimiter=',')
-            iesh_results = np.loadtxt('v03_iesh_'+str(final_state)+'.txt',delimiter=',')
-            err = iesh_pos[final_state-1] - iesh_results[:,1]
+            directory =  './v03/translational/'
+            ef_results = np.loadtxt(directory+'ef_'+str(final_state)+'_SB.txt',delimiter=',')
+            iesh_results = np.loadtxt(directory+'iesh_'+str(final_state)+'_SB.txt',delimiter=',')
+            iesh_pos = np.loadtxt(directory+'iesh_'+str(final_state)+'_SB_pos.txt',delimiter=',')
+            ef_pos = np.loadtxt(directory+'ef_'+str(final_state)+'_SB_pos.txt',delimiter=',')
+
+            err = iesh_pos - iesh_results[:,1]
             a = ax[i,j].errorbar(iesh_results[:,0],iesh_results[:,1],markersize=4,
                 yerr=err,capsize=3,elinewidth=1,zorder=-11,**iesh_args)
 
-            err = ef_pos[final_state-1] - ef_results[:,1] 
+            err = ef_pos - ef_results[:,1] 
             a = ax[i,j].errorbar(ef_results[:,0],ef_results[:,1],markersize=4,
                     yerr=err,capsize=3,elinewidth=1,zorder=-10,**ef_args)
 
@@ -177,8 +183,6 @@ for initial_state in [2,3]:
         if initial_state == 2 and final_state >= 2:
             continue
         
-        print('initial ' + str(initial_state))
-        print('final ' + str(final_state))
         for mode in ['ldfa','bomd','tdpt']:
             if mode=='tdpt':
                 mode_args = tdpt_args.copy()
@@ -197,9 +201,8 @@ for initial_state in [2,3]:
             order = np.argsort(incidence_es)
             incidence_es = incidence_es[order]
             ratios = ratios[order]
-            print(c)
             a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black',zorder=zorder)
-        ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.9),xycoords='axes fraction')
+        ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.91),xycoords='axes fraction')
         #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
 
         c+=1
@@ -237,7 +240,7 @@ for i in range(2):
 
         ax[i,j].yaxis.set_major_locator(MultipleLocator(0.2))
 
-
+ax[0,1].yaxis.set_major_locator(MultipleLocator(0.1))
 ax[0,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 ax[1,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 ax[1,1].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
@@ -249,7 +252,7 @@ ax[1,0].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
 ax[0,1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
-ax[0,1].set_ylim(0,0.6)
+ax[0,1].set_ylim(0,0.3)
 ax[1,0].set_ylim(0,1.2)
 ax[1,1].set_ylim(0,1.2)
 
@@ -271,16 +274,16 @@ ax[1,0].set_yticks(labels)
 
 handles,labels = ax[1,1].get_legend_handles_labels()
 
-handles = [handles[1], handles[4], 
-            handles[0], handles[3], 
+handles = [handles[1], handles[3], 
+            handles[0], handles[4], 
             handles[2], handles[5]]
-labels = [labels[1], labels[4], 
-            labels[0],labels[3], 
+labels = [labels[1], labels[3], 
+            labels[0],labels[4], 
             labels[2], labels[5]]
 
 fig.set_figheight(4.)
 fig.set_figwidth(3.25)
-plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.55), loc='center')
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.5), loc='center')
 plt.subplots_adjust(hspace=0.3,wspace=0.2)
 fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight',dpi=300)
 fig.savefig('fig3.eps',transparent=False,bbox_inches='tight')

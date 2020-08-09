@@ -8,7 +8,7 @@ matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
-
+from matplotlib import gridspec
 #COMMAND: python ~/Documents/scripts/papers/no_au111/fig2.py v02/translational/*/300K/640/states_1_e.txt {v03,v11,v16}/overview/*/states_1_e.txt && open fig2.pdf
 SMALL_SIZE = 9.5
 MEDIUM_SIZE = 9.5
@@ -56,13 +56,24 @@ tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label
 #tdpt_args = {'marker' : '^', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-mdef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'MDEF ref', 'alpha' : 1.0}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 1.0}
-annotate_args = {'xy' : (0.98,0.85), 'xycoords' : 'axes fraction'}
+mdef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF ref', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 1.0}
+annotate_args = {'xy' : (0.98,0.8), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
 
 
 fig, ax = plt.subplots(2, 2)#, sharex='all',sharey='all')#, constrained_layout=True)
+
+fig = plt.figure()
+gs = gridspec.GridSpec(nrows=3, ncols=2, height_ratios=[0.7, 1, 1] )
+
+ax0= fig.add_subplot(gs[0, 0])
+ax1= fig.add_subplot(gs[0, 1])
+ax2 = fig.add_subplot(gs[1, :])
+ax3 = fig.add_subplot(gs[2, :])
+
+ax = np.array(([ax0,ax1],[ax2,ax3]))
+
 
 #v02 exp
 ax[0,0].bar(x2_exp,v2_exp,color=exp_colour,edgecolor='black',label='EXP')#label=r'$\nu_i=2$ exp')
@@ -75,21 +86,21 @@ ax[0,0].annotate(r'$\nu_i = 2$',ha="right", **annotate_args)
 ax[0,1].bar(x3_exp,v3_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=3$ exp')
 ax[0,1].set_xlim(0,4)
 ax[0,1].set_ylim(0,1.0)
-ax[0,1].annotate(r'$3$', ha="right",**annotate_args)
+ax[0,1].annotate(r'$\nu_i = 3$', ha="right",**annotate_args)
 
 
 #v11
 ax[1,0].bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=11$ exp')
-ax[1,0].set_ylim(0,0.5)
+ax[1,0].set_ylim(0,0.6)
 plotted_exp = True
 ax[1,0].set_xlim(0,12)
-ax[1,0].annotate(r'$11$',ha="right", **annotate_args)
+ax[1,0].annotate(r'$\nu_i = 11$',ha="right", **annotate_args)
 
 #v16
 ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$\nu_i=16$ exp')
-ax[1,1].set_ylim(0,0.5)
+ax[1,1].set_ylim(0,0.4)
 ax[1,1].set_xlim(0,18)
-ax[1,1].annotate(r'$16$',ha="right", **annotate_args)
+ax[1,1].annotate(r'$\nu_i = 16$',ha="right", **annotate_args)
 
 # states=['v02','v03','v11','v16']
 # for i in range(2):
@@ -109,7 +120,7 @@ ax[1,1].annotate(r'$16$',ha="right", **annotate_args)
 
 
 
-annotate_args['xy'] = (0.05,0.85)
+annotate_args['xy'] = (0.05,0.8)
 ax[0,0].annotate(r'(a)',ha="left", **annotate_args)
 ax[0,1].annotate(r'(b)',ha="left", **annotate_args)
 ax[1,0].annotate(r'(c)',ha="left", **annotate_args)
@@ -191,14 +202,17 @@ for i,filename in enumerate(filenames):
 
 font='Arial'
 for i in range(2):
-    ax[i,0].set_ylabel('Population',fontname=font,color='black')
-    ax[i,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+
     for j in range(2):
+        if i == 0 and j == 1:
+            ax[i,j].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+        else:
+            ax[i,j].set_ylabel('Population',fontname=font,color='black')
         ax[i,j].tick_params(axis='both', which='major')
         ax[i,j].xaxis.set_major_locator(MaxNLocator(integer=True))
         ax[i,j].xaxis.set_minor_locator(MultipleLocator(1))
         ax[i,j].yaxis.set_minor_locator(MultipleLocator(0.025))
-        ax[0,j].yaxis.set_major_locator(MultipleLocator(0.2))
+        ax[i,j].yaxis.set_major_locator(MultipleLocator(0.2))
         ax[i,j].set_xlabel(r"$\nu_f$",fontname=font)
 
         for tick in ax[i,j].get_xticklabels():
@@ -207,10 +221,25 @@ for i in range(2):
             tick.set_fontname(font)
 
 
-ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
-fig.set_figheight(3.)
+# ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
+fig.set_figheight(5.)
 fig.set_figwidth(3.25)
-plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 2.65), loc='center')
+
+handles,labels = ax[1,1].get_legend_handles_labels()
+print(labels)
+order = np.array([2,0,
+                3,1,
+                4,5])
+# handles = [handles[1], handles[4], 
+#             handles[0], handles[3], 
+#             handles[2], handles[5]]
+# labels = [labels[1], labels[4], 
+#             labels[0],labels[3], 
+#             labels[2], labels[5]]
+handles = [handles[i] for i in order]
+labels = [labels[i] for i in order]
+
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 3.8), loc='center')
 #plt.tight_layout()
 plt.subplots_adjust(hspace=0.45)
 #plt.gcf().subplots_adjust(right=0.01)

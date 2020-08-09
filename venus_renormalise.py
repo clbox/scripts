@@ -28,7 +28,9 @@ for i,filename in enumerate(filenames):
         exp_range = [1,3]
 
     elif 'v03' in os.path.abspath(filename):
-        if '950' in os.path.abspath(filename):
+        if 'overview' in os.path.abspath(filename):
+            exp_range = [1,3]
+        elif '950' in os.path.abspath(filename):
             exp_range = [0,3]
 
     elif 'v11' in os.path.abspath(filename):
