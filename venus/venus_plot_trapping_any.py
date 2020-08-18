@@ -20,7 +20,7 @@ matplotlib.rcParams['font.family'] = "sans-serif"
 
 filenames = sys.argv[1:]
 
-colours = ['indigo','maroon','darkgreen','navy']
+colours = ['indigo','maroon','darkgreen','darkorange','navy']
 
 tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'ODF', 'alpha' : 1.0}
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF (r) $\times 4$', 'alpha' : 1.0}
@@ -62,6 +62,8 @@ for i,filename in enumerate(filenames):
     
     if 'i4' in os.path.abspath(filename):
         mode += r' $\times 4$'
+    if 'pes' in os.path.abspath(filename):
+        mode += r' PES$_\mathrm{rs}$'
 
     results['mode'].append(mode)
     results['ratios'].append(ratio)
@@ -97,7 +99,7 @@ all_ratios = np.array(results['ratios'])
 #     mode_args['linestyle'] = 'None'
 #     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
 print(all_modes)
-for i,v in enumerate(['02','03','11','16']):
+for i,v in enumerate(['02','03','11','15','16']):
     if v in filenames[0]:
         bar_colour = colours[i]
         vib_state = int(v)

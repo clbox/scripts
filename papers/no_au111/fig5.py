@@ -114,7 +114,7 @@ ax[0,1].axhline(y=(element_val*4), xmin=0, xmax=100,color=c2,linestyle=':',linew
 #         arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color=c2),
 #         #arrowprops=dict(width=0.5),
 #         color='red')
-ax[0,1].plot(bins,re[c,:],linestyle='-',linewidth=1,color='navy')
+ax[0,1].plot(bins,re[c,:],linestyle='-',linewidth=1,color='black')
 ax[0,1].text( x=1.8,y=1.4, s=r'$\times 4$', color=c2)
 ax[0,1].set_ylim(bottom=0,top=1.8)
 ax[0,1].set_xlim(0,np.max(bins))
