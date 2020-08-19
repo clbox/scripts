@@ -669,12 +669,12 @@ class venus_analysis():
         Ni,Ji = self.parse_input_parameters()
 
         if not self.trapped:
-            Nf_raw = Nf
-            Jf_raw = Jf
+            self.Nf_raw = Nf
+            self.Jf_raw = Jf
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
-            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {} \n N_raw = {}, J_raw = {}"""\
-                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf,Nf_raw,Jf_raw)
+            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
+                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
             self.summary_dir = 'Ni={}_Ji={}/Nf={}/'.format(str(Ni),str(Ji),str(Nf))
         else:
 
@@ -798,6 +798,7 @@ class venus_analysis():
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
+                f.write('Nf_raw: '+str(self.Nf_raw) + ' Jf_raw: ' + str(self.Jf_raw) + '\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
             f.write('------------------------------------------------------\n')
