@@ -788,8 +788,6 @@ class venus_analysis():
 
     def write_short_summary_to_file(self):
         traj_no = self.traj_no
-        ndim = len(self.friction_atoms)*3
-        fraction_energy_loss =[]
         self.get_initial_energies()
 
 
