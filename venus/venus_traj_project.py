@@ -669,10 +669,12 @@ class venus_analysis():
         Ni,Ji = self.parse_input_parameters()
 
         if not self.trapped:
+            Nf_raw = Nf
+            Jf_raw = Jf
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
-            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
-                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {} \n N_raw = {}, J_raw = {}"""\
+                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf,Nf_raw,Jf_raw)
             self.summary_dir = 'Ni={}_Ji={}/Nf={}/'.format(str(Ni),str(Ji),str(Nf))
         else:
 
