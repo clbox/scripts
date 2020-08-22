@@ -343,7 +343,7 @@ def cosine_fit(x,m,x0):
     return y
 
 
-bins = np.linspace(0, 100, 20)
+bins = np.linspace(0, 100, 15)
 theta = np.linspace(0,2*np.pi,200)
 rho = np.cos(theta)
 x = (bins[1:] + bins[:-1]) / 2

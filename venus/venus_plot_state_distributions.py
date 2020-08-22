@@ -115,6 +115,7 @@ for i,filename in enumerate(filenames):
         ax.set_xlim(0,17)
         ax.set_ylim(0,0.8)
         plotted_exp = True
+        ylabel = True
         if annotate:
             ax.annotate(r'$\nu_i = 15$', **annotate_args)
 

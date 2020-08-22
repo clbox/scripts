@@ -36,7 +36,8 @@ ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDF
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
-pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'green', 'label' : r'ODF PES$_\mathrm{rs}$', 'alpha' : 1.0}
+tdpt_pes_args = {'marker' : '>', 'linestyle' : '-','color' : 'orange', 'label' : r'ODF PES$_\mathrm{rs}$', 'alpha' : 1.0}
+bomd_pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'green', 'label' : r'BOMD PES$_\mathrm{rs}$', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.98,0.9), 'xycoords' : 'axes fraction'}
 
 results = {'mode' : [], 'incidence_es' : [], 'ratios' : []}
@@ -78,7 +79,12 @@ for i,filename in enumerate(filenames):
         mode = 'd4'
 
     if 'pes' in os.path.abspath(filename):
-        mode = 'pes'
+        if 'tdpt' in os.path.abspath(filename):
+            mode = 'tdpt_pes'
+
+        if 'bomd' in os.path.abspath(filename):
+            mode = 'bomd_pes'
+
 
 
     if ei not in[97,300,420,425,640]:
@@ -99,7 +105,7 @@ all_modes = np.array(results['mode'])
 all_eis = np.array(results['incidence_es'])
 all_ratios = np.array(results['ratios'])
 
-for mode in ['bomd','ldfa','tdpt','d4','pes']:
+for mode in ['bomd','ldfa','tdpt','d4','tdpt_pes','bomd_pes']:
     print(mode)
     idx = np.argwhere(all_modes==mode)
 
@@ -123,8 +129,10 @@ for mode in ['bomd','ldfa','tdpt','d4','pes']:
         mode_args = ldfa_args.copy()
     if mode=='d4':
         mode_args = d4_args.copy()
-    if mode=='pes':
-        mode_args = pes_args.copy()
+    if mode=='tdpt_pes':
+        mode_args = tdpt_pes_args.copy()
+    if mode=='bomd_pes':
+        mode_args = bomd_pes_args.copy()
 
     mode_args['linestyle'] = 'None'
     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
