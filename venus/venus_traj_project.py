@@ -757,6 +757,9 @@ class venus_analysis():
         with open(self.summary_dir+"summary.dat","a+") as f:
             f.write('Trajectory number = '+str(traj_no)+' Instance number = '+str(self.instance_number)+'\n')
             f.write(self.first_atom+' first, theta = '+str(self.initial_theta)+'\n')
+            f.write('Impact time: ' + str(self.impact_time) + '\n') 
+            f.write('Impact 0: ' + str(self.impact_geo[0,0]) +' '+str(self.impact_geo[0,1])+' '+str(self.impact_geo[0,2])+ '\n')
+            f.write('Impact 1: ' + str(self.impact_geo[1,0]) +' '+str(self.impact_geo[1,1])+' '+str(self.impact_geo[1,2])+ '\n')
             if not self.trapped:
                 f.write(self.traj_text.replace('$','')+'\n')
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
