@@ -589,6 +589,8 @@ class venus_analysis():
         self.get_initial_orientation()
         self.get_impact_geometry()
         if not self.trapped:
+            self.Nf_raw = Nf
+            self.Jf_raw = Jf
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
             self.get_n_bounces()
@@ -633,6 +635,8 @@ class venus_analysis():
 
         if not self.trapped:
             self.get_n_bounces()
+            self.Nf_raw = Nf
+            self.Jf_raw = Jf
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
             self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
@@ -727,6 +731,7 @@ class venus_analysis():
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
                 f.write('Number of bounces : {:d}\n'.format(n_bounces))
                 f.write('SBT: ' + str(self.sbt) + '\n')
+                f.write('Nf_raw: '+str(self.Nf_raw) + ' Jf_raw: ' + str(self.Jf_raw) + '\n')
 
             if self.mode == 1:
                 f.write('Total energy loss / eV, d = {:0.3f}, phi = {:0.3f}, theta = {:0.3f}, X = {:0.3f}, Y = {:0.3f}, Z = {:0.3f}, Total = {:0.3f}\n'\
@@ -757,6 +762,7 @@ class venus_analysis():
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
                 f.write('Number of bounces : {:d}\n'.format(n_bounces))
+                f.write('Nf_raw: '+str(self.Nf_raw) + ' Jf_raw: ' + str(self.Jf_raw) + '\n')
             f.write('------------------------------------------------------\n')
             
 
