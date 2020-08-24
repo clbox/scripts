@@ -58,17 +58,28 @@ tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'grey', 'label' : r'OD
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
 
-annotate_args = {'xy' : (0.98,0.85), 'xycoords' : 'axes fraction'}
+annotate_args = {'xy' : (0.96,0.80), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
 
 
 #fig, ax = plt.subplots(2, 2, gridspec_kw={'width_ratios': [2,1]})#, sharex='all',sharey='all')#, constrained_layout=True)
 fig = plt.figure()
-gs = gridspec.GridSpec(nrows=2, ncols=2, height_ratios=[1, 2] )
+gs0 = gridspec.GridSpec(3,1,height_ratios=[0.6,0.1,1])
 
-ax0= fig.add_subplot(gs[0, :])
-ax1 = fig.add_subplot(gs[1, 0])
-ax2 = fig.add_subplot(gs[1, 1])
+gs00 = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=gs0[0], hspace=0)
+ax0 = fig.add_subplot(gs00[0])
+
+gs01 = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs0[2], hspace=0.6)
+ax1 = fig.add_subplot(gs01[0])
+ax2 = fig.add_subplot(gs01[1])
+# gs = gridspec.GridSpec(nrows=3, ncols=1, height_ratios=[1, 1, 1] )
+
+# gs1 = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec = gs[0],hspace=1)
+# gs2 = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec = gs[1],hspace=0.7)
+# gs3 = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec = gs[2],hspace=0.7)
+
+
+
 
 ax = np.array(([None,ax0],[ax1,ax2]))
 
@@ -130,23 +141,23 @@ ax[0,1].set_xlabel(r'Excitation energy / eV',color='black')
 #fig.delaxes(ax[0,1])
 #v11
 ax[1,0].bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=11$ exp')
-ax[1,0].set_ylim(0,0.25)
+ax[1,0].set_ylim(0,0.3)
 plotted_exp = True
 ax[1,0].set_xlim(0,12)
 ax[1,0].annotate(r'$\nu_i = 11$',ha="right", **annotate_args)
 
 #v16
 ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$\nu_i=16$ exp')
-ax[1,1].set_ylim(0,0.25)
+ax[1,1].set_ylim(0,0.3)
 ax[1,1].set_xlim(0,18)
-ax[1,1].annotate(r'$16$',ha="right", **annotate_args)
+ax[1,1].annotate(r'$\nu_i = 16$',ha="right", **annotate_args)
 
 
 
-annotate_args['xy'] = (0.01,0.8)
+annotate_args['xy'] = (0.01,0.85)
 # ax[0,0].annotate(r'(a)',ha="left", **annotate_args)
 ax[0,1].annotate(r'(a)',ha="left", **annotate_args)
-annotate_args['xy'] = (0.05,0.85)
+annotate_args['xy'] = (0.01,0.80)
 ax[1,0].annotate(r'(b)',ha="left", **annotate_args)
 ax[1,1].annotate(r'(c)',ha="left", **annotate_args)
 indices=[]
@@ -222,14 +233,14 @@ for i,filename in enumerate(filenames):
 
 font='Arial'
 for i in [1]:
-    ax[i,0].set_ylabel('Population',fontname=font,color='black')
-    ax[i,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+    
+    #ax[i,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
     for j in range(2):
         ax[i,j].tick_params(axis='both', which='major')
         ax[i,j].xaxis.set_major_locator(MaxNLocator(integer=True))
         ax[i,j].xaxis.set_minor_locator(MultipleLocator(1))
         ax[i,j].yaxis.set_minor_locator(MultipleLocator(0.025))
-        ax[i,j].yaxis.set_major_locator(MultipleLocator(0.05))
+        ax[i,j].yaxis.set_major_locator(MultipleLocator(0.1))
         ax[i,j].set_xlabel(r"$\nu_f$",fontname=font)
 
         for tick in ax[i,j].get_xticklabels():
@@ -237,13 +248,14 @@ for i in [1]:
         for tick in ax[i,j].get_yticklabels():
             tick.set_fontname(font)
 
-
+ax[1,0].set_ylabel('Population',fontname=font,color='black')
+ax[1,1].set_ylabel('Population',fontname=font,color='black')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
-fig.set_figheight(3.25)
+fig.set_figheight(5)
 fig.set_figwidth(3.25)
-plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 1.1), loc='center')
+plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 2.8), loc='center')
 #plt.tight_layout()
-plt.subplots_adjust(hspace=0.8)
+#plt.subplots_adjust(hspace=1.2)
 #plt.gcf().subplots_adjust(right=0.01)
 fig.savefig('fig5.pdf',transparent=True,bbox_inches='tight')
 fig.savefig('fig5.eps',transparent=False,bbox_inches='tight')

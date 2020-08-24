@@ -134,7 +134,7 @@ bins_y = np.linspace(1.5, 3, 100)
 labels = [r'N $\downarrow$',r'O $\downarrow$']
 for i,atom in enumerate(['n','o']):
     zorder=5-i
-    indices = (np.where((np.array(results['final_v'])==3) & (np.array(results['atom_first'])==atom)))[0]
+    indices = (np.where((np.array(results['final_v'])==16) & (np.array(results['atom_first'])==atom)))[0]
     pos1 = np.array((results['pos1']))[indices,:]
     pos2 = np.array((results['pos2']))[indices,:]
 

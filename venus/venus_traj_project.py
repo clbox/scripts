@@ -632,6 +632,7 @@ class venus_analysis():
         
         Ni,Ji = self.parse_input_parameters()
         self.get_initial_orientation()
+        self.get_impact_geometry()
 
         if not self.trapped:
             self.get_n_bounces()
