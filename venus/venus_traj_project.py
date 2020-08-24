@@ -762,6 +762,7 @@ class venus_analysis():
                 f.write('Initial vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.init_vib_e,self.init_rot_e,self.init_tran_e))
                 f.write('Final vib, rot, trans energy / eV : {:0.3f},{:0.3f},{:0.3f}\n'.format(self.vib_e,self.rot_e,self.tran_e))
                 f.write('Number of bounces : {:d}\n'.format(n_bounces))
+                f.write('SBT: ' + str(self.sbt) + '\n')
                 f.write('Nf_raw: '+str(self.Nf_raw) + ' Jf_raw: ' + str(self.Jf_raw) + '\n')
             f.write('------------------------------------------------------\n')
             
