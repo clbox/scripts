@@ -1,4 +1,3 @@
-from matplotlib.pyplot import xcorr
 import numpy as np
 import sys
 import os
@@ -28,8 +27,8 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
-markers = ['o','^','s','v','.','x']
-colours = ['navy','maroon','darkgreen','goldenrod','violet','pink']
+markers = ['o','^','s','v','.']
+colours = ['navy','maroon','darkgreen','goldenrod','violet']
 
 O_mass = 14.0067
 N_mass = 15.999
@@ -37,10 +36,9 @@ N_mass = 15.999
 
 mode = sys.argv[1] #theta or r
 
-mode2 = sys.argv[2] #orient or final
 
 results = {'final_v' : [],'atom_first' : [], 'pos1' : [], 'pos2' : []}
-filenames = sys.argv[3:]
+filenames = sys.argv[2:]
 for i,filename in enumerate(filenames):
     trapped = False
     print(filename)
@@ -112,70 +110,61 @@ ax_marg_y = fig.add_subplot(gs[1:4,3])
 
 
 
+# for i in [2,3]:
+#     zorder=5-i
+
+#     if orientation=='n':
+#         indices = (np.where((np.array(results['final_v'])==i) & (np.array(results['atom_first'])=='n' )))[0]
+#     elif orientation=='o':
+#         indices = (np.where((np.array(results['final_v'])==i) & (np.array(results['atom_first'])=='o' )))[0]
+#     else:
+#          indices = (np.where(np.array(results['final_v'])==i))[0]
 
 
-if mode2 == 'orient':
-    labels = [r'N $\downarrow$',r'O $\downarrow$']
-    for i,atom in enumerate(['n','o']):
-        zorder=5-i
-        #indices = (np.where((np.array(results['final_v'])==16) & (np.array(results['atom_first'])==atom)))[0]
-        indices = (np.where((np.array(results['atom_first'])==atom)))[0]
-        #indices = (np.where((np.array(results['final_v'])==-1) & (np.array(results['atom_first'])==atom)))[0]
-        pos1 = np.array((results['pos1']))[indices,:]
-        pos2 = np.array((results['pos2']))[indices,:]
 
-        y1 = pos1[:,2]
-        y2 = pos2[:,2]
-        centre_mass_z = (y1*O_mass + y2*N_mass) / (O_mass + N_mass)
+#     pos1 = np.array((results['pos1']))[indices,:]
+#     pos2 = np.array((results['pos2']))[indices,:]
 
-        COM = (pos1*O_mass + pos2*N_mass) / (O_mass + N_mass)
+#     COM = (pos1*O_mass + pos2*N_mass) / (O_mass + N_mass)
+#     ax_joint.scatter(COM[:,0],COM[:,1],zorder=zorder,s=10,label=str(i),marker=markers[i],facecolors="None",edgecolors=colours[i])
+#     ax_marg_x.hist(COM[:,0],color=colours[i],alpha=0.5,zorder=zorder)
+#     ax_marg_y.hist(COM[:,1],color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder)
 
 
-        dx = pos1[:,0]-pos2[:,0]
-        dy = pos1[:,1]-pos2[:,1]
-        dz = pos1[:,2]-pos2[:,2]
-        r = np.sqrt(dx**2 + dy**2 + dz**2)
-        angle = np.arcsin((y1-y2)/r) * 180/np.pi
 
-        if mode == 'r':
-            r_bins = np.linspace(1,1.5,100)
-            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
-            ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
-        else:
-            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
-            ax_marg_x.hist(angle,color=colours[i],alpha=0.5,zorder=zorder,density=False)
-        ax_marg_y.hist(centre_mass_z,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
-else:
-    facecolours = ['none','red']
-    for i,v in enumerate([-1,0,1,2,3]):
-        ii=0
-        zorder=5-i
-        #for ii,atom in enumerate(['n','o']):
-        #indices = (np.where((np.array(results['final_v'])==v) & (np.array(results['atom_first'])==atom)))[0]
-        indices = (np.where((np.array(results['final_v'])==v)))[0]
+labels = [r'N $\downarrow$',r'O $\downarrow$']
+for i,atom in enumerate(['n','o']):
+    zorder=5-i
+    #indices = (np.where((np.array(results['final_v'])==16) & (np.array(results['atom_first'])==atom)))[0]
+    indices = (np.where((np.array(results['atom_first'])==atom)))[0]
+    pos1 = np.array((results['pos1']))[indices,:]
+    pos2 = np.array((results['pos2']))[indices,:]
 
-        pos1 = np.array((results['pos1']))[indices,:]
-        pos2 = np.array((results['pos2']))[indices,:]
+    y1 = pos1[:,2]
+    y2 = pos2[:,2]
+    centre_mass_z = (y1*O_mass + y2*N_mass) / (O_mass + N_mass)
 
-        y1 = pos1[:,2]
-        y2 = pos2[:,2]
-        centre_mass_z = (y1*O_mass + y2*N_mass) / (O_mass + N_mass)
+    COM = (pos1*O_mass + pos2*N_mass) / (O_mass + N_mass)
 
-        COM = (pos1*O_mass + pos2*N_mass) / (O_mass + N_mass)
-        dx = pos1[:,0]-pos2[:,0]
-        dy = pos1[:,1]-pos2[:,1]
-        dz = pos1[:,2]-pos2[:,2]
-        r = np.sqrt(dx**2 + dy**2 + dz**2)
-        angle = np.arcsin((y1-y2)/r) * 180/np.pi
 
-        if mode == 'r':
-            r_bins = np.linspace(1,1.5,100)
-            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=10,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
-            ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
-        else:
-            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=10,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
-            ax_marg_x.hist(angle,color=colours[i],alpha=0.5,zorder=zorder,density=False)
-        ax_marg_y.hist(centre_mass_z,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
+    dx = pos1[:,0]-pos2[:,0]
+    dy = pos1[:,1]-pos2[:,1]
+    dz = pos1[:,2]-pos2[:,2]
+    r = np.sqrt(dx**2 + dy**2 + dz**2)
+    angle = np.arcsin((y1-y2)/r) * 180/np.pi
+
+    
+    
+
+    if mode == 'r':
+        r_bins = np.linspace(1,1.5,100)
+        ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
+        ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=True)
+    else:
+        ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
+        ax_marg_x.hist(angle,color=colours[i],alpha=0.5,zorder=zorder,density=True)
+    ax_marg_y.hist(centre_mass_z,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=True)
+
 
 
 
@@ -199,6 +188,7 @@ if mode == 'r':
     ax_joint.set_xlabel(r"r / $\mathrm{\AA{}}$")
     ax_marg_x.xaxis.set_minor_locator(MultipleLocator(0.05))
     ax_marg_x.xaxis.set_major_locator(MultipleLocator(0.1))
+    ax_marg_x.set_ylabel(r'Density / $\mathrm{\AA{}}^{-1}$')
 else:
     ax_marg_x.set_xlim(-90,90)
     ax_joint.set_xlim(-90,90)
@@ -208,7 +198,7 @@ else:
     ax_joint.set_xlabel(r"$\theta$")
     ax_marg_x.xaxis.set_minor_locator(MultipleLocator(5))
     ax_marg_x.xaxis.set_major_locator(MultipleLocator(30))
-
+    ax_marg_x.set_ylabel('Density      ')
 
 
 ax_joint.set_ylim(1.25,3)
@@ -226,8 +216,7 @@ plt.setp(ax_marg_y.get_yticklabels(), visible=False)
 ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")
 
 # Set labels on marginals
-ax_marg_x.set_ylabel('Frequency')
-ax_marg_y.set_xlabel('Frequency')
+ax_marg_y.set_xlabel(r'Density / $\mathrm{\AA{}}^{-1}$')
 
 # 
 plt.subplots_adjust(hspace=0.6,wspace=0.6)

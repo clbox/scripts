@@ -183,7 +183,7 @@ for initial_state in [2,3]:
         if initial_state == 2 and final_state >= 2:
             continue
         
-        for mode in ['ldfa','bomd','tdpt']:
+        for mode in ['ldfa','bomd','tdpt','pes']:
             if mode=='tdpt':
                 mode_args = tdpt_args.copy()
                 zorder=3

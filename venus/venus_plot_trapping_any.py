@@ -58,10 +58,10 @@ for i,filename in enumerate(filenames):
         mode = 'LDFA'
 
     if 'd4' in os.path.abspath(filename):
-        mode = r'ODF (r) $\times 4$'
+        mode = r'ODF [$\Lambda_{rr} \times 4$]'
     
     if 'i4' in os.path.abspath(filename):
-        mode += r' $\times 4$'
+        mode += r'[$ \mathbf{\Lambda} \times 4$]'
     if 'pes' in os.path.abspath(filename):
         mode += r' PES$_\mathrm{rs}$'
 
@@ -99,6 +99,7 @@ all_ratios = np.array(results['ratios'])
 #     mode_args['linestyle'] = 'None'
 #     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
 print(all_modes)
+print(all_ratios)
 for i,v in enumerate(['02','03','11','15','16']):
     if v in filenames[0]:
         bar_colour = colours[i]

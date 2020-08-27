@@ -114,8 +114,10 @@ for i,filename in enumerate(filenames):
         mode_args['marker'] = 'v'
 
     if 'i2' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'$\times 2$'
-        mode_args['linestyle'] = '--'
+        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 2$]'
+        mode_args['linestyle'] = '-'
+        mode_args['color'] = 'indigo'
+        mode_args['marker'] = '^'
 
     if 'i3' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'$\times 3$'
@@ -145,7 +147,8 @@ for i,filename in enumerate(filenames):
     if 'pes' in os.path.abspath(filename):
         mode_args['color'] = 'green'
         mode_args['marker'] = 'v'
-        mode_args['label'] = mode_args['label'] + r'+ PES(2)'
+        mode_args['linestyle'] = '-.'
+        mode_args['label'] = mode_args['label'] + r' PES$_{\mathrm{rs}}$'
     
     if '_n' in os.path.abspath(filename):
         indices = [1,0]

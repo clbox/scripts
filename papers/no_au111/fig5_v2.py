@@ -185,15 +185,15 @@ for i,filename in enumerate(filenames):
         mode_args['marker'] = 'v'
 
     if 'i2' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'$\times 2$'
+        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 2$]'
         mode_args['linestyle'] = '--'
 
     if 'i3' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'$\times 3$'
+        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 3$]'
         mode_args['linestyle'] = ':'
     
     if 'i4' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'$\times 4$'
+        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 4$]'
         
 
         if 'tdpt' in os.path.abspath(filename):
