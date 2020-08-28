@@ -2,7 +2,7 @@ import numpy as np
 import sys
 from ase.io import read
 import glob
-import venus_traj_project as vjp
+import venus.venus_traj_project as vjp
 
 
 def build_tensor(raw_tensor):

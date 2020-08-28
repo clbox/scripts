@@ -13,7 +13,7 @@ from mem_energy_loss import read_memory_kernel
 
 
 #labels = ['Reactant','Adsorption','Transition state','Dissociated']
-labels = ['Adsorption','Transition state','Dissociated']
+#labels = ['Adsorption','Transition state','Dissociated']
 
 #labels = list(range(0,15))
 
@@ -30,14 +30,6 @@ filenames = sys.argv[2:]
 
 fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
 
-#plot gaussian
-x0 = 0
-s = 0.6
-x = np.linspace(0,6,5000)
-c1 = 'purple'
-gauss = (np.exp(-0.5*((x-x0)*(x-x0))/(s*s))/(s*np.sqrt(np.pi)))*(1/np.sqrt(2))
-ax.plot(x,gauss,'-',color=c1,linewidth=2)
-ax.fill_between(x, gauss,np.zeros_like(gauss),color=c1,alpha=0.4)
 
 
 
@@ -50,32 +42,12 @@ for i,filename in enumerate(filenames):
             if ii==jj==element:
                 break
             c+=1
-
-    ax.plot(bins,re[c,:],linestyle='-',linewidth=1,label=str(labels[i]),color=colours[i])
-
-
     output_dir = os.path.dirname(filename)
-    if 'project' in filename:
-        tensor_file = (glob.glob(output_dir+'/*projected_tensor.out'))[0]
-    else:
-        tensor_file = (glob.glob(output_dir+'/*friction_tensor.out'))[0]
-    tensor = np.loadtxt(tensor_file)
-    element_val = tensor[element,element]
+    ax.plot(bins,re[c,:],linestyle='-',linewidth=1,label=str(output_dir),color=colours[i])
 
-    ax.annotate('', xy=(0,element_val), xycoords='data', xytext=(-0.4, element_val), 
-            arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color='purple'),
-            #arrowprops=dict(width=0.5),
-            color='red')
 
-    c2 = 'darkgoldenrod'
-    ax.axhline(y=(element_val*4), xmin=0, xmax=100,color=c2,linestyle='--',linewidth=1.5)
+   
 
-    ax.annotate('', xy=(2,4*element_val), xycoords='data', xytext=(2,element_val), 
-            arrowprops=dict(arrowstyle="-|>, head_width=0.3, head_length=0.7",color=c2),
-            #arrowprops=dict(width=0.5),
-            color='red')
-
-    ax.text( x=2.1,y=2*element_val, s=r'$\times 4$', color=c2)
     
 
 

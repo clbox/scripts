@@ -3,7 +3,7 @@ import sys
 from ase.io import read
 import glob
 from mem_energy_loss import read_memory_kernel
-import venus_traj_project as vjp
+import venus.venus_traj_project as vjp
 
 # mem_file = (glob.glob(sys.argv[1]+'/*friction_memory_kernel.out'))[0]
 # bins,re,im,dimension,max_e = read_memory_kernel(mem_file)

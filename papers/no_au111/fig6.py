@@ -174,7 +174,6 @@ ax[0].errorbar(exp[:,0],exp[:,1],yerr=exp[:,2]-exp[:,1],markersize=4,capsize=3,e
 ax[0].errorbar([-100,-50],[-60,-70],yerr=10,markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='--',color='black',label='EXPT')
 ###########################
 ax[0].annotate(r'$\nu_i = 2$',ha="right", **annotate_args)
-ax[0].tick_params(axis='both', which='major')
 ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
 #ax.legend(fontsize=15)
 ax[0].xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -238,10 +237,10 @@ all_ratios = np.array(high_results['ratios'])
 all_v = np.array(high_results['vi'])
 all_pes = np.array(high_results['pes'])
 print(all_v)
-colours = ['indigo','maroon','salmon','red']
+colours = np.array((['maroon','navy'],['salmon','dodgerblue']))
 for i,v in enumerate(['11','16']):
     for p, pes in enumerate([1,2]):
-        bar_colour = colours[i+p]
+        bar_colour = colours[p,i]
         vib_state = int(v)
 
         idx = np.argwhere((all_v == vib_state) & (all_pes == pes))

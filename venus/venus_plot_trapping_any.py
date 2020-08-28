@@ -9,6 +9,17 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 from scipy.optimize import curve_fit
+SMALL_SIZE = 9.5
+MEDIUM_SIZE = 9.5
+BIGGER_SIZE = 9.5
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 # from matplotlib import rc
 # #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 # rc('font',**{'family':'serif','serif':['Times']})
@@ -30,7 +41,7 @@ exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 
-annotate_args = {'fontsize' : 12, 'xy' : (0.32,0.8), 'xycoords' : 'figure fraction'}
+annotate_args = {'xy' : (0.72,0.8), 'xycoords' : 'figure fraction'}
 
 results = {'mode' : [], 'incidence_es' : [], 'ratios' : []}
 
@@ -63,7 +74,7 @@ for i,filename in enumerate(filenames):
     if 'i4' in os.path.abspath(filename):
         mode += r'[$ \mathbf{\Lambda} \times 4$]'
     if 'pes' in os.path.abspath(filename):
-        mode += r' PES$_\mathrm{rs}$'
+        mode += r'[RS]'
 
     results['mode'].append(mode)
     results['ratios'].append(ratio)
@@ -104,30 +115,24 @@ for i,v in enumerate(['02','03','11','15','16']):
     if v in filenames[0]:
         bar_colour = colours[i]
         vib_state = int(v)
-ax.bar(all_modes,all_ratios,color=bar_colour,edgecolor='black')
+ax.barh(all_modes,all_ratios,color=bar_colour,edgecolor='black')
 ax.annotate(r'$\nu_i = {}$'.format(vib_state), **annotate_args)
 
-###########################
-font='Arial'
-for tick in ax.get_xticklabels():
-    tick.set_fontname(font)
-for tick in ax.get_yticklabels():
-    tick.set_fontname(font)
 
 
-ax.tick_params(axis='both', which='major', labelsize=12)
-ax.set_xticklabels(labels=all_modes,rotation='vertical')
+
+ax.set_yticklabels(labels=all_modes)
 # ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 #ax.legend(fontsize=15)
 
 # ax.xaxis.set_minor_locator(MultipleLocator(0.05))
 # ax.xaxis.set_major_locator(MultipleLocator(0.2))
 
-ax.yaxis.set_minor_locator(MultipleLocator(0.05))
-# ax.yaxis.set_major_locator(MultipleLocator(0.2))
+ax.xaxis.set_minor_locator(MultipleLocator(0.05))
+ax.xaxis.set_major_locator(MultipleLocator(0.1))
 
 #ax.set_xlim(0,0.8)
-ax.set_ylim(0,0.5)
+ax.set_xlim(0,0.5)
 
 
 #ax.set_yscale('log')  
@@ -137,15 +142,11 @@ fig.set_figwidth(3.25)
 
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
 
-ax.set_xlabel('Model',fontsize=12,fontname=font)#,color='white')
-ax.set_ylabel('Population',fontsize=12,fontname=font)#,color='white')
+ax.set_ylabel('Model')#,color='white')
+ax.set_xlabel('Population')#,color='white')
 
-plt.gcf().subplots_adjust(left=0.3,bottom=0.5)
+plt.gcf().subplots_adjust(left=0.4,bottom=0.2)
 
 #fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('trapped.pdf',transparent=True)#,bbox_inches='tight')
-
-fig.legend(ncol=2,fontsize=12,fancybox=True,framealpha=0)
-ax.remove()
-fig.savefig('legend.pdf',transparent=True)#,bbox_inches='tight')
