@@ -36,7 +36,7 @@ ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDF
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF Ref', 'alpha' : 1.0}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 1.0}
-
+d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'indigo', 'label' : r'ODF [$\Lambda_{rr} \times 4$]', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.03,0.91), 'xycoords' : 'axes fraction'}
 
 results = {'initial' : [], 'final' : [], 'mode' : [], 'incidence_e' : [], 'ratio' : []}
@@ -128,9 +128,12 @@ for i,filename in enumerate(filenames):
     states = dis[:,0]
     pops = dis[:,1]
 
-
+    
     if 'tdpt' in os.path.abspath(filename):
         mode = 'tdpt'
+
+        if 'd4' in os.path.abspath(filename):
+            mode = 'd4'
 
     elif 'bomd' in os.path.abspath(filename):
         mode = 'bomd'
@@ -183,7 +186,7 @@ for initial_state in [2,3]:
         if initial_state == 2 and final_state >= 2:
             continue
         
-        for mode in ['ldfa','bomd','tdpt','pes']:
+        for mode in ['ldfa','bomd','tdpt','pes','d4']:
             if mode=='tdpt':
                 mode_args = tdpt_args.copy()
                 zorder=3
@@ -193,6 +196,8 @@ for initial_state in [2,3]:
             if mode=='ldfa':
                 mode_args = ldfa_args.copy()
                 zorder=2
+            if mode=='d4':
+                mode_args = d4_args.copy()
 
             idx = np.argwhere((all_modes==mode) & (all_initials == initial_state) & (all_finals == final_state)).flatten()
             incidence_es = all_eis[idx]

@@ -8,6 +8,7 @@ matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
+from matplotlib import gridspec
 SMALL_SIZE = 9.5
 MEDIUM_SIZE = 9.5
 BIGGER_SIZE = 9.5
@@ -66,7 +67,21 @@ exp_v3tov3 = np.array([[0.09586, 0.7539],
 
 v3_exp = [exp_v3tov1,exp_v3tov2,exp_v3tov3]
 
-fig, ax = plt.subplots(4, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
+fig = plt.figure()
+gs0 = gridspec.GridSpec(3,1,height_ratios=[0.3,0.000005,1])
+
+gs00 = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=gs0[0], hspace=0)
+ax0 = fig.add_subplot(gs00[0])
+
+gx = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=gs0[1], hspace=-0.2)
+
+gs01 = gridspec.GridSpecFromSubplotSpec(3, 1, subplot_spec=gs0[2:], hspace=0.2)
+ax1 = fig.add_subplot(gs01[0])
+ax2 = fig.add_subplot(gs01[1])
+ax3 = fig.add_subplot(gs01[2])
+
+ax = [ax0,ax1,ax2,ax3]
+
 
 final_state = 1
 for i in range(4):
@@ -200,11 +215,11 @@ for i in range(4):
         ax[i].tick_params(axis='both', which='major')
         ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
         ax[i].xaxis.set_minor_locator(MultipleLocator(0.05))
-        ax[i].xaxis.set_major_locator(MultipleLocator(0.3))
+        ax[i].xaxis.set_major_locator(MultipleLocator(0.2))
         ax[i].yaxis.set_minor_locator(MultipleLocator(0.05))
-        ax[i].yaxis.set_major_locator(MultipleLocator(0.3))
+        ax[i].yaxis.set_major_locator(MultipleLocator(0.2))
 
-
+ax[0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 ax[3].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 
 ax[0].set_ylabel(r'$P(1)/P(2)$',fontname=font,color='black')
@@ -215,8 +230,8 @@ ax[1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 ax[2].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
 ax[1].set_ylim(0,0.6)
-ax[2].set_ylim(0,1.2)
-ax[3].set_ylim(0,1.2)
+ax[2].set_ylim(0,1.)
+ax[3].set_ylim(0,1.)
 
 ax[0].set_xlim(0,0.7)
 ax[0].set_yscale('log')  
@@ -226,7 +241,7 @@ ax[0].set_yticks(labels)
 ax[0].set_ylim(1e-3,1)
 
 
-fig.set_figheight(4.)
+fig.set_figheight(5.)
 fig.set_figwidth(3.25)
 plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 5.55), loc='center')
 plt.subplots_adjust(hspace=0.3)

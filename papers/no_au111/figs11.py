@@ -223,4 +223,6 @@ plt.subplots_adjust(hspace=0.6,wspace=0.6)
 fig.set_figwidth(3.25)
 fig.set_figheight(3.0)
 
-fig.savefig('scatter.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('figs11.pdf',transparent=True,bbox_inches='tight')
+#fig.savefig('figs11.eps',transparent=True,bbox_inches='tight')
+fig.savefig('figs11.png',dpi=300,transparent=True,bbox_inches='tight')

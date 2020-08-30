@@ -35,7 +35,7 @@ O_mass = 14.0067
 N_mass = 15.999
 
 
-mode = sys.argv[1] #theta or r
+mode = sys.argv[1] #theta or r or xy
 
 mode2 = sys.argv[2] #orient or final
 
@@ -112,15 +112,15 @@ ax_marg_y = fig.add_subplot(gs[1:4,3])
 
 
 
-
+com_bins = np.linspace(1,3,100)
 
 if mode2 == 'orient':
     labels = [r'N $\downarrow$',r'O $\downarrow$']
     for i,atom in enumerate(['n','o']):
         zorder=5-i
         #indices = (np.where((np.array(results['final_v'])==16) & (np.array(results['atom_first'])==atom)))[0]
-        indices = (np.where((np.array(results['atom_first'])==atom)))[0]
-        #indices = (np.where((np.array(results['final_v'])==-1) & (np.array(results['atom_first'])==atom)))[0]
+        #indices = (np.where((np.array(results['atom_first'])==atom)))[0]
+        indices = (np.where((np.array(results['final_v'])==-1) & (np.array(results['atom_first'])==atom)))[0]
         pos1 = np.array((results['pos1']))[indices,:]
         pos2 = np.array((results['pos2']))[indices,:]
 
@@ -139,12 +139,13 @@ if mode2 == 'orient':
 
         if mode == 'r':
             r_bins = np.linspace(1,1.5,100)
-            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
+            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=1,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
             ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
         else:
-            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=10,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
-            ax_marg_x.hist(angle,color=colours[i],alpha=0.5,zorder=zorder,density=False)
-        ax_marg_y.hist(centre_mass_z,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
+            theta_bins = np.linspace(-90,90,100)
+            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=1,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
+            ax_marg_x.hist(angle,bins=theta_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
+        ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
 else:
     facecolours = ['none','red']
     for i,v in enumerate([-1,0,1,2,3]):
@@ -157,6 +158,12 @@ else:
         pos1 = np.array((results['pos1']))[indices,:]
         pos2 = np.array((results['pos2']))[indices,:]
 
+        x1 =  pos1[:,0]
+        x2 = pos2[:,0]
+
+        z1 =  pos1[:,1]
+        z2 = pos2[:,1]
+
         y1 = pos1[:,2]
         y2 = pos2[:,2]
         centre_mass_z = (y1*O_mass + y2*N_mass) / (O_mass + N_mass)
@@ -170,12 +177,20 @@ else:
 
         if mode == 'r':
             r_bins = np.linspace(1,1.5,100)
-            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=10,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
+            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=1,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
             ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
+            ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
+        elif mode == 'xy':
+            xy_bins = np.linspace(-10,10,100)
+            ax_joint.scatter(COM[:,0],COM[:,1],zorder=zorder,s=1,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
+            ax_marg_x.hist(COM[:,0],bins=xy_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
+            ax_marg_y.hist(COM[:,1],bins=xy_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
         else:
-            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=10,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
-            ax_marg_x.hist(angle,color=colours[i],alpha=0.5,zorder=zorder,density=False)
-        ax_marg_y.hist(centre_mass_z,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
+            theta_bins = np.linspace(-90,90,100)
+            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=1,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
+            ax_marg_x.hist(angle,bins=theta_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
+            ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
+        
 
 
 
@@ -185,7 +200,7 @@ else:
 
 #Limits
 ax_joint.legend(ncol=2,handletextpad=0.15,columnspacing=0.2,fancybox=True,framealpha=1,handlelength=1,bbox_to_anchor=(0.5, 1.05), loc='center')
-ax_marg_y.set_ylim(1.25,3)
+
 
 annotate_args = {'xy' : (0.01,0.05), 'xycoords' : 'axes fraction'}
 ax_joint.annotate(r'$\nu_i = 3$',ha="left", **annotate_args)
@@ -199,6 +214,16 @@ if mode == 'r':
     ax_joint.set_xlabel(r"r / $\mathrm{\AA{}}$")
     ax_marg_x.xaxis.set_minor_locator(MultipleLocator(0.05))
     ax_marg_x.xaxis.set_major_locator(MultipleLocator(0.1))
+    ax_marg_y.set_ylim(1.25,3)
+    ax_joint.set_ylim(1.25,3)
+    ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")
+elif mode == 'xy':
+    ax_joint.set_ylabel(r"y / $\mathrm{\AA{}}$")
+    ax_joint.set_xlabel(r"x / $\mathrm{\AA{}}$")
+    ax_marg_x.set_xlim(-10,10)
+    ax_joint.set_xlim(-10,10)
+    ax_marg_y.set_ylim(-1,10)
+    ax_joint.set_ylim(-1,10)
 else:
     ax_marg_x.set_xlim(-90,90)
     ax_joint.set_xlim(-90,90)
@@ -208,10 +233,13 @@ else:
     ax_joint.set_xlabel(r"$\theta$")
     ax_marg_x.xaxis.set_minor_locator(MultipleLocator(5))
     ax_marg_x.xaxis.set_major_locator(MultipleLocator(30))
+    ax_marg_y.set_ylim(1.25,3)
+    ax_joint.set_ylim(1.25,3)
+    ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")
 
 
 
-ax_joint.set_ylim(1.25,3)
+
 ax_joint.yaxis.set_major_locator(MultipleLocator(0.25))
 ax_joint.yaxis.set_minor_locator(MultipleLocator(0.05))
 
@@ -223,7 +251,7 @@ plt.setp(ax_marg_y.get_yticklabels(), visible=False)
 # Set labels on joint
 # 
 
-ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")
+
 
 # Set labels on marginals
 ax_marg_x.set_ylabel('Frequency')
@@ -235,3 +263,4 @@ fig.set_figwidth(3.25)
 fig.set_figheight(3.0)
 
 fig.savefig('scatter.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('scatter.png',dpi=300,transparent=True,bbox_inches='tight')
