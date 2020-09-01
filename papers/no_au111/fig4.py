@@ -51,7 +51,8 @@ exp_colour = 'gold'
 fig, ax = plt.subplots(2, 2)#, sharex='all',sharey='all')#, constrained_layout=True)
 
 
-fig.delaxes(ax[0,0])
+#fig.delaxes(ax[0,0])
+ax[0,0].axis('off')
 # img = mpimg.imread('drawing.png')
 # ax[0,0].imshow(img)
 
