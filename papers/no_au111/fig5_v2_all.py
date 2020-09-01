@@ -154,9 +154,9 @@ for i,filename in enumerate(filenames):
         
 
         if 'tdpt' in os.path.abspath(filename):
-            mode_args['color'] = 'mediumorchid'
-            mode_args['marker'] = 'o'
-            mode_args['linestyle'] = '-'
+            mode_args['color'] = 'indigo'
+            mode_args['marker'] = 'x'
+            mode_args['linestyle'] = ':'
         if 'ldfa' in os.path.abspath(filename):
             mode_args['color'] = 'dodgerblue'
             mode_args['linestyle'] = '-.'
@@ -166,7 +166,7 @@ for i,filename in enumerate(filenames):
         mode_args['linestyle'] = '-.'
 
     if 'd4' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r' [$\Lambda_{rr} \times 4$]'
+        mode_args['label'] = mode_args['label'] + r'[$\Lambda_{rr} \times 4$]'
         mode_args['linestyle'] = '-'
         mode_args['marker'] = '^'
         mode_args['color'] = 'mediumorchid'
@@ -174,7 +174,7 @@ for i,filename in enumerate(filenames):
     if 'pes' in os.path.abspath(filename):
         mode_args['color'] = 'green'
         mode_args['marker'] = 'v'
-        mode_args['label'] = mode_args['label'] + r'+ PES(2)'
+        mode_args['label'] = mode_args['label'] + r'[RS]'
     
     if 'v02' in os.path.abspath(filename):
         indices = [0,0]
@@ -210,7 +210,7 @@ ax[1,1].set_ylabel('Population',fontname=font,color='black')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
 fig.set_figheight(3)
 fig.set_figwidth(3.25)
-plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 2.8), loc='center')
+plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 2.8), loc='center')
 #plt.tight_layout()
 #plt.subplots_adjust(hspace=1.2)
 #plt.gcf().subplots_adjust(right=0.01)

@@ -118,9 +118,10 @@ if mode2 == 'orient':
     labels = [r'N $\downarrow$',r'O $\downarrow$']
     for i,atom in enumerate(['n','o']):
         zorder=5-i
-        #indices = (np.where((np.array(results['final_v'])==16) & (np.array(results['atom_first'])==atom)))[0]
-        #indices = (np.where((np.array(results['atom_first'])==atom)))[0]
         indices = (np.where((np.array(results['final_v'])==-1) & (np.array(results['atom_first'])==atom)))[0]
+        #indices = (np.where((np.array(results['atom_first'])==atom)))[0]
+        print('Number of {} first is {}'.format(atom,len(indices)))
+        #indices = (np.where((np.array(results['final_v'])==-1) & (np.array(results['atom_first'])==atom)))[0]
         pos1 = np.array((results['pos1']))[indices,:]
         pos2 = np.array((results['pos2']))[indices,:]
 
@@ -138,7 +139,7 @@ if mode2 == 'orient':
         angle = np.arcsin((y1-y2)/r) * 180/np.pi
 
         if mode == 'r':
-            r_bins = np.linspace(1,1.5,100)
+            r_bins = np.linspace(1,2.,100)
             ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=1,label=labels[i],marker=markers[i],facecolors="None",edgecolors=colours[i])
             ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
         else:
@@ -148,13 +149,18 @@ if mode2 == 'orient':
         ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
 else:
     facecolours = ['none','red']
-    for i,v in enumerate([-1,0,1,2,3]):
+    for i,v in enumerate([-1,2]):
         ii=0
-        zorder=5-i
+        zorder=-i
+
+        if v == -1:
+            label = 'Trapped'
+        else:
+            label = r'$\nu_{f} =$ ' + str(v)
         #for ii,atom in enumerate(['n','o']):
         #indices = (np.where((np.array(results['final_v'])==v) & (np.array(results['atom_first'])==atom)))[0]
         indices = (np.where((np.array(results['final_v'])==v)))[0]
-
+        
         pos1 = np.array((results['pos1']))[indices,:]
         pos2 = np.array((results['pos2']))[indices,:]
 
@@ -177,17 +183,17 @@ else:
 
         if mode == 'r':
             r_bins = np.linspace(1,1.5,100)
-            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=1,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
+            ax_joint.scatter(r,centre_mass_z,zorder=zorder,s=1,label=label,marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
             ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
             ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
         elif mode == 'xy':
             xy_bins = np.linspace(-10,10,100)
-            ax_joint.scatter(COM[:,0],COM[:,1],zorder=zorder,s=1,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
+            ax_joint.scatter(COM[:,0],COM[:,1],zorder=zorder,s=1,label=label,marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
             ax_marg_x.hist(COM[:,0],bins=xy_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
             ax_marg_y.hist(COM[:,1],bins=xy_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
         else:
             theta_bins = np.linspace(-90,90,100)
-            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=1,label=str(v),marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
+            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,s=1,label=label,marker=markers[i],facecolors=facecolours[ii],edgecolors=colours[i])
             ax_marg_x.hist(angle,bins=theta_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
             ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
         
@@ -206,14 +212,14 @@ annotate_args = {'xy' : (0.01,0.05), 'xycoords' : 'axes fraction'}
 ax_joint.annotate(r'$\nu_i = 3$',ha="left", **annotate_args)
 annotate_args['xy'] = (0.01,0.9)
 if mode == 'r':
-    ax_joint.set_xlim(1,1.5)
-    ax_marg_x.set_xlim(1,1.5)
+    ax_joint.set_xlim(1.,1.5)
+    ax_marg_x.set_xlim(1.,1.5)
     ax_joint.annotate(r'(b)',ha="left", **annotate_args)
     ax_joint.xaxis.set_minor_locator(MultipleLocator(0.05))
     ax_joint.xaxis.set_major_locator(MultipleLocator(0.1))
     ax_joint.set_xlabel(r"r / $\mathrm{\AA{}}$")
     ax_marg_x.xaxis.set_minor_locator(MultipleLocator(0.05))
-    ax_marg_x.xaxis.set_major_locator(MultipleLocator(0.1))
+    ax_marg_x.xaxis.set_major_locator(MultipleLocator(0.2))
     ax_marg_y.set_ylim(1.25,3)
     ax_joint.set_ylim(1.25,3)
     ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")

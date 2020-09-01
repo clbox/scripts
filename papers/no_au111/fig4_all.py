@@ -61,7 +61,7 @@ exp = np.loadtxt('v03_iso_950.txt')
 err = np.array([0.189,0.206,0.473,0.306])-exp[:,1]
 p1 = ax[0,1].bar(exp[:,0],exp[:,1],color=exp_colour,edgecolor='black'
         ,yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT')
-ax[0,1].set_xlim(-0.5,3.5)
+ax[0,1].set_xlim(-0.5,5.5)
 ax[0,1].set_ylim(0,0.9)
 ax[0,1].annotate(r'Isotropic',ha="left",**annotate_args)
 
@@ -70,7 +70,7 @@ exp = np.loadtxt('v03_nfirst_950.txt')
 err = np.array([0.232,0.262,0.646,0.180])-exp[:,1]
 p2 = ax[1,0].bar(exp[:,0],exp[:,1],color='cornflowerblue',edgecolor='black',
         yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT')
-ax[1,0].set_xlim(-0.5,3.5)
+ax[1,0].set_xlim(-0.5,5.5)
 ax[1,0].set_ylim(0,0.9)
 ax[1,0].annotate(r'N$\downarrow$', ha="left",**annotate_args)
 
@@ -79,7 +79,7 @@ exp = np.loadtxt('v03_ofirst_950.txt')
 err = np.array([0.143,0.165,0.401,0.456])-exp[:,1]
 p3 = ax[1,1].bar(exp[:,0],exp[:,1],color="lightcoral",edgecolor='black',
         yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT'))#,label=r'EXPT')
-ax[1,1].set_xlim(-0.5,3.5)
+ax[1,1].set_xlim(-0.5,5.5)
 ax[1,1].set_ylim(0,0.9)
 ax[1,1].annotate(r'O$\downarrow$', ha="left",**annotate_args)
 
@@ -115,9 +115,9 @@ for i,filename in enumerate(filenames):
 
     if 'i2' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 2$]'
-        mode_args['linestyle'] = '-'
+        mode_args['linestyle'] = ':'
         mode_args['color'] = 'indigo'
-        mode_args['marker'] = '^'
+        mode_args['marker'] = 'x'
 
     if 'i3' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'$\times 3$'
@@ -148,7 +148,7 @@ for i,filename in enumerate(filenames):
         mode_args['color'] = 'green'
         mode_args['marker'] = 'v'
         mode_args['linestyle'] = '-.'
-        mode_args['label'] = mode_args['label'] + r' PES$_{\mathrm{rs}}$'
+        mode_args['label'] = mode_args['label'] + r'[RS]'
     
     if '_n' in os.path.abspath(filename):
         indices = [1,0]
@@ -202,13 +202,13 @@ labels.append('EXPT')
 
 ax[0,1].legend(handles,labels,numpoints=1,
                 handler_map={tuple: HandlerTuple(ndivide=None)},
-                ncol=4,handletextpad=0.15,columnspacing=0.6,
-                fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 1.1), loc='center')
+                ncol=3,handletextpad=0.15,columnspacing=0.6,
+                fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 1.15), loc='center')
 
 ax[0,1].yaxis.set_label_position("right")
 ax[0,1].yaxis.tick_right()
 
-fig.set_figheight(3.)
+fig.set_figheight(3.2)
 fig.set_figwidth(3.25)
 # plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 2.25), loc='center')
 #plt.tight_layout()

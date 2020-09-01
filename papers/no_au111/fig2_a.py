@@ -220,7 +220,8 @@ for i in range(2):
         for tick in ax[i,j].get_yticklabels():
             tick.set_fontname(font)
 
-
+ax[0,0].yaxis.set_minor_locator(MultipleLocator(0.1))
+ax[0,1].yaxis.set_minor_locator(MultipleLocator(0.1))
 # ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
 fig.set_figheight(5.)
 fig.set_figwidth(3.25)

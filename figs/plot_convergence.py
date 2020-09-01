@@ -21,9 +21,9 @@ broad = False
 if 'k_grid' in  os.path.abspath(filenames[1]) or 'kgrid' in  os.path.abspath(filenames[1]):
     kgrid = True
     print('kgrid')
-if 'broadening' in  os.path.abspath(filenames[1]):
+elif 'broadening' in  os.path.abspath(filenames[1]):
     broad = True
-    print('broac')
+    print('broad')
 
 
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')#, constrained_layout=True)

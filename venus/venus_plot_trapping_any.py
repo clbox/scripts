@@ -20,18 +20,13 @@ plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-# from matplotlib import rc
-# #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-# rc('font',**{'family':'serif','serif':['Times']})
-# rc('text', usetex=True)
-annotate=True
 matplotlib.rcParams['font.sans-serif'] = "Arial"
-# Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
 filenames = sys.argv[1:]
 
-colours = ['indigo','maroon','darkgreen','darkorange','navy']
+colours = ['indigo','darkgreen','maroon','darkorange','navy']
+colours2 = ['mediumorchid','green','salmon','orange','dodgerblue']
 
 tdpt_args = {'marker' : 'o', 'linestyle' : '-','color' : 'purple', 'label' : r'ODF', 'alpha' : 1.0}
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF (r) $\times 4$', 'alpha' : 1.0}
@@ -41,9 +36,9 @@ exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 
-annotate_args = {'xy' : (0.72,0.8), 'xycoords' : 'figure fraction'}
+annotate_args = {'xy' : (0.87,0.8), 'xycoords' : 'figure fraction'}
 
-results = {'mode' : [], 'incidence_es' : [], 'ratios' : []}
+results = {'mode' : [], 'incidence_es' : [], 'ratios' : [], 'pes' : []}
 
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')#, constrained_layout=True)
 
@@ -58,6 +53,11 @@ for i,filename in enumerate(filenames):
         continue
 
     ratio = dis[-1,1]/np.sum(dis[:,1])
+
+    if 'pes' in os.path.abspath(filename):
+        pes = 1
+    else:
+        pes = 0
     
     if 'tdpt' in os.path.abspath(filename):
         mode = 'ODF'
@@ -73,55 +73,46 @@ for i,filename in enumerate(filenames):
     
     if 'i4' in os.path.abspath(filename):
         mode += r'[$ \mathbf{\Lambda} \times 4$]'
-    if 'pes' in os.path.abspath(filename):
-        mode += r'[RS]'
+
+    if 'i2' in os.path.abspath(filename):
+        mode += r'[$ \mathbf{\Lambda} \times 2$]'
+
 
     results['mode'].append(mode)
     results['ratios'].append(ratio)
+    results['pes'].append(pes)
 
 all_modes = np.array(results['mode'])
 all_ratios = np.array(results['ratios'])
-
-# for mode in ['bomd','ldfa','tdpt','d4']:
-#     print(mode)
-#     idx = np.argwhere(all_modes==mode)
-
-#     idx = idx[:,0]
+all_pes = np.array(results['pes'])
 
 
-    
-#     incidence_es = all_eis[idx]
-#     print(incidence_es)
-#     ratios = all_ratios[idx]
 
-#     order = np.argsort(incidence_es)
-#     incidence_es = incidence_es[order]
-#     ratios = ratios[order]
+for p in range (2):
+    idx = np.argwhere( (all_pes == p))
+    idx = idx[:,0]
+    modes = all_modes[idx]
+    ratios = all_ratios[idx]
 
-#     if mode=='tdpt':
-#         mode_args = tdpt_args.copy()
-#     if mode=='bomd':
-#         mode_args = bomd_args.copy()
-#     if mode=='ldfa':
-#         mode_args = ldfa_args.copy()
-#     if mode=='d4':
-#         mode_args = d4_args.copy()
+    for i,v in enumerate(['02','03','11','15','16']):
+        if v in filenames[0]:
+            if p == 0:
+                bar_colour = colours[i]
+            else:
+                bar_colour = colours2[i]
+            vib_state = int(v)
 
-#     mode_args['linestyle'] = 'None'
-#     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
-print(all_modes)
-print(all_ratios)
-for i,v in enumerate(['02','03','11','15','16']):
-    if v in filenames[0]:
-        bar_colour = colours[i]
-        vib_state = int(v)
-ax.barh(all_modes,all_ratios,color=bar_colour,edgecolor='black')
-ax.annotate(r'$\nu_i = {}$'.format(vib_state), **annotate_args)
+    print(modes)
+    ax.barh(modes,ratios,color=bar_colour,edgecolor='black')
+
+if vib_state == 16:
+    annotate_args['xy'] = (0.87,0.25)
+ax.annotate(r'$\nu_i = {}$'.format(vib_state),ha='right', **annotate_args)
 
 
 
 
-ax.set_yticklabels(labels=all_modes)
+#ax.set_yticklabels(labels=all_modes)
 # ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 #ax.legend(fontsize=15)
 

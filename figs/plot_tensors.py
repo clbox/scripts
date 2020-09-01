@@ -1,78 +1,94 @@
-#Reads in tensor from aims.out. Made specifically for large tensors where each row of the tensor is
-#printed over multiple lines in aims.out but should work in normal (small) tensors. With a geometry.in file present
-#it labels the tensor with the atoms and the corresponding .csv file. No arguments needed
-
-import matplotlib.pyplot as plt
+from matplotlib.pyplot import legend
 import numpy as np
+import sys
 import os
 import glob
-import sys
+from pathlib import Path
+import matplotlib
+matplotlib.use('PDF')
+import matplotlib.pyplot as plt
+from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
+                               AutoMinorLocator, MaxNLocator)
+SMALL_SIZE = 9.5
+MEDIUM_SIZE = 9.5
+BIGGER_SIZE = 9.5
 
-tensors = [None]*len(sys.argv[1:])
-dirs = [None]*len(sys.argv[1:])
-for idx,output in enumerate(sys.argv[1:]):
-    print(idx)
-    dirs[idx]=float((output.split('/'))[0])
-    #Reading tensor from aims.out
-    lines = open(str(output)).readlines()
-    raw_lines = []
-    copy = False
-    for line in lines:
-        if '********Printing Friction Tensor in 1/ps*********' in line:
-            copy = True
-            continue
-        if '**********END Printing Friction Tensor************' in line:
-            copy = False
-        if copy:
-            raw_lines.append(line)
-            #for j in range(ndim):
-                #friction_tensor[i,j]=float(line.split()[j])
-    
-    
-    
-                
-    a = len(raw_lines[0].split())
-    lines_per_line = 0
-    for i,line in enumerate(raw_lines):
-        if i == 0:
-            continue
-        if len(line.split()) != a:
-            lines_per_line += 1
-        if len(line.split()) == a:
-            break
-    
-    ndim = (a - 1)*(lines_per_line+1)
-    print(ndim)
-    friction_tensor = np.zeros((ndim,ndim))
-    print('lines per line '+str(lines_per_line+1))
-    c=0
-    i=-1
-    for ii, line in enumerate(raw_lines):
-        
-        if c == lines_per_line+1 or c==0:
-            i+=1
-            c=0
-        
-        for j in range(ndim/(lines_per_line+1)):
-            if c ==0:
-                friction_tensor[i,j]=float(line.split()[j+1])
-            else:
-                friction_tensor[i,j+((ndim/(lines_per_line+1))*c)]=float(line.split()[j])
-        c+=1
-    
-    tensors[idx]=friction_tensor
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+matplotlib.rcParams['font.sans-serif'] = "Arial"
+# Then, "ALWAYS use sans-serif fonts"
+matplotlib.rcParams['font.family'] = "sans-serif"
 
 
-tensors_ary = np.asarray(tensors)
-fig, ax = plt.subplots(ndim, ndim, sharex='all', sharey='all')
+markers = ['o','s','^']
+colours = ['navy','forestgreen','maroon']
 
-for i in range(ndim):
-    for j in range(ndim):
-        ax[i,j].plot(dirs,tensors_ary[:,i,j],'s-')
-        ax[i,j].set_ylim(1.5,1.8)
+legend_labels = ['Adsorption', 'Reactant','Transition state']
 
-fig.set_figheight(10)
-fig.set_figwidth(10)
-fig.text(0.5, 0.01, "Temperature / K", ha='center',fontsize=15)
-fig.text(0.01, 0.5, r'$\Lambda\ /\ \mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=15)
-fig.savefig('tensor_plot.pdf',transparent=True,bbox_inches='tight')
+i = int(sys.argv[1])
+j = int(sys.argv[2])
+tensors = sys.argv[3:]
+x = []
+y = []
+results = {'geom' : [], 'cov' : [],'val' : []}
+
+for t,tensor in enumerate(tensors):
+    data = np.loadtxt(tensor)
+
+
+    results['geom'].append(os.path.dirname(os.path.dirname(tensor)))
+    results['cov'].append(int(os.path.dirname(tensor)[-1]))
+    results['val'].append(data[i,j])
+
+
+
+fig, ax = plt.subplots(1, 1)
+
+geoms = np.array(results['geom'])
+covs = np.array(results['cov'])
+vals = np.array(results['val'])
+
+unique = list(set(results['geom']))
+unique.sort()
+for g,geom in enumerate(unique):
+    print(geom)
+    idx = np.argwhere((geoms==geom)).flatten()
+    x = covs[idx]
+    y = vals[idx]
+    ax.plot(x,y,label=geom,marker=markers[g],linestyle='-',color=colours[g])
+
+
+ax.set_ylabel(r'$\Lambda_{\mathrm{rr}}$ / ps$^{-1}$',color='black')
+ax.set_xlabel(r'Unit cell',color='black')
+
+ticks=[]
+tick_labels = []
+labels= set(results['cov'])
+for i in labels:
+    ticks.append(int(i))
+    tick_labels.append(r'p({}$\times${})'.format(i,i))
+
+ax.set_xticks(ticks)
+ax.set_xticklabels(tick_labels)
+ax.set_ylim(0,1)
+
+
+
+handles,labels = ax.get_legend_handles_labels()
+
+handles = handles
+labels = legend_labels
+
+ax.yaxis.set_minor_locator(MultipleLocator(0.05))
+ax.yaxis.set_major_locator(MultipleLocator(0.1))
+
+
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
+fig.set_figheight(2.)
+fig.set_figwidth(3.25)
+fig.savefig('fig.pdf',transparent=True,bbox_inches='tight')

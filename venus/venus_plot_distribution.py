@@ -11,6 +11,26 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 import sys
 import scipy
 from scipy import optimize
+
+
+SMALL_SIZE = 9.5
+MEDIUM_SIZE = 9.5
+BIGGER_SIZE = 9.5
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+matplotlib.rcParams['font.sans-serif'] = "Arial"
+# Then, "ALWAYS use sans-serif fonts"
+matplotlib.rcParams['font.family'] = "sans-serif"
+
+
+
 x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
@@ -343,7 +363,7 @@ def cosine_fit(x,m,x0):
     return y
 
 
-bins = np.linspace(0, 100, 15)
+bins = np.linspace(0, 100, 20)
 theta = np.linspace(0,2*np.pi,200)
 rho = np.cos(theta)
 x = (bins[1:] + bins[:-1]) / 2
@@ -360,7 +380,7 @@ all_angles = single_bounce_angles+double_bounce_angles+multi_bounce_angles
 print(np.shape(all_angles))
 list_of_angles = [single_bounce_angles,double_bounce_angles,multi_bounce_angles,all_angles]
 
-
+markers =['^','s','.','o']
 for i in range(4):
     #digitized = np.digitize(list_of_angles[i], bins)
     if i in [1,2]:
@@ -370,9 +390,10 @@ for i in range(4):
 
 
 
-    ax.plot(x*np.pi/180,hist, '.',color=colours[i],label = labels[i])
+    ax.plot(x*np.pi/180,hist, '.',color=colours[i],label = labels[i],marker=markers[i],markersize=3)
     
     popt, pcov = scipy.optimize.curve_fit(cosine_fit,x*np.pi/180,hist)
+    print('m, theta0')
     print(popt)
     ax.plot(theta,cosine_fit(theta,*popt),'-',color=colours[i])
 
@@ -384,19 +405,14 @@ for i in range(4):
 # plt.polar(bins/np.pi,(np.cos(bins*np.pi/180)**14)/100,'black',linestyle=':')
 
 #plt.polar(theta,rho)
-ax.plot(theta,rho,linestyle='--',color='black',label=r'$cos(\theta)$')
-font='Arial'
-for tick in ax.get_xticklabels():
-    tick.set_fontname(font)
-for tick in ax.get_yticklabels():
-    tick.set_fontname(font)
+ax.plot(theta,rho,linestyle='--',color='black',label=r'cos$(\theta)$')
 
-ax.tick_params(axis='both', which='major', labelsize=12)
+ax.tick_params(axis='both', which='major')
 ax.set_theta_zero_location("N")
 ax.set_xticks(np.arange(-90, 100, 10)*np.pi/180)
 ax.set_yticks([])
 #ax.xaxis.set_minor_locator(MultipleLocator(5*np.pi/180))
-ax.legend(loc=8,ncol=3,fontsize=12,fancybox=True,framealpha=0)
+ax.legend(loc=8,ncol=3,fancybox=True,framealpha=0)
 ax.set_xlim(-np.pi/2,np.pi/2)
 ax.set_ylim(0,1)
 plt.gcf().subplots_adjust(bottom=-1)

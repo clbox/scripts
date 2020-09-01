@@ -37,8 +37,8 @@ ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDF
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
-tdpt_pes_args = {'marker' : '>', 'linestyle' : '-','color' : 'orange', 'label' : r'ODF [RS]', 'alpha' : 1.0}
-bomd_pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'green', 'label' : r'BOMD [RS]', 'alpha' : 1.0}
+tdpt_pes_args = {'marker' : '>', 'linestyle' : '-','color' : 'orange', 'label' : r'ODF[RS]', 'alpha' : 1.0}
+bomd_pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'green', 'label' : r'BOMD[RS]', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.98,0.94), 'xycoords' : 'axes fraction'}
 
 results = {'mode' : [], 'incidence_es' : [], 'ratios' : [], 'vi' : []}
@@ -251,7 +251,7 @@ for i,v in enumerate(['11','16']):
 
         annotate_args['xy'] = (0.33,0.05)
         ax[i+1].barh(modes,ratios,color=bar_colour,edgecolor='black')
-        ax[i+1].annotate(r'$\nu_i = {}$'.format(vib_state), **annotate_args)
+    ax[i+1].annotate(r'$\nu_i = {}$'.format(vib_state), **annotate_args)
 
 
 for i in [1,2]:
