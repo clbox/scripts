@@ -72,7 +72,7 @@ else:
 
 
 
-ax.ylim(0,2)
+ax.set_ylim(0,2)
 ax.yaxis.set_minor_locator(MultipleLocator(0.05))
 ax.yaxis.set_major_locator(MultipleLocator(0.1))
 
