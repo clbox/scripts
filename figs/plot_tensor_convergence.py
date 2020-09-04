@@ -25,7 +25,7 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
-style = sys.argv[1] #k (k grid), b (broadening), o (other)
+style = sys.argv[1] #k (k grid), b (broadening), rc (reaction coordinate), o (other)
 markers = ['o','s','^','.','>','v']
 colours = ['red','navy','mediumorchid','maroon','dodgerblue','gold']
 linestyles = ['-','-.','--','-','-.','--']
@@ -65,6 +65,8 @@ for i in range(dimension):
 ax.set_ylabel(r'$\Lambda_{\mathrm{ij}}$ / ps$^{-1}$',color='black')
 if style =='k':
     ax.set_xlabel(r'$N_{\mathrm{k}}$',color='black')
+elif style =='rc':
+    ax.set_xlabel(r'Reaction coordinate',color='black')
 else:
     ax.set_xlabel(r'Index',color='black')
 
