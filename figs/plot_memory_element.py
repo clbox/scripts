@@ -35,8 +35,8 @@ matplotlib.rcParams['font.family'] = "sans-serif"
 colours = ['lightgrey','grey','black']
 
 labels =[]
-for i in [2,3,4]:
-    labels.append(r'p({}$\times${})'.format(i,i))
+# for i in [2,3,4]:
+#     labels.append(r'p({}$\times${})'.format(i,i))
 #labels = np.arange(0,15,1)
 
 #element to plot, BASE 0
@@ -54,7 +54,7 @@ fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
 
 for i,filename in enumerate(filenames):
     bins,re,im,dimension,max_e = read_memory_kernel(filename,treat_complex=False)
-
+    label = os.path.dirname(filename)
     c=0
     for ii in range(dimension):
         for jj in range(ii,dimension):
@@ -65,7 +65,7 @@ for i,filename in enumerate(filenames):
             c+=1
     print(d)
     output_dir = os.path.dirname(filename)
-    ax.plot(bins,re[d,:],linestyle='-',linewidth=1,label=labels[i],color=colours[i])
+    ax.plot(bins,re[d,:],linestyle='-',linewidth=1,label=label,color=colours[i])
 
 
    
@@ -85,8 +85,13 @@ ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.yaxis.set_major_locator(MultipleLocator(0.5))
 
 #ax.set_ylim(bottom=0,top=1.)
-ax.set_xlim(0,np.max(bins))
+#ax.set_xlim(0,np.max(bins))
 
+idx = np.argwhere(bins==1)
+ytop = np.max(re[d,:idx])
+ytop = np.ceil(ytop)
+
+ax.set_ylim(0,ytop)
 ax.set_xlim(left=0,right=1)
 #if len(filenames) > 1:
 #    ax.legend(loc=1,ncol=1,fancybox=True,framealpha=0)
