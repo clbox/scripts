@@ -72,10 +72,10 @@ else:
 ytop = np.max(vals)
 ytop = np.ceil(ytop)
 
-ybottom = ytop - 1
-if ybottom < 0:
-    ybottom = 0
-ax.set_ylim(ybottom,ytop)
+ymin = np.min(np.diagonal(vals,axis1=1,axis2=2))
+ymin = np.floor(ymin)
+
+ax.set_ylim(ymin,ytop)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.yaxis.set_major_locator(MultipleLocator(0.2))
