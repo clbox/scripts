@@ -97,7 +97,7 @@ ax.set_xlim(left=0,right=1)
 #if len(filenames) > 1:
 #    ax.legend(loc=1,ncol=1,fancybox=True,framealpha=0)
 ax.set_xlabel("Excitation energy / eV")
-ax.set_ylabel(r'$\Lambda_{\mathrm{ij}}(\epsilon)\ /\ \mathrm{ps}^{-1} $')
+ax.set_ylabel(r'$\Lambda_{ij}(\epsilon)\ /\ \mathrm{ps}^{-1} $')
 fig.set_figheight(2.0)
 fig.set_figwidth(3.25)
 #plt.gcf().subplots_adjust(left=0.2,bottom=0.2)
