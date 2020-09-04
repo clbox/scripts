@@ -25,12 +25,12 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
-kgrid = False
+style = sys.argv[1] #k (k grid), b (broadening), o (other)
 markers = ['o','s','^','.','>','v']
 colours = ['red','navy','mediumorchid','maroon','dodgerblue','gold']
 linestyles = ['-','-.','--','-','-.','--']
 
-tensors = sys.argv[1:]
+tensors = sys.argv[2:]
 x = []
 y = []
 results = {'geom' : [], 'idx' : [],'val' : []}
@@ -50,8 +50,6 @@ fig, ax = plt.subplots(1, 1)
 
 idxs = np.array(results['idx'])
 vals = np.array(results['val'])
-if isinstance(idxs[0], int):
-    kgrid = True
 dimension = np.shape(vals)[1]
 c=0
 for i in range(dimension):
@@ -65,7 +63,7 @@ for i in range(dimension):
 
 
 ax.set_ylabel(r'$\Lambda_{\mathrm{ij}}$ / ps$^{-1}$',color='black')
-if kgrid:
+if style =='k':
     ax.set_xlabel(r'$N_{\mathrm{k}}$',color='black')
 else:
     ax.set_xlabel(r'Index',color='black')
@@ -73,7 +71,7 @@ else:
 
 
 ax.set_ylim(0,2)
-ax.yaxis.set_minor_locator(MultipleLocator(0.05))
+ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.yaxis.set_major_locator(MultipleLocator(0.2))
 
 
