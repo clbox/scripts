@@ -48,10 +48,12 @@ annotate_args = {'xy' : (0.05,0.65), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
 
 
-fig, ax = plt.subplots(2, 2)#, sharex='all',sharey='all')#, constrained_layout=True)
+fig, axes = plt.subplots(3, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 
+ax = np.array(([None,axes[0]],[axes[1],axes[2]]))
 
-fig.delaxes(ax[0,0])
+#fig.delaxes(ax[0,0])
+#ax[0,0].axis('off')
 # img = mpimg.imread('drawing.png')
 # ax[0,0].imshow(img)
 
@@ -85,10 +87,10 @@ ax[1,1].annotate(r'O$\downarrow$', ha="left",**annotate_args)
 
 
 annotate_args['xy'] = (0.05,0.85)
-ax[0,0].annotate(r'(a)',ha="left", **annotate_args)
-ax[0,1].annotate(r'(b)',ha="left", **annotate_args)
-ax[1,0].annotate(r'(c)',ha="left", **annotate_args)
-ax[1,1].annotate(r'(d)',ha="left", **annotate_args)
+#ax[0,0].annotate(r'(a)',ha="left", **annotate_args)
+ax[0,1].annotate(r'(a)',ha="left", **annotate_args)
+ax[1,0].annotate(r'(b)',ha="left", **annotate_args)
+ax[1,1].annotate(r'(c)',ha="left", **annotate_args)
 indices=[]
 for i,filename in enumerate(filenames):
 
@@ -166,10 +168,10 @@ for i,filename in enumerate(filenames):
         b = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
 
 
-ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
-font='Arial'
+#ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+
 for i in range(2):
-    ax[1,0].set_ylabel('Population',fontname=font,color='black')
+    
     
     for j in range(2):
         if i == 0 and j==0:
@@ -180,18 +182,15 @@ for i in range(2):
         ax[i,j].yaxis.set_minor_locator(MultipleLocator(0.1))
         ax[i,j].yaxis.set_major_locator(MultipleLocator(0.3))
         
+        ax[i,j].set_ylabel('Population',color='black')
+        
 
-        ax[0,j].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
-        for tick in ax[i,j].get_xticklabels():
-            tick.set_fontname(font)
-        for tick in ax[i,j].get_yticklabels():
-            tick.set_fontname(font)
-
-ax[0,1].set_ylabel('Population',fontname=font,color='black')
+#ax[0,1].set_ylabel('Population',fontname=font,color='black')
 fig.text(0.5, 0.00, r"$\nu_f$", ha='center')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(1))
-
+ax[0,1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+ax[1,0].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
 
 
@@ -203,16 +202,16 @@ labels.append('EXPT')
 ax[0,1].legend(handles,labels,numpoints=1,
                 handler_map={tuple: HandlerTuple(ndivide=None)},
                 ncol=3,handletextpad=0.15,columnspacing=0.6,
-                fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 1.15), loc='center')
+                fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.25), loc='center')
 
-ax[0,1].yaxis.set_label_position("right")
-ax[0,1].yaxis.tick_right()
+# ax[0,1].yaxis.set_label_position("right")
+# ax[0,1].yaxis.tick_right()
 
-fig.set_figheight(3.2)
+fig.set_figheight(4.2)
 fig.set_figwidth(3.25)
 # plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.2, 2.25), loc='center')
 #plt.tight_layout()
-plt.subplots_adjust(hspace=0.1,wspace=0.1)
+plt.subplots_adjust(hspace=0.2,wspace=0.1)
 #plt.gcf().subplots_adjust(right=0.01)
-fig.savefig('fig4.pdf',transparent=True,bbox_inches='tight',dpi=300)
-fig.savefig('fig4.eps',transparent=False,bbox_inches='tight')
+fig.savefig('fig4_all.pdf',transparent=True,bbox_inches='tight',dpi=300)
+fig.savefig('fig4_all.eps',transparent=False,bbox_inches='tight')
