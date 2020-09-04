@@ -25,7 +25,7 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
-
+kgrid = False
 markers = ['o','s','^','.','>','v']
 colours = ['red','navy','mediumorchid','maroon','dodgerblue','gold']
 linestyles = ['-','-.','--','-','-.','--']
@@ -50,7 +50,8 @@ fig, ax = plt.subplots(1, 1)
 
 idxs = np.array(results['idx'])
 vals = np.array(results['val'])
-
+if isinstance(idxs[0], int):
+    kgrid = True
 dimension = np.shape(vals)[1]
 c=0
 for i in range(dimension):
@@ -58,17 +59,20 @@ for i in range(dimension):
         if i == j:
             x = idxs
             y = vals[:,i,j]
-            ax.plot(x,y,label=r'$\Lambda_{{{}{}}}$'.format(i,j),marker=markers[c],color=colours[c],linestyle=linestyles[c],
+            ax.plot(x,y,label=r'$\Lambda_{{{}{}}}$'.format(i+1,j+1),marker=markers[c],color=colours[c],linestyle=linestyles[c],
             markersize=3,linewidth=1)
             c += 1
 
 
 ax.set_ylabel(r'$\Lambda_{\mathrm{ij}}$ / ps$^{-1}$',color='black')
-ax.set_xlabel(r'Index',color='black')
+if kgrid:
+    ax.set_xlabel(r'$N_{\mathrm{k}}$',color='black')
+else:
+    ax.set_xlabel(r'Index',color='black')
 
 
 
-
+ax.ylim(0,2)
 ax.yaxis.set_minor_locator(MultipleLocator(0.05))
 ax.yaxis.set_major_locator(MultipleLocator(0.1))
 
