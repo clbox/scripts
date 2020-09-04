@@ -87,7 +87,7 @@ ax.yaxis.set_major_locator(MultipleLocator(0.5))
 #ax.set_ylim(bottom=0,top=1.)
 #ax.set_xlim(0,np.max(bins))
 
-idx = np.argwhere(bins==1)
+idx = np.argwhere(bins==1)[0]
 ytop = np.max(re[d,:idx])
 ytop = np.ceil(ytop)
 
