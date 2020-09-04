@@ -84,7 +84,7 @@ ax.xaxis.set_major_locator(MultipleLocator(0.3))
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.yaxis.set_major_locator(MultipleLocator(0.5))
 
-ax.set_ylim(bottom=0,top=1.)
+#ax.set_ylim(bottom=0,top=1.)
 ax.set_xlim(0,np.max(bins))
 
 ax.set_xlim(left=0)
