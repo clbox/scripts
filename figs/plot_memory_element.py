@@ -65,7 +65,7 @@ for i,filename in enumerate(filenames):
             c+=1
     print(d)
     output_dir = os.path.dirname(filename)
-    ax.plot(bins,re[d,:],linestyle='-',linewidth=0.7,label=label,color=plt.cm.coolwarm(color_idx[i]))
+    ax.plot(bins,re[d,:],linestyle='-',linewidth=0.7,label=label,color=plt.cm.copper(color_idx[i]))
 
 
    
