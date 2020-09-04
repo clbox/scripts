@@ -69,8 +69,14 @@ else:
     ax.set_xlabel(r'Index',color='black')
 
 
+ytop = np.max(vals)
+ytop = np.ceil(ytop)
 
-ax.set_ylim(0,2)
+ybottom = ytop - 1
+if ybottom < 0:
+    ybottom = 0
+ax.set_ylim(ybottom,ytop)
+
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.yaxis.set_major_locator(MultipleLocator(0.2))
 
