@@ -87,7 +87,7 @@ ax.yaxis.set_major_locator(MultipleLocator(0.5))
 #ax.set_ylim(bottom=0,top=1.)
 ax.set_xlim(0,np.max(bins))
 
-ax.set_xlim(left=0)
+ax.set_xlim(left=0,right=1)
 #if len(filenames) > 1:
 #    ax.legend(loc=1,ncol=1,fancybox=True,framealpha=0)
 ax.set_xlabel("Excitation energy / eV")
