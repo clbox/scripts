@@ -74,10 +74,10 @@ else:
 
 ax.set_ylim(0,2)
 ax.yaxis.set_minor_locator(MultipleLocator(0.05))
-ax.yaxis.set_major_locator(MultipleLocator(0.1))
+ax.yaxis.set_major_locator(MultipleLocator(0.2))
 
 
-plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
+plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.15), loc='center')
 fig.set_figheight(2.)
 fig.set_figwidth(3.25)
 fig.savefig('fig.pdf',transparent=True,bbox_inches='tight')
