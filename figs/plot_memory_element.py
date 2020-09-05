@@ -54,6 +54,7 @@ linestyles = ['-','--']*10
 
 
 for i,filename in enumerate(filenames):
+    print(filename)
     bins,re,im,dimension,max_e = read_memory_kernel(filename,treat_complex=False)
     label = os.path.dirname(filename)
     c=0
