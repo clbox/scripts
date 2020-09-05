@@ -456,7 +456,7 @@ def read_memory_kernel(path,treat_complex=True):
         for line in f:
             if "Friction" in line:
                 c=0
-                if int(line.split()[4]) > int(line.split()[4]):
+                if int(line.split()[3]) > int(line.split()[4]):
                     skip = True
                 else:
                     skip = False
