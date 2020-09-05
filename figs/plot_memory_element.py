@@ -49,7 +49,7 @@ print('Element: ' + str(element))
 
 fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
 color_idx = np.linspace(0, 1, len(filenames))
-linestyles = ['-','--']*10
+linestyles = ['-','--']*50
 
 
 
