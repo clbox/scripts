@@ -432,7 +432,7 @@ def read_memory_kernel(path,treat_complex=True):
         for line in f:
             if "Friction" in line:
                 dimension = int(line.split()[3])
-                if int(line.split()[2]) > int(line.split()[3]):
+                if int(line.split()[3]) > int(line.split()[4]):
                     continue
                 else:
                     head_count += 1
@@ -451,13 +451,15 @@ def read_memory_kernel(path,treat_complex=True):
     re_memory_kernel=np.zeros((elements,len(bins)))
     im_memory_kernel=np.zeros_like(re_memory_kernel)
     e=0
+    skip = False
     with open(path, "r") as f:
         for line in f:
             if "Friction" in line:
                 c=0
-                if int(line.split()[2]) > int(line.split()[3]):
+                if int(line.split()[4]) > int(line.split()[4]):
                     skip = True
                 else:
+                    skip = False
                     e +=1
             if any(x in line for x in header):
                 continue
