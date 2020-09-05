@@ -423,13 +423,19 @@ def Parse_memory_kernels(path_to_calcs,file_range,read=False):
     return raw_data,bins
 
 def read_memory_kernel(path,treat_complex=True):
+    #In some older calculations the full tensor is printed (old_format = True)
+    #In this case need to ignore elements where 
     head_count =0
+    old_format = False
     header = ["No of","Discretization","Number of Bins","Excitation energy","==========","k-point","Friction"] #skip lines
     with open(path, "r") as f:
         for line in f:
             if "Friction" in line:
                 dimension = int(line.split()[3])
-                head_count += 1
+                if int(line.split()[2]) > int(line.split()[3]):
+                    continue
+                else:
+                    head_count += 1
             if "Discretization" in line:
                 discretization=float(line.split()[-1])
             if any(x in line for x in header):
@@ -449,10 +455,15 @@ def read_memory_kernel(path,treat_complex=True):
         for line in f:
             if "Friction" in line:
                 c=0
-                e +=1
+                if int(line.split()[2]) > int(line.split()[3]):
+                    skip = True
+                else:
+                    e +=1
             if any(x in line for x in header):
                 continue
             else:
+                if skip:
+                    continue
                 re_memory_kernel[e-1,c]=float(line.split()[1])
                 if treat_complex:
                     im_memory_kernel[e-1,c]=float(line.split()[2])
