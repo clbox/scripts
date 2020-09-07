@@ -40,9 +40,11 @@ labels =[]
 #labels = np.arange(0,15,1)
 
 #element to plot, BASE 0
-element = int(sys.argv[1])
+style = sys.argv[1] #k (k grid), rc (reaction coordinate), o (other)
 
-filenames = sys.argv[2:]
+element = int(sys.argv[2])
+
+filenames = sys.argv[3:]
 
 print('Element: ' + str(element))
 
@@ -51,7 +53,8 @@ fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
 color_idx = np.linspace(0, 1, len(filenames))
 linestyles = ['-','--']*50
 
-
+if style == 'rc':
+    labels = np.arange(0,len(filenames))
 
 for i,filename in enumerate(filenames):
     print(filename)
@@ -67,7 +70,10 @@ for i,filename in enumerate(filenames):
             c+=1
     print(d)
     output_dir = os.path.dirname(filename)
-    ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=label,color=plt.cm.copper(color_idx[len(filenames)-i-1]))
+    if style == 'rc':
+        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=labels[i],color=plt.cm.copper(color_idx[len(filenames)-i-1]))
+    else:
+        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=label,color=plt.cm.copper(color_idx[len(filenames)-i-1]))
 
 
    

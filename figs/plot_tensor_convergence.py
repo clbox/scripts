@@ -57,7 +57,7 @@ for i in range(dimension):
         if i == j:
             x = idxs
             if style == 'rc':
-                x = np.arange(1,(len(idxs)+1))
+                x = np.arange(0,(len(idxs)))
             y = vals[:,i,j]
             ax.plot(x,y,label=r'$\Lambda_{{{}{}}}$'.format(i+1,j+1),marker=markers[c],color=colours[c],linestyle=linestyles[c],
             markersize=3,linewidth=1)
