@@ -56,6 +56,8 @@ for i in range(dimension):
     for j in range(dimension):
         if i == j:
             x = idxs
+            if style == 'rc':
+                x = np.arange(1,(len(idxs)+1))
             y = vals[:,i,j]
             ax.plot(x,y,label=r'$\Lambda_{{{}{}}}$'.format(i+1,j+1),marker=markers[c],color=colours[c],linestyle=linestyles[c],
             markersize=3,linewidth=1)
@@ -81,6 +83,16 @@ ax.set_ylim(ymin,ytop)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.yaxis.set_major_locator(MultipleLocator(0.2))
+
+if style == 'rc':
+    ax.xaxis.set_major_locator(MultipleLocator(1))
+
+    if ytop > 5 and ymin == 0:
+        ax.yaxis.set_minor_locator(MultipleLocator(0.5))
+        ax.yaxis.set_major_locator(MultipleLocator(1.0))
+
+    
+
 
 
 plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.15), loc='center')
