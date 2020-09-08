@@ -115,7 +115,7 @@ fig.set_figheight(2.0)
 fig.set_figwidth(3.25)
 #plt.gcf().subplots_adjust(left=0.2,bottom=0.2)
 #fig.text(0.01, 0.5, r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=15)
-plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
+plt.legend(ncol=5,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
 fig.savefig('memory_element_'+str(element)+'.pdf',transparent=True,bbox_inches='tight')
 
 
