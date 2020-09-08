@@ -85,7 +85,10 @@ ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.yaxis.set_major_locator(MultipleLocator(0.2))
 
 if style == 'rc':
-    ax.xaxis.set_major_locator(MultipleLocator(1))
+    if len(tensors) > 10:
+        ax.xaxis.set_major_locator(MultipleLocator(2))
+    else:
+        ax.xaxis.set_major_locator(MultipleLocator(1))
 
     if ytop > 5 and ymin == 0:
         ax.yaxis.set_minor_locator(MultipleLocator(0.5))
