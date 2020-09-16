@@ -48,7 +48,6 @@ ax.yaxis.set_minor_locator(MultipleLocator(0.025))
 ax.yaxis.set_major_locator(MultipleLocator(0.05))
 
 ax.set_ylim(bottom=0)
-
 ax.set_xlabel("Reaction coordinate")
 ax.set_ylabel(r'Energy / eV')
 fig.set_figheight(2.0)
