@@ -59,7 +59,7 @@ for i in range(dimension):
             if style == 'rc':
                 x = np.arange(0,(len(idxs)))
             if style == 'unit':
-                x = [r'$2 \times 2 \ times 4$',r'$3 \times 3 \ times 4$',r'$4 \times 4 \ times 4$']
+                x = [r'$2 \times 2 \times 4$',r'$3 \times 3 \times 4$',r'$4 \times 4 \times 4$']
             y = vals[:,i,j]
             ax.plot(x,y,label=r'$\Lambda_{{{}{}}}$'.format(i+1,j+1),marker=markers[c],color=colours[c],linestyle=linestyles[c],
             markersize=3,linewidth=1)
