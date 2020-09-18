@@ -191,7 +191,7 @@ for initial_state in [2,3]:
             incidence_es = incidence_es[order]
             ratios = ratios[order]
             a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black',zorder=zorder)
-        ax[map_plot[c]].annotate(r'$\nu_i=$'+str(initial_state)+r'$\rightarrow$'+r'$\nu_f=$'+str(final_state),xy=(0.2,0.91),xycoords='axes fraction')
+        ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.2,0.91),xycoords='axes fraction')
         #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
 
         c+=1
@@ -235,8 +235,8 @@ ax[1,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 ax[1,1].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
 
 ax[0,0].set_ylabel(r'$P(1)\ /\ P(2)$',fontname=font,color='black')
-ax[0,1].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
-ax[1,0].set_ylabel(r'$B(\nu_f)$',fontname=font,color='black')
+ax[0,1].set_ylabel(r'$B(v_f)$',fontname=font,color='black')
+ax[1,0].set_ylabel(r'$B(v_f)$',fontname=font,color='black')
 
 ax[0,1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())

@@ -134,17 +134,17 @@ ax[0,1].set_xlabel(r'Excitation energy / eV',color='black')
 #fig.delaxes(ax[0,0])
 #fig.delaxes(ax[0,1])
 #v11
-ax[1,0].bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=11$ exp')
+ax[1,0].bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$v_i=11$ exp')
 ax[1,0].set_ylim(0,0.3)
 plotted_exp = True
 ax[1,0].set_xlim(0,12)
-ax[1,0].annotate(r'$\nu_i = 11$',ha="right", **annotate_args)
+ax[1,0].annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 #v16
-ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$\nu_i=16$ exp')
+ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$v_i=16$ exp')
 ax[1,1].set_ylim(0,0.3)
 ax[1,1].set_xlim(0,18)
-ax[1,1].annotate(r'$\nu_i = 16$',ha="right", **annotate_args)
+ax[1,1].annotate(r'$v_i = 16$',ha="right", **annotate_args)
 
 
 
@@ -235,7 +235,7 @@ for i in [1]:
         ax[i,j].xaxis.set_minor_locator(MultipleLocator(1))
         ax[i,j].yaxis.set_minor_locator(MultipleLocator(0.025))
         ax[i,j].yaxis.set_major_locator(MultipleLocator(0.1))
-        ax[i,j].set_xlabel(r"$\nu_f$",fontname=font)
+        ax[i,j].set_xlabel(r"$v_f$",fontname=font)
 
         for tick in ax[i,j].get_xticklabels():
             tick.set_fontname(font)

@@ -310,27 +310,27 @@ ntraj_list = np.append(ntraj_list,n_trapped)
 
 np.savetxt('absolute_pops.txt',np.c_[state_list,ntraj_list],fmt='%1.3f')
 #V16
-# ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
+# ax.bar(x16_exp,v16_exp,color='black',label=r'$v_i=16$ exp')
 # ax.set_ylim(0,0.5)
 # ax.set_xlim(0,20)
 
 #V3
-# ax.bar(x3_exp,v3_exp,color='black',label=r'$\nu_i=3$ exp')
+# ax.bar(x3_exp,v3_exp,color='black',label=r'$v_i=3$ exp')
 # ax.set_xlim(0,6)
 # ax.set_ylim(0,0.8)
 
 #V15
-# ax.bar(x15_exp,v15_exp,color='black',label=r'$\nu_i=15$ exp')
+# ax.bar(x15_exp,v15_exp,color='black',label=r'$v_i=15$ exp')
 # ax.set_xlim(0,17)
 # ax.set_ylim(0,0.8)
 
 #V11
-# ax.bar(x11_exp,v11_exp,color='black',label=r'$\nu_i=11$ exp')
+# ax.bar(x11_exp,v11_exp,color='black',label=r'$v_i=11$ exp')
 # ax.set_xlim(0,20)
 # ax.set_ylim(0,0.5)
 
 #V2
-ax.bar(x2_exp,v2_exp,color='black',label=r'$\nu_i=2$ exp')
+ax.bar(x2_exp,v2_exp,color='black',label=r'$v_i=2$ exp')
 ax.set_xlim(0,4)
 ax.set_ylim(0,0.8)
 
@@ -341,7 +341,7 @@ ax.legend()
 
 fig.set_figheight(4)
 fig.set_figwidth(5)
-fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
+fig.text(0.5, 0.00, r"Final vibrational state ($v_f$)", ha='center',fontsize=15)
 fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('probability.pdf',transparent=True,bbox_inches='tight')
 

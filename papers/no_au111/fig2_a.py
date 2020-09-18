@@ -76,31 +76,31 @@ ax = np.array(([ax0,ax1],[ax2,ax3]))
 
 
 #v02 exp
-ax[0,0].bar(x2_exp,v2_exp,color=exp_colour,edgecolor='black',label='EXP')#label=r'$\nu_i=2$ exp')
+ax[0,0].bar(x2_exp,v2_exp,color=exp_colour,edgecolor='black',label='EXP')#label=r'$v_i=2$ exp')
 ax[0,0].set_xlim(0,4)
 ax[0,0].set_ylim(0,1.0)
-ax[0,0].annotate(r'$\nu_i = 2$',ha="right", **annotate_args)
+ax[0,0].annotate(r'$v_i = 2$',ha="right", **annotate_args)
 
 
 #v03
-ax[0,1].bar(x3_exp,v3_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=3$ exp')
+ax[0,1].bar(x3_exp,v3_exp,color=exp_colour,edgecolor='black',label=r'$v_i=3$ exp')
 ax[0,1].set_xlim(0,4)
 ax[0,1].set_ylim(0,1.0)
-ax[0,1].annotate(r'$\nu_i = 3$', ha="right",**annotate_args)
+ax[0,1].annotate(r'$v_i = 3$', ha="right",**annotate_args)
 
 
 #v11
-ax[1,0].bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=11$ exp')
+ax[1,0].bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$v_i=11$ exp')
 ax[1,0].set_ylim(0,0.6)
 plotted_exp = True
 ax[1,0].set_xlim(0,12)
-ax[1,0].annotate(r'$\nu_i = 11$',ha="right", **annotate_args)
+ax[1,0].annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 #v16
-ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$\nu_i=16$ exp')
+ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$v_i=16$ exp')
 ax[1,1].set_ylim(0,0.4)
 ax[1,1].set_xlim(0,18)
-ax[1,1].annotate(r'$\nu_i = 16$',ha="right", **annotate_args)
+ax[1,1].annotate(r'$v_i = 16$',ha="right", **annotate_args)
 
 # states=['v02','v03','v11','v16']
 # for i in range(2):
@@ -213,7 +213,7 @@ for i in range(2):
         ax[i,j].xaxis.set_minor_locator(MultipleLocator(1))
         ax[i,j].yaxis.set_minor_locator(MultipleLocator(0.025))
         ax[i,j].yaxis.set_major_locator(MultipleLocator(0.2))
-        ax[i,j].set_xlabel(r"$\nu_f$",fontname=font)
+        ax[i,j].set_xlabel(r"$v_f$",fontname=font)
 
         for tick in ax[i,j].get_xticklabels():
             tick.set_fontname(font)

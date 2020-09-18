@@ -15,7 +15,7 @@ import seaborn as sns
 filenames = sys.argv[1:]
 
 
-labels = ['Trapped',r'$\nu_f = 1$',r'$\nu_f = 2$',r'$\nu_f = 3$']
+labels = ['Trapped',r'$v_f = 1$',r'$v_f = 2$',r'$v_f = 3$']
 
 #labels = ['Trapped',r'Inelastic',r'Elastic']
 

@@ -173,7 +173,7 @@ ax[0].errorbar(exp[:,0],exp[:,1],yerr=exp[:,2]-exp[:,1],markersize=4,capsize=3,e
 
 ax[0].errorbar([-100,-50],[-60,-70],yerr=10,markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='--',color='black',label='EXPT')
 ###########################
-ax[0].annotate(r'$\nu_i = 2$',ha="right", **annotate_args)
+ax[0].annotate(r'$v_i = 2$',ha="right", **annotate_args)
 ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
 #ax.legend(fontsize=15)
 ax[0].xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -251,7 +251,7 @@ for i,v in enumerate(['11','16']):
 
         annotate_args['xy'] = (0.33,0.05)
         ax[i+1].barh(modes,ratios,color=bar_colour,edgecolor='black')
-    ax[i+1].annotate(r'$\nu_i = {}$'.format(vib_state), **annotate_args)
+    ax[i+1].annotate(r'$v_i = {}$'.format(vib_state), **annotate_args)
 
 
 for i in [1,2]:
@@ -280,7 +280,8 @@ fig.set_figwidth(3.25)
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
 
 ax[0].set_xlabel('Incidence energy / eV')#,color='white')
-ax[0].set_ylabel(r'$p_{\mathrm{trap}}$')#,color='white')
+#ax[0].set_ylabel(r'$p_{\mathrm{trap}}$')#,color='white')
+ax[0].set_ylabel(r'$1 - P(2) - P(1)$')#,color='white')
 
 ax[0].legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.6, 1.1), loc='center')
 #plt.gcf().subplots_adjust(left=0.3,bottom=0.3)

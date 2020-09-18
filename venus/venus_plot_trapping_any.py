@@ -107,7 +107,7 @@ for p in range (2):
 
 if vib_state == 16:
     annotate_args['xy'] = (0.87,0.25)
-ax.annotate(r'$\nu_i = {}$'.format(vib_state),ha='right', **annotate_args)
+ax.annotate(r'$v_i = {}$'.format(vib_state),ha='right', **annotate_args)
 
 
 
@@ -138,6 +138,6 @@ ax.set_xlabel('Population')#,color='white')
 
 plt.gcf().subplots_adjust(left=0.4,bottom=0.2)
 
-#fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
+#fig.text(0.5, 0.00, r"Final vibrational state ($v_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('trapped.pdf',transparent=True)#,bbox_inches='tight')

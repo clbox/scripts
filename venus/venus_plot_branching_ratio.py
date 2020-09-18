@@ -239,7 +239,7 @@ for mode in ['ldfa','bomd','tdpt','pes']:
     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
 
 if plot_v03:
-    ax.annotate(r'$\nu_i = 3 \rightarrow \nu_f = $' + str(final_state), **annotate_args)
+    ax.annotate(r'$v_i = 3 \rightarrow v_f = $' + str(final_state), **annotate_args)
 
     if final_state == 3:
         ax.set_ylim(0,1.2)
@@ -281,7 +281,7 @@ if plot_v03:
     ax.set_xlim(0,1.2)
     ax.set_ylabel('Ratio',fontsize=fontsize,fontname=font,color='white')
 if plot_v02:
-    ax.annotate(r'$\nu_i = 2 \rightarrow \nu_f = $' + str(final_state), **annotate_args)
+    ax.annotate(r'$v_i = 2 \rightarrow v_f = $' + str(final_state), **annotate_args)
     ax.set_xlim(0,0.7)
     ax.set_yscale('log')  
     labels= (1e-4,1e-3,1e-2,1e-1,1)
@@ -308,7 +308,7 @@ fig.set_figwidth(3.25)
 
 plt.gcf().subplots_adjust(left=0.4,bottom=0.3)
 
-#fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
+#fig.text(0.5, 0.00, r"Final vibrational state ($v_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('branching.pdf',transparent=True,bbox_inches='tight')
 

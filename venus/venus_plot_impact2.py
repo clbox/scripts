@@ -156,7 +156,7 @@ else:
         if v == -1:
             label = 'Trapped'
         else:
-            label = r'$\nu_{f} =$ ' + str(v)
+            label = r'$v_{f} =$ ' + str(v)
         #for ii,atom in enumerate(['n','o']):
         #indices = (np.where((np.array(results['final_v'])==v) & (np.array(results['atom_first'])==atom)))[0]
         indices = (np.where((np.array(results['final_v'])==v)))[0]
@@ -209,7 +209,7 @@ ax_joint.legend(ncol=2,handletextpad=0.15,columnspacing=0.2,fancybox=True,framea
 
 
 annotate_args = {'xy' : (0.01,0.05), 'xycoords' : 'axes fraction'}
-ax_joint.annotate(r'$\nu_i = 3$',ha="left", **annotate_args)
+ax_joint.annotate(r'$v_i = 3$',ha="left", **annotate_args)
 annotate_args['xy'] = (0.01,0.9)
 if mode == 'r':
     ax_joint.set_xlim(1.,1.5)

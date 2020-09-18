@@ -190,7 +190,7 @@ for i in range(2):
             tick.set_fontname(font)
 
 ax[0,1].set_ylabel('Population',fontname=font,color='black')
-fig.text(0.5, 0.00, r"$\nu_f$", ha='center')
+fig.text(0.5, 0.00, r"$v_f$", ha='center')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(1))
 
 

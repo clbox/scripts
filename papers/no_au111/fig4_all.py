@@ -187,7 +187,7 @@ for i in range(2):
 
 
 #ax[0,1].set_ylabel('Population',fontname=font,color='black')
-fig.text(0.5, 0.00, r"$\nu_f$", ha='center')
+fig.text(0.5, 0.00, r"$v_f$", ha='center')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(1))
 ax[0,1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 ax[1,0].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())

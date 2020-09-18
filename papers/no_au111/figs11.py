@@ -177,7 +177,7 @@ ax_joint.legend(ncol=2,handletextpad=0.15,columnspacing=0.2,fancybox=True,framea
 ax_marg_y.set_ylim(1.25,3)
 
 annotate_args = {'xy' : (0.01,0.05), 'xycoords' : 'axes fraction'}
-ax_joint.annotate(r'$\nu_i = 3$',ha="left", **annotate_args)
+ax_joint.annotate(r'$v_i = 3$',ha="left", **annotate_args)
 annotate_args['xy'] = (0.01,0.9)
 if mode == 'r':
     ax_joint.set_xlim(1,1.5)

@@ -165,7 +165,7 @@ ax.set_ylabel('Population',fontname=font)#,color='white')
 
 #plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
 
-#fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
+#fig.text(0.5, 0.00, r"Final vibrational state ($v_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('trapped.pdf',transparent=True,bbox_inches='tight')
 

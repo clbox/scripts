@@ -67,18 +67,18 @@ for filename in filenames:
 for i,filename in enumerate(filenames):
 
     if 'v02' in os.path.abspath(filename) and not plotted_exp:
-        ax.bar(x2_exp,v2_exp,color=exp_colour,edgecolor='black',label='Exp')#label=r'$\nu_i=2$ exp')
+        ax.bar(x2_exp,v2_exp,color=exp_colour,edgecolor='black',label='Exp')#label=r'$v_i=2$ exp')
         ax.set_xlim(0,4)
         ax.set_ylim(0,1.0)
         plotted_exp = True
         if annotate:
-            ax.annotate(r'$\nu_i = 2$', **annotate_args)
+            ax.annotate(r'$v_i = 2$', **annotate_args)
             annotate_args['xy'] = (0.22,0.8)
             ax.annotate(r'(a)', **annotate_args)
         ylabel = True
     
     elif 'v03' in os.path.abspath(filename) and not plotted_exp:
-        ax.bar(x3_exp,v3_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=3$ exp')
+        ax.bar(x3_exp,v3_exp,color=exp_colour,edgecolor='black',label=r'$v_i=3$ exp')
         if all_results:
             ax.set_xlim(0,6)
         else:
@@ -86,14 +86,14 @@ for i,filename in enumerate(filenames):
         ax.set_ylim(0,1.0)
         plotted_exp = True
         if annotate:
-            ax.annotate(r'$\nu_i = 3$', **annotate_args)
+            ax.annotate(r'$v_i = 3$', **annotate_args)
             annotate_args['xy'] = (0.22,0.8)
             ax.annotate(r'(b)', **annotate_args)
         ylabel = False
 
     elif 'v11' in os.path.abspath(filename) and not plotted_exp:
-        #ax.bar(x11_exp,v11_exp,color='black',label=r'$\nu_i=11$ exp')
-        ax.bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=11$ exp')
+        #ax.bar(x11_exp,v11_exp,color='black',label=r'$v_i=11$ exp')
+        ax.bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$v_i=11$ exp')
         ax.set_ylim(0,0.3)
         plotted_exp = True
         if all_results:
@@ -101,7 +101,7 @@ for i,filename in enumerate(filenames):
         else:
             ax.set_xlim(0,12)
         if annotate:
-            ax.annotate(r'$\nu_i = 11$', **annotate_args)
+            ax.annotate(r'$v_i = 11$', **annotate_args)
             annotate_args['xy'] = (0.22,0.8)
             if scaled_plot:
                 ax.annotate(r'(b)', **annotate_args)
@@ -111,17 +111,17 @@ for i,filename in enumerate(filenames):
         ylabel = True
 
     elif 'v15' in os.path.abspath(filename) and not plotted_exp:
-        ax.bar(x15_exp,v15_exp,color=exp_colour,edgecolor='black',label=r'$\nu_i=15$ exp')
+        ax.bar(x15_exp,v15_exp,color=exp_colour,edgecolor='black',label=r'$v_i=15$ exp')
         ax.set_xlim(0,17)
         ax.set_ylim(0,0.8)
         plotted_exp = True
         ylabel = True
         if annotate:
-            ax.annotate(r'$\nu_i = 15$', **annotate_args)
+            ax.annotate(r'$v_i = 15$', **annotate_args)
 
     elif 'v16' in os.path.abspath(filename) and not plotted_exp:
-        #ax.bar(x16_exp,v16_exp,color='black',label=r'$\nu_i=16$ exp')
-        ax.bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Exp')#,label=r'$\nu_i=16$ exp')
+        #ax.bar(x16_exp,v16_exp,color='black',label=r'$v_i=16$ exp')
+        ax.bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Exp')#,label=r'$v_i=16$ exp')
         ax.set_ylim(0,0.3)
         if all_results:
             ax.set_xlim(0,20)
@@ -129,7 +129,7 @@ for i,filename in enumerate(filenames):
             ax.set_xlim(0,18)
         plotted_exp = True
         if annotate:
-            ax.annotate(r'$\nu_i = 16$', **annotate_args)
+            ax.annotate(r'$v_i = 16$', **annotate_args)
             annotate_args['xy'] = (0.22,0.8)
             if scaled_plot:
                 ax.annotate(r'(c)', **annotate_args)
@@ -215,7 +215,7 @@ fig.set_figheight(2.7)
 
 fig.set_figwidth(3.25)
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
-ax.set_xlabel(r"Final vibrational state ($\nu_f$)",fontsize=fontsize,fontname=font)
+ax.set_xlabel(r"Final vibrational state ($v_f$)",fontsize=fontsize,fontname=font)
 #ax.set_ylabel('Population',fontsize=12,fontname=font)#,color='white')
 
 if ylabel or scaled_plot:
@@ -224,7 +224,7 @@ else:
     ax.set_ylabel('Population',fontsize=fontsize,fontname=font,color='white')
 
 plt.gcf().subplots_adjust(left=0.2,bottom=0.2)
-#fig.text(0.5, 0.00, r"Final vibrational state ($\nu_f$)", ha='center',fontsize=15)
+#fig.text(0.5, 0.00, r"Final vibrational state ($v_f$)", ha='center',fontsize=15)
 #fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
 fig.savefig('state2state.pdf',transparent=True)#,bbox_inches='tight')
 
