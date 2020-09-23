@@ -106,7 +106,7 @@ ax.set_ylim(0,ytop)
 if ytop < 5:
     ax.yaxis.set_minor_locator(MultipleLocator(0.1))
     ax.yaxis.set_major_locator(MultipleLocator(0.5))
-if ytop > 5:
+if ytop > 5 and ytop < 15:
     ax.yaxis.set_minor_locator(MultipleLocator(0.5))
     ax.yaxis.set_major_locator(MultipleLocator(1.0))
 
