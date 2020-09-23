@@ -55,10 +55,11 @@ linestyles = ['-','--']*50
 
 if style == 'rc':
     labels = np.arange(0,len(filenames))
-
+ytop = 1
 for i,filename in enumerate(filenames):
     print(filename)
     bins,re,im,dimension,max_e = read_memory_kernel(filename,treat_complex=False)
+    
     label = os.path.dirname(filename)
     c=0
     for ii in range(dimension):
@@ -69,6 +70,11 @@ for i,filename in enumerate(filenames):
                 break
             c+=1
     print(d)
+
+    idx = (np.argwhere(bins==1)[0])[0]
+    ymax = np.max(re[d,:idx])
+    if ymax > ytop:
+        ytop = ymax
     output_dir = os.path.dirname(filename)
     if style == 'rc':
         ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=labels[i],color=plt.cm.copper(color_idx[len(filenames)-i-1]))
@@ -95,8 +101,6 @@ ax.yaxis.set_major_locator(MultipleLocator(0.5))
 #ax.set_ylim(bottom=0,top=1.)
 #ax.set_xlim(0,np.max(bins))
 
-idx = (np.argwhere(bins==1)[0])[0]
-ytop = np.max(re[d,:idx])
 ytop = np.ceil(ytop)
 
 ax.set_ylim(0,ytop)
