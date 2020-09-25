@@ -12,7 +12,7 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
 boundaries = True
 i = int(sys.argv[1])
 j = int(sys.argv[2])
-labels = ['Reactant','Adsorption','Transition state','Dissociation']
+labels = ['Reactant','Adsorption','TS','Product']
 colours = ['red','navy','black','orange','orange','orange']
 markers = ['.','s','o','^']
 filenames = sys.argv[3:]

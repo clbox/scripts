@@ -230,11 +230,6 @@ for i in range(2):
             ax[i,j].xaxis.set_minor_locator(MultipleLocator(0.05))
             ax[i,j].xaxis.set_major_locator(MultipleLocator(0.3))
             continue
-        font='Arial'
-        for tick in ax[i,j].get_xticklabels():
-            tick.set_fontname(font)
-        for tick in ax[i,j].get_yticklabels():
-            tick.set_fontname(font)
 
         ax[i,j].set_xlim(0,1.2)
         ax[i,j].tick_params(axis='both', which='major')
@@ -246,12 +241,12 @@ for i in range(2):
         ax[i,j].yaxis.set_major_locator(MultipleLocator(0.2))
 
 ax[0,1].yaxis.set_major_locator(MultipleLocator(0.1))
-ax[0,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
-ax[0,1].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
-ax[1,0].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
-ax[1,1].set_xlabel(r'$E_i$ / eV',fontname=font,color='black')
+ax[0,0].set_xlabel(r'$E_i$ / eV',color='black')
+ax[0,1].set_xlabel(r'$E_i$ / eV',color='black')
+ax[1,0].set_xlabel(r'$E_i$ / eV',color='black')
+ax[1,1].set_xlabel(r'$E_i$ / eV',color='black')
 
-ax[0,0].set_ylabel(r'$P(1)\ /\ P(2)$',fontname=font,color='black')
+ax[0,0].set_ylabel(r'$P(1)\ /\ P(2)$',color='black')
 # ax[0,1].set_ylabel(r'$B(v_f)$',fontname=font,color='black')
 # ax[1,0].set_ylabel(r'$B(v_f)$',fontname=font,color='black')
 
@@ -293,5 +288,6 @@ fig.set_figheight(4.)
 fig.set_figwidth(3.25)
 plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.5), loc='center')
 plt.subplots_adjust(hspace=0.3,wspace=0.2)
-fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight',dpi=300)
-fig.savefig('fig3.eps',transparent=False,bbox_inches='tight')
+fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('fig3.tiff',transparent=True,bbox_inches='tight',dpi=600)
+fig.savefig('fig3.eps',transparent=True,bbox_inches='tight')

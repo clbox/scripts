@@ -289,4 +289,5 @@ ax[0].legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealph
 plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
 plt.subplots_adjust(hspace=0.1,wspace=0.3)
 fig.savefig('fig6.pdf',transparent=True,bbox_inches='tight')
-fig.savefig('fig6.eps',transparent=False,bbox_inches='tight')
+fig.savefig('fig6.tiff',transparent=True,bbox_inches='tight',dpi=600)
+fig.savefig('fig6.eps',transparent=True,bbox_inches='tight')

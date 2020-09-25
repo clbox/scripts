@@ -214,5 +214,6 @@ plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=
 #plt.tight_layout()
 #plt.subplots_adjust(hspace=1.2)
 #plt.gcf().subplots_adjust(right=0.01)
-fig.savefig('fig5.pdf',transparent=True,bbox_inches='tight')
-fig.savefig('fig5.eps',transparent=False,bbox_inches='tight')
+fig.savefig('fig5_all.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('fig5_all.tiff',transparent=True,bbox_inches='tight',dpi=600)
+fig.savefig('fig5_all.eps',transparent=True,bbox_inches='tight')

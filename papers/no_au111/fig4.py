@@ -168,9 +168,8 @@ for i,filename in enumerate(filenames):
 
 
 ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
-font='Arial'
 for i in range(2):
-    ax[1,0].set_ylabel('Population',fontname=font,color='black')
+    ax[1,0].set_ylabel('Population',color='black')
     
     for j in range(2):
         if i == 0 and j==0:
@@ -184,12 +183,8 @@ for i in range(2):
 
         ax[0,j].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
-        for tick in ax[i,j].get_xticklabels():
-            tick.set_fontname(font)
-        for tick in ax[i,j].get_yticklabels():
-            tick.set_fontname(font)
 
-ax[0,1].set_ylabel('Population',fontname=font,color='black')
+ax[0,1].set_ylabel('Population',color='black')
 fig.text(0.5, 0.00, r"$v_f$", ha='center')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(1))
 
@@ -215,5 +210,6 @@ fig.set_figwidth(3.25)
 #plt.tight_layout()
 plt.subplots_adjust(hspace=0.1,wspace=0.1)
 #plt.gcf().subplots_adjust(right=0.01)
-fig.savefig('fig4.pdf',transparent=True,bbox_inches='tight',dpi=300)
-fig.savefig('fig4.eps',transparent=False,bbox_inches='tight')
+fig.savefig('fig4.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('fig4.tiff',transparent=True,bbox_inches='tight',dpi=600)
+fig.savefig('fig4.eps',transparent=True,bbox_inches='tight')

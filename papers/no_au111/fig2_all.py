@@ -84,7 +84,7 @@ ax[0,0].annotate(r'$v_i = 2$',ha="right", **annotate_args)
 
 #v03
 ax[0,1].bar(x3_exp,v3_exp,color=exp_colour,edgecolor='black',label=r'$v_i=3$ exp')
-ax[0,1].set_xlim(0,4)
+ax[0,1].set_xlim(0,5)
 ax[0,1].set_ylim(0,1.0)
 ax[0,1].annotate(r'$v_i = 3$', ha="right",**annotate_args)
 
@@ -223,8 +223,7 @@ for i in range(2):
 ax[0,0].yaxis.set_minor_locator(MultipleLocator(0.1))
 ax[0,1].yaxis.set_minor_locator(MultipleLocator(0.1))
 # ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
-fig.set_figheight(5.)
-fig.set_figwidth(3.25)
+
 
 handles,labels = ax[1,1].get_legend_handles_labels()
 print(labels)
@@ -244,5 +243,8 @@ plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing
 #plt.tight_layout()
 plt.subplots_adjust(hspace=0.45)
 #plt.gcf().subplots_adjust(right=0.01)
-fig.savefig('fig2.pdf',transparent=True,bbox_inches='tight')
-fig.savefig('fig2.eps',transparent=False,bbox_inches='tight')
+fig.set_figheight(5.)
+fig.set_figwidth(3.25)
+fig.savefig('fig2_all.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('fig2_all.tiff',dpi=600,transparent=True,bbox_inches='tight')
+fig.savefig('fig2_all.eps',transparent=True,bbox_inches='tight')
