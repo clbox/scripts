@@ -13,7 +13,7 @@ def string2array(string):
 
 
 # PARSING DATA 
-old_database = sys.argv[1]
+old_database = connect(sys.argv[1])
 
 #available_properties = ["raw_coupling_energies","raw_coupling_elements","smear_frequency_energies","smeared_frequency_friction","markov_friction_tensor",]
 available_properties = ["friction_tensor"]
