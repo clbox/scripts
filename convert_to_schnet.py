@@ -18,7 +18,7 @@ old_database = connect(sys.argv[1])
 #available_properties = ["raw_coupling_energies","raw_coupling_elements","smear_frequency_energies","smeared_frequency_friction","markov_friction_tensor",]
 available_properties = ["friction_tensor","friction_indices"]
 dataset = spk.data.AtomsData("schnet.db", available_properties=available_properties)
-friction_indices = np.array([-2,-1])
+friction_indices = np.array([64,65])
 print('Friction indices: ')
 print(friction_indices)
 for idx in range(1,len(old_database)+1):
