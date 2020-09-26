@@ -351,11 +351,9 @@ fig.savefig('probability.pdf',transparent=True,bbox_inches='tight')
 
 #PLOT SCATTERING ANGULAR DISTRIBUTION
 #fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='polar')
-
-
-
+#fig = plt.figure()
+#ax = fig.add_subplot(111, projection='polar')
+fig, ax = plt.subplots(1, 1, figsize=(3,3.25), subplot_kw={'projection': 'polar'})
 def cosine_fit(x,m,x0):
 
     y = np.cos(x-x0)**m
@@ -367,15 +365,9 @@ bins = np.linspace(0, 100, 20)
 theta = np.linspace(0,2*np.pi,200)
 rho = np.cos(theta)
 x = (bins[1:] + bins[:-1]) / 2
-# for i,state in enumerate(angles):
-#         if i > 3:
-#             continue
-#         sns.distplot(state[:], bins = bins, hist = False, kde = True,
-#                  kde_kws = {'shade': False, 'linewidth': 1}, 
-#                   label = str(i))
-
-labels = ['Single', 'Double', 'Multi', 'Total']
+labels = ['Single bounce', 'Double', 'Multi', 'All bounce']
 colours = ['dodgerblue','maroon','navy','black']
+linestyles=['-.','--',':','-']
 all_angles = single_bounce_angles+double_bounce_angles+multi_bounce_angles
 print(np.shape(all_angles))
 list_of_angles = [single_bounce_angles,double_bounce_angles,multi_bounce_angles,all_angles]
@@ -390,34 +382,32 @@ for i in range(4):
 
 
 
-    ax.plot(x*np.pi/180,hist, '.',color=colours[i],label = labels[i],marker=markers[i],markersize=3)
+    ax.plot(x*np.pi/180,hist, '.',color=colours[i],label = labels[i],marker=markers[i],markersize=3,mfc='none')
     
     popt, pcov = scipy.optimize.curve_fit(cosine_fit,x*np.pi/180,hist)
     print('m, theta0')
     print(popt)
-    ax.plot(theta,cosine_fit(theta,*popt),'-',color=colours[i])
-
-    #ax.text(0,1.3+(0.05*i),r'$m = {:.2f}, \theta_0 = {:.2f}$'.format(popt[0],popt[1]*180/np.pi),color = colours[i])
-    #sns.distplot(list_of_angles[i], bins = bins, hist = False, kde = True,
-    #              kde_kws = {'shade': False, 'linewidth': 1}, 
-    #               label = labels[i])
-# plt.polar(bins/np.pi,np.cos(bins*np.pi/180)/100,'black')
-# plt.polar(bins/np.pi,(np.cos(bins*np.pi/180)**14)/100,'black',linestyle=':')
-
-#plt.polar(theta,rho)
-ax.plot(theta,rho,linestyle='--',color='black',label=r'cos$(\theta)$')
+    if i == 3:
+        ax.plot(theta,cosine_fit(theta,*popt),'-',color=colours[i],linewidth=0.9,linestyle=linestyles[i],label = r'cos$^{:.0f}(\theta - {:.0f})$'.format(popt[0],popt[1]*180/np.pi))
+ax.plot(theta,rho,linestyle='--',color='firebrick',label=r'cos$(\theta)$',linewidth=.9)
 
 ax.tick_params(axis='both', which='major')
 ax.set_theta_zero_location("N")
 ax.set_xticks(np.arange(-90, 100, 10)*np.pi/180)
-ax.set_yticks([])
+#ax.set_yticks([])
 #ax.xaxis.set_minor_locator(MultipleLocator(5*np.pi/180))
-ax.legend(loc=8,ncol=3,fancybox=True,framealpha=0)
+#ax.legend(loc=8,ncol=3,fancybox=True,framealpha=0)
+plt.legend(ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 0.95), loc='center')
 ax.set_xlim(-np.pi/2,np.pi/2)
 ax.set_ylim(0,1)
-plt.gcf().subplots_adjust(bottom=-1)
-fig.set_figheight(2.7)
-fig.set_figwidth(3.25)
+
+#plt.gcf().subplots_adjust(bottom=-5.5,top=-1.6)
+# fig.set_figheight(2.3)
+# fig.set_figwidth(3.25)
+ax.set_xlabel('Distribution', labelpad=-20)
 # ax.set_xlabel("Scattering angle",fontsize=12,fontname=font)
 # ax.set_ylabel(r'Density',fontsize=12,fontname=font)
+ax.set_position( [0.1, -0.45, 0.8, 2.])
 fig.savefig('angles.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('angles.tiff',transparent=True,bbox_inches='tight',dpi=600)
+fig.savefig('angles.eps',transparent=True,bbox_inches='tight')
