@@ -82,8 +82,8 @@ for m,mode in enumerate(['kgrid','broadening']):
             if mode=='broadening':
                 x_data = np.array(x_data)
                 final = data[x_data==0.6,i,j]
-            ax[m].axhline(y=(final+0.1*final), xmin=0, xmax=100,color=colours[c],linestyle='--',zorder=0)
-            ax[m].axhline(y=(final-0.1*final), xmin=0, xmax=100,color=colours[c],linestyle='--',zorder=0)
+            ax[m].axhline(y=(final+0.1*final), xmin=0, xmax=100,color=colours[c],linestyle='--',zorder=0,linewidth=1)
+            ax[m].axhline(y=(final-0.1*final), xmin=0, xmax=100,color=colours[c],linestyle='--',zorder=0,linewidth=1)
         ax[m].plot(x_data,data[:,i,j],label=labels[c],color=colours[c],marker=markers[c],mfc='none')
 
 

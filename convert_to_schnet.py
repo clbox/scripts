@@ -16,9 +16,11 @@ def string2array(string):
 old_database = connect(sys.argv[1])
 
 #available_properties = ["raw_coupling_energies","raw_coupling_elements","smear_frequency_energies","smeared_frequency_friction","markov_friction_tensor",]
-available_properties = ["friction_tensor"]
+available_properties = ["friction_tensor","friction_indices"]
 dataset = spk.data.AtomsData("schnet.db", available_properties=available_properties)
-
+friction_indices = [-2,-1]
+print('Friction indices: ')
+print(friction_indices)
 for idx in range(1,len(old_database)+1):
     print(idx)
     property_list = {}
@@ -28,6 +30,7 @@ for idx in range(1,len(old_database)+1):
     try:
         markov_tensor = string2array(row.get('ft1'))
         property_list.update({"friction_tensor": markov_tensor})
+        property_list.update({"friction_indices": friction_indices})
     except:
         print('no markov')
         continue
