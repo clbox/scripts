@@ -127,7 +127,7 @@ ax[0,1].xaxis.set_major_locator(MultipleLocator(0.3))
 ax[0,1].yaxis.set_major_locator(MultipleLocator(0.3))
 ax[0,1].xaxis.set_minor_locator(MultipleLocator(0.1))
 ax[0,1].yaxis.set_minor_locator(MultipleLocator(0.1))
-ax[0,1].set_ylabel(r'$\Lambda_{rr}$ / ps$^{-1}$',color='black')
+ax[0,1].set_ylabel(r'$\Lambda_{rr}(\epsilon)$ / ps$^{-1}$',color='black')
 ax[0,1].set_xlabel(r'Excitation energy / eV',color='black')
 
 

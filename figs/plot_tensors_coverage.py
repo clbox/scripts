@@ -25,10 +25,10 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
 
-markers = ['o','s','^']
-colours = ['navy','forestgreen','maroon']
+markers = ['s','o','^']
+colours = ['violet','red','navy']
 
-legend_labels = ['Adsorption', 'Reactant','Transition state']
+legend_labels = ['Reactant','Adsorption','TS']
 
 i = int(sys.argv[1])
 j = int(sys.argv[2])
@@ -55,12 +55,14 @@ vals = np.array(results['val'])
 
 unique = list(set(results['geom']))
 unique.sort()
+unique = [unique[1],unique[0],unique[2]]
+print(unique)
 for g,geom in enumerate(unique):
     print(geom)
     idx = np.argwhere((geoms==geom)).flatten()
     x = covs[idx]
     y = vals[idx]
-    ax.plot(x,y,label=geom,marker=markers[g],linestyle='-',color=colours[g])
+    ax.plot(x,y,label=geom,marker=markers[g],linestyle='-',color=colours[g],mfc='none')
 
 
 ax.set_ylabel(r'$\Lambda_{\mathrm{rr}}$ / ps$^{-1}$',color='black')
@@ -90,5 +92,5 @@ ax.yaxis.set_major_locator(MultipleLocator(0.1))
 
 plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
 fig.set_figheight(2.)
-fig.set_figwidth(3.25)
+fig.set_figwidth(2.4)
 fig.savefig('fig.pdf',transparent=True,bbox_inches='tight')
