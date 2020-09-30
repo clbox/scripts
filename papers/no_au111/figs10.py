@@ -230,5 +230,6 @@ for mode in ['theta', 'r']:
     fig.set_figheight(3.0)
 
     fig.savefig('figs10'+mode+'.pdf',transparent=True,bbox_inches='tight')
+    fig.savefig('figs10'+mode+'.png',transparent=True,bbox_inches='tight',dpi=300)
     fig.savefig('figs10'+mode+'.eps',transparent=False,bbox_inches='tight')
     fig.savefig('figs10'+mode+'scatter.tiff',dpi=600,transparent=True,bbox_inches='tight')

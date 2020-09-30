@@ -232,10 +232,10 @@ ax[1,0].set_xlabel(r'$E_i$ / eV',color='black')
 ax[1,1].set_xlabel(r'$E_i$ / eV',color='black')
 
 ax[0,0].set_ylabel(r'$P(1)\ /\ P(2)$',color='black')
-ax[0,1].set_ylabel(r'$P(v_f)/[P(1)+P(2)+P(3)]$',color='black')
-ax[1,0].set_ylabel(r'$P(v_f)/[P(1)+P(2)+P(3)]$',color='black')
+ax[0,1].set_ylabel(r'$P(v_f)\ /\ (P(1)+P(2)+P(3))$',color='black')
+ax[1,0].set_ylabel(r'$P(v_f)\ /\ (P(1)+P(2)+P(3))$',color='black')
 
-ax[0,1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
+#ax[0,1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
 ax[0,1].set_ylim(0,0.5)

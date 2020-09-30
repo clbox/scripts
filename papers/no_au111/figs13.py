@@ -41,9 +41,9 @@ for m,mode in enumerate(['','ldfa/']):
             ax[v,m].plot(time_axis,projected_velocities[:,i],linestyle='-',**line_args,color=colours1[i])
             ax2.plot(time_axis,projected_tensors[:,i,i],linestyle='--',**line_args,color=colours2[i])
         ax[v,m].yaxis.label.set_color('red')
-        ax[v,m].tick_params(axis='y', colors='red')
+        ax[v,m].tick_params(axis='y',which='both', colors='red')
         ax2.yaxis.label.set_color('blue')
-        ax2.tick_params(axis='y', colors='blue')
+        ax2.tick_params(axis='y',which='both', colors='blue')
 
         
         ax2.set_ylim(bottom=0.0,top=1.2)
@@ -105,5 +105,6 @@ fig.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=
 
 
 fig.savefig('figs13.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('figs13.png',transparent=True,bbox_inches='tight',dpi=300)
 fig.savefig('figs13.eps',transparent=True,bbox_inches='tight')
 fig.savefig('figs13.tiff',transparent=True,bbox_inches='tight',dpi=600)
