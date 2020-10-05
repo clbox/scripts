@@ -26,7 +26,8 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
-
+if os.path.exists("fig3.txt"):
+    os.remove("fig3.txt")
 filenames = sys.argv[1:]
 
 tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
@@ -185,19 +186,24 @@ for initial_state in [2,3]:
     for final_state in [1,2,3]:
         if initial_state == 2 and final_state >= 2:
             continue
+        model =''
         
         for mode in ['ldfa','bomd','tdpt']: #,'pes','d4']:
             if mode=='tdpt':
                 mode_args = tdpt_args.copy()
                 zorder=3
+                model = 'ODF'
             if mode=='bomd':
                 mode_args = bomd_args.copy()
                 zorder=1
+                model = 'BOMD'
             if mode=='ldfa':
                 mode_args = ldfa_args.copy()
                 zorder=2
+                model = 'LDFA'
             if mode=='d4':
                 mode_args = d4_args.copy()
+                model = 'ODF(rr)*4'
 
             idx = np.argwhere((all_modes==mode) & (all_initials == initial_state) & (all_finals == final_state)).flatten()
             incidence_es = all_eis[idx]
@@ -207,7 +213,19 @@ for initial_state in [2,3]:
             incidence_es = incidence_es[order]
             ratios = ratios[order]
             a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black',zorder=zorder)
+            if model in ['BOMD','LDFA','ODF','LDFA*4','ODF(rr)*4']:
+                with open('fig3.txt','a+') as f:
+                    f.write('initial vib '+str(initial_state) + '\n')
+                    f.write('final vib '+str(final_state) + '\n')
+                    f.write(model + '\n')
+                    for s in range(len(incidence_es)):
+                        print(ratios[s])
+                        f.write(str(incidence_es[s])+'    ')
+                        f.write(str(ratios[s]))
+                        f.write('\n')
         ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.2,0.91),xycoords='axes fraction')
+
+
         #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
 
         c+=1

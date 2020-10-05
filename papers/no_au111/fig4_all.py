@@ -47,7 +47,8 @@ ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDF
 annotate_args = {'xy' : (0.05,0.65), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
 
-
+if os.path.exists("figs8.txt"):
+    os.remove("figs8.txt")
 fig, axes = plt.subplots(3, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 
 ax = np.array(([None,axes[0]],[axes[1],axes[2]]))
@@ -93,17 +94,20 @@ ax[1,0].annotate(r'(b)',ha="left", **annotate_args)
 ax[1,1].annotate(r'(c)',ha="left", **annotate_args)
 indices=[]
 for i,filename in enumerate(filenames):
-
+    mode =''
     dis = np.loadtxt(filename)
     mode_args = None
     if 'tdpt' in os.path.abspath(filename):
         mode_args = tdpt_args.copy()
+        mode = 'ODF'
 
     if 'bomd' in os.path.abspath(filename):
         mode_args = bomd_args.copy()
+        mode = 'BOMD'
 
     if 'ldfa' in os.path.abspath(filename):
         mode_args = ldfa_args.copy()
+        mode = 'LDFA'
 
     # if '_1' in os.path.abspath(filename):
     #     mode_args['label'] = mode_args['label'] + ' SB'
@@ -120,6 +124,8 @@ for i,filename in enumerate(filenames):
         mode_args['linestyle'] = ':'
         mode_args['color'] = 'indigo'
         mode_args['marker'] = 'x'
+        if 'tdpt' in os.path.abspath(filename):
+            mode='ODF*2'
 
     if 'i3' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + r'$\times 3$'
@@ -151,13 +157,18 @@ for i,filename in enumerate(filenames):
         mode_args['marker'] = 'v'
         mode_args['linestyle'] = '-.'
         mode_args['label'] = mode_args['label'] + r'[RS]'
+        if 'tdpt' in os.path.abspath(filename):
+            mode = 'ODF[RS]'
     
     if '_n' in os.path.abspath(filename):
         indices = [1,0]
+        mode2 = 'N first'
     elif '_o' in os.path.abspath(filename):
         indices = [1,1]
+        mode2 = 'O first'
     else:
         indices = [0,1]
+        mode2 = 'Isotropic'
 
 
     if 'tdpt' in os.path.abspath(filename):
@@ -166,6 +177,15 @@ for i,filename in enumerate(filenames):
         l = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
     elif 'bomd' in os.path.abspath(filename):
         b = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
+
+    if mode in ['BOMD','LDFA','ODF','ODF[RS]','ODF*2']:
+        with open('figs8.txt','a+') as f:
+            f.write('initial vib '+'3 ' + mode2 +'\n')
+            f.write(mode + '\n')
+            for s in range(np.shape(dis)[0]):
+                f.write(str(int(dis[s,0]))+'    ')
+                f.write(str(dis[s,1]))
+                f.write('\n')
 
 
 #ax[1,1].yaxis.set_major_formatter(matplotlib.ticker.NullFormatter())

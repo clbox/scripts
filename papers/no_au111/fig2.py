@@ -32,7 +32,8 @@ matplotlib.rcParams['font.family'] = "sans-serif"
 
 #First argument, a = all results, e = exp only normalisation
 # new limits for some plots
-
+if os.path.exists("fig2.txt"):
+    os.remove("fig2.txt")
 
 filenames = sys.argv[1:]
 
@@ -127,17 +128,20 @@ ax[1,0].annotate(r'(c)',ha="left", **annotate_args)
 ax[1,1].annotate(r'(d)',ha="left", **annotate_args)
 indices=[]
 for i,filename in enumerate(filenames):
-
+    mode = ''
     dis = np.loadtxt(filename)
     mode_args = None
     if 'tdpt' in os.path.abspath(filename):
         mode_args = tdpt_args.copy()
+        mode='ODF'
 
     if 'bomd' in os.path.abspath(filename):
         mode_args = bomd_args.copy()
+        mode='BOMD'
 
     if 'ldfa' in os.path.abspath(filename):
         mode_args = ldfa_args.copy()
+        mode='LDFA'
 
     # if '_1' in os.path.abspath(filename):
     #     mode_args['label'] = mode_args['label'] + ' SB'
@@ -190,12 +194,25 @@ for i,filename in enumerate(filenames):
 
     if 'v02' in os.path.abspath(filename):
         indices = [0,0]
+        v=2
     if 'v03' in os.path.abspath(filename):
         indices = [0,1]
+        v=3
     if 'v11' in os.path.abspath(filename):
         indices = [1,0]
+        v=11
     if 'v16' in os.path.abspath(filename):
         indices = [1,1]
+        v=16
+
+    if mode in ['BOMD','LDFA','ODF']:
+        with open('fig2.txt','a+') as f:
+            f.write('initial vib '+str(v) + '\n')
+            f.write(mode + '\n')
+            for s in range(np.shape(dis)[0]):
+                f.write(str(int(dis[s,0]))+'    ')
+                f.write(str(dis[s,1]))
+                f.write('\n')
 
     a = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
 

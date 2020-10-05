@@ -25,7 +25,8 @@ annotate=True
 matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
-
+if os.path.exists("fig6.txt"):
+    os.remove("fig6.txt")
 filenames = sys.argv[1:]
 
 
@@ -134,6 +135,7 @@ all_v = np.array(results['vi'])
 #labels = ['BOMD','LDFA','ODF',r'ODF [$\Lambda_{\mathrm{rr}} \times 4$]',r'ODF PES$_{\mathrm{rs}}$',r'BOMD PES$_{\mathrm{rs}}$']
 
 for i,mode in enumerate(['bomd','ldfa','tdpt','d4','bomd_pes','tdpt_pes']):
+    model=''
     zorder=i
     print(mode)
     v=2
@@ -150,20 +152,34 @@ for i,mode in enumerate(['bomd','ldfa','tdpt','d4','bomd_pes','tdpt_pes']):
 
     if mode=='tdpt':
         mode_args = tdpt_args.copy()
+        model = 'ODF'
     if mode=='bomd':
         mode_args = bomd_args.copy()
         zorder=10
+        model = 'BOMD'
     if mode=='ldfa':
         mode_args = ldfa_args.copy()
+        model = 'LDFA'
     if mode=='d4':
         mode_args = d4_args.copy()
+        model = 'ODF(rr)*4'
         continue
     if mode=='tdpt_pes':
         mode_args = tdpt_pes_args.copy()
+        model = 'ODF[RS]'
     if mode=='bomd_pes':
         mode_args = bomd_pes_args.copy()
+        model = 'BOMD[RS]'
 
     mode_args['linestyle'] = 'None'
+    if model in ['BOMD','LDFA','ODF','BOMD[RS]','ODF[RS]','LDFA*4','ODF(rr)*4']:
+            with open('fig6.txt','a+') as f:
+                f.write('initial vib '+str(2) + '\n')
+                f.write(model + '\n')
+                for s in range(len(incidence_es)):
+                    f.write(str(incidence_es[s])+'    ')
+                    f.write(str(ratios[s]))
+                    f.write('\n')
     a = ax[0].plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black',zorder=zorder)
 
 
@@ -238,6 +254,7 @@ all_v = np.array(high_results['vi'])
 all_pes = np.array(high_results['pes'])
 print(all_v)
 colours = np.array((['maroon','navy'],['salmon','dodgerblue']))
+pes_labels = ['','[RS]']
 for i,v in enumerate(['11','16']):
     for p, pes in enumerate([1,2]):
         bar_colour = colours[p,i]
@@ -251,6 +268,13 @@ for i,v in enumerate(['11','16']):
 
         annotate_args['xy'] = (0.33,0.05)
         ax[i+1].barh(modes,ratios,color=bar_colour,edgecolor='black')
+
+        with open('fig6.txt','a+') as f:
+            f.write('initial vib '+str(v) + '\n')
+            for s in range(len(modes)):
+                f.write(str(modes[s])+pes_labels[p]+'    ')
+                f.write(str(ratios[s]))
+                f.write('\n')
     ax[i+1].annotate(r'$v_i = {}$'.format(vib_state), **annotate_args)
 
 

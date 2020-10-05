@@ -60,7 +60,8 @@ ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDF
 
 annotate_args = {'xy' : (0.96,0.80), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
-
+if os.path.exists("fig5.txt"):
+    os.remove("fig5.txt")
 
 #fig, ax = plt.subplots(2, 2, gridspec_kw={'width_ratios': [2,1]})#, sharex='all',sharey='all')#, constrained_layout=True)
 fig = plt.figure()
@@ -156,17 +157,20 @@ ax[1,0].annotate(r'(b)',ha="left", **annotate_args)
 ax[1,1].annotate(r'(c)',ha="left", **annotate_args)
 indices=[]
 for i,filename in enumerate(filenames):
-
+    mode =''
     dis = np.loadtxt(filename)
     mode_args = None
     if 'tdpt' in os.path.abspath(filename):
         mode_args = tdpt_args.copy()
+        mode = 'ODF'
 
     if 'bomd' in os.path.abspath(filename):
         mode_args = bomd_args.copy()
+        mode = 'BOMD'
 
     if 'ldfa' in os.path.abspath(filename):
         mode_args = ldfa_args.copy()
+        mode = 'LDFA'
 
     # if '_1' in os.path.abspath(filename):
     #     mode_args['label'] = mode_args['label'] + ' SB'
@@ -194,9 +198,11 @@ for i,filename in enumerate(filenames):
             mode_args['color'] = 'mediumorchid'
             mode_args['marker'] = 'o'
             mode_args['linestyle'] = '-'
+            mode = 'ODF*4'
         if 'ldfa' in os.path.abspath(filename):
             mode_args['color'] = 'dodgerblue'
             mode_args['linestyle'] = '-.'
+            mode = 'LDFA*4'
 
     if '_multi' in os.path.abspath(filename):
         mode_args['label'] = mode_args['label'] + ' MB'
@@ -207,6 +213,7 @@ for i,filename in enumerate(filenames):
         mode_args['linestyle'] = '-'
         mode_args['marker'] = '^'
         mode_args['color'] = 'mediumorchid'
+        mode = 'ODF(rr)*4'
 
     if 'pes' in os.path.abspath(filename):
         mode_args['color'] = 'green'
@@ -215,12 +222,25 @@ for i,filename in enumerate(filenames):
     
     if 'v02' in os.path.abspath(filename):
         indices = [0,0]
+        v=2
     if 'v03' in os.path.abspath(filename):
         indices = [0,1]
+        v=3
     if 'v11' in os.path.abspath(filename):
         indices = [1,0]
+        v=11
     if 'v16' in os.path.abspath(filename):
         indices = [1,1]
+        v=16
+
+    if mode in ['BOMD','LDFA','ODF','LDFA*4','ODF(rr)*4']:
+        with open('fig5.txt','a+') as f:
+            f.write('initial vib '+str(v) + '\n')
+            f.write(mode + '\n')
+            for s in range(np.shape(dis)[0]):
+                f.write(str(int(dis[s,0]))+'    ')
+                f.write(str(dis[s,1]))
+                f.write('\n')
 
     a = ax[indices[0],indices[1]].plot(dis[:,0],dis[:,1],**mode_args,markersize=4,markeredgecolor='black')
 
