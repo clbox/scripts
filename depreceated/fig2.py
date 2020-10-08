@@ -86,7 +86,7 @@ ax[1,0].set_xlim(0,12)
 ax[1,0].annotate(r'$11$',ha="right", **annotate_args)
 
 #v16
-ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$v_i=16$ exp')
+ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt')#,label=r'$v_i=16$ exp')
 ax[1,1].set_ylim(0,0.5)
 ax[1,1].set_xlim(0,18)
 ax[1,1].annotate(r'$16$',ha="right", **annotate_args)

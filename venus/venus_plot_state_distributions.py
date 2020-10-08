@@ -193,6 +193,16 @@ for i,filename in enumerate(filenames):
         mode_args['color'] = 'green'
         mode_args['marker'] = 'v'
         mode_args['label'] = mode_args['label'] + r'+ PES(2)'
+
+    if 'alt_ei' in os.path.abspath(filename):
+        mode_args['color'] = 'violet'
+    
+    if '_o' in os.path.abspath(filename):
+        mode_args['marker'] = 'o'
+    if '_n' in os.path.abspath(filename):
+        mode_args['marker'] = '$N$'
+        
+        
     
 
     a = ax.plot(dis[:,0],dis[:,1],**mode_args,markersize=6,markeredgecolor='black')

@@ -33,7 +33,7 @@ tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'indigo', 'label' : r'ODF (r) $\times 4$', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
@@ -129,7 +129,7 @@ for mode in ['bomd','ldfa','tdpt','d4','pes']:
     a = ax.plot(incidence_es,ratios,**mode_args,markersize=6,markeredgecolor='black')
 
 
-ax.plot(np.linspace(0,1,100), func(np.linspace(0,1,100), *popt), '--', color='black',label='EXPT')
+ax.plot(np.linspace(0,1,100), func(np.linspace(0,1,100), *popt), '--', color='black',label='Expt')
 
 ###########################
 font='Arial'

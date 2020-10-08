@@ -105,7 +105,7 @@ ax[1,0].set_xlim(0,14)
 ax[1,0].annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 #v16
-ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$v_i=16$ exp')
+ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt')#,label=r'$v_i=16$ exp')
 ax[1,1].set_ylim(0,0.3)
 ax[1,1].set_xlim(0,18)
 ax[1,1].annotate(r'$v_i = 16$',ha="right", **annotate_args)
@@ -179,8 +179,8 @@ for i,filename in enumerate(filenames):
         mode = 'ODF(rr)*4'
 
     if 'pes' in os.path.abspath(filename):
-        mode_args['color'] = 'green'
-        mode_args['marker'] = 'v'
+        mode_args['color'] = 'orange'
+        mode_args['marker'] = 'D'
         mode_args['label'] = mode_args['label'] + r'[RS]'
         if 'tdpt' in os.path.abspath(filename):
             mode = 'ODF[RS]'
@@ -233,7 +233,16 @@ ax[1,1].set_ylabel('Population',fontname=font,color='black')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
 fig.set_figheight(3)
 fig.set_figwidth(3.25)
-plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 2.8), loc='center')
+
+
+handles,labels = ax[1,1].get_legend_handles_labels()
+order = np.array([0,3,
+        2,4,
+        1,5])
+
+handles = [handles[i] for i in order]
+labels = [labels[i] for i in order]
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 2.8), loc='center')
 #plt.tight_layout()
 #plt.subplots_adjust(hspace=1.2)
 #plt.gcf().subplots_adjust(right=0.01)

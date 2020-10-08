@@ -32,10 +32,11 @@ if os.path.exists("figs7.txt"):
     os.remove("figs7.txt")
 
 tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
-pes_args = {'marker' : 'v', 'linestyle' : 'None','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
+bomd_pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'cyan', 'label' : r'BOMD[RS]', 'alpha' : 1.0}
+odf_pes_args = {'marker' : 'D', 'linestyle' : '-.','color' : 'orange', 'label' : r'ODF[RS]', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'EXPT', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF Ref', 'alpha' : 1.0}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 1.0}
 
@@ -131,6 +132,11 @@ for i,filename in enumerate(filenames):
 
     if 'pes' in os.path.abspath(filename):
         mode = 'pes'
+        if 'tdpt' in os.path.abspath(filename):
+            mode = 'odf[rs]'
+        if 'bomd' in os.path.abspath(filename):
+            mode = 'bomd[rs]'
+
 
     if 'v02' in os.path.abspath(filename):
         initial=2
@@ -175,7 +181,7 @@ for initial_state in [2,3]:
             continue
         model =''
         
-        for mode in ['ldfa','bomd','tdpt']:
+        for mode in ['ldfa','bomd','tdpt','bomd[rs]','odf[rs]']:
             if mode=='tdpt':
                 mode_args = tdpt_args.copy()
                 zorder=3
@@ -191,6 +197,10 @@ for initial_state in [2,3]:
             if mode=='d4':
                 mode_args = d4_args.copy()
                 model = 'ODF(rr)*4'
+            if mode=='odf[rs]':
+                mode_args = odf_pes_args
+            if mode=='bomd[rs]':
+                mode_args = bomd_pes_args
 
             idx = np.argwhere((all_modes==mode) & (all_initials == initial_state) & (all_finals == final_state)).flatten()
             incidence_es = all_eis[idx]
@@ -277,17 +287,19 @@ labels= (0,0.2,0.4,0.6,0.8,1.0)
 ax[1,0].set_yticks(labels)
 
 handles,labels = ax[1,1].get_legend_handles_labels()
-
-handles = [handles[1], handles[3], 
-            handles[0], handles[4], 
-            handles[2], handles[5]]
-labels = [labels[1], labels[3], 
-            labels[0],labels[4], 
-            labels[2], labels[5]]
+print(labels)
+handles = [handles[1], handles[4], 
+            handles[0], handles[5], 
+            handles[2], handles[6],
+            handles[3], handles[7]]
+labels = [labels[1], labels[4], 
+            labels[0],labels[5], 
+            labels[2], labels[6],
+            labels[3], labels[7]]
 
 fig.set_figheight(4.)
 fig.set_figwidth(3.25)
-plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.5), loc='center')
+plt.legend(handles=handles,labels=labels,ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.5), loc='center')
 plt.subplots_adjust(hspace=0.3,wspace=0.2)
 fig.savefig('fig3_all.pdf',transparent=True,bbox_inches='tight')
 fig.savefig('fig3_all.tiff',transparent=True,bbox_inches='tight',dpi=600)

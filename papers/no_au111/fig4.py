@@ -62,7 +62,7 @@ ax[0,0].axis('off')
 exp = np.loadtxt('v03_iso_950.txt')
 err = np.array([0.189,0.206,0.473,0.306])-exp[:,1]
 p1 = ax[0,1].bar(exp[:,0],exp[:,1],color=exp_colour,edgecolor='black'
-        ,yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT')
+        ,yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'Expt')
 ax[0,1].set_xlim(-0.5,3.5)
 ax[0,1].set_ylim(0,0.9)
 ax[0,1].annotate(r'Isotropic',ha="left",**annotate_args)
@@ -71,7 +71,7 @@ ax[0,1].annotate(r'Isotropic',ha="left",**annotate_args)
 exp = np.loadtxt('v03_nfirst_950.txt')
 err = np.array([0.232,0.262,0.646,0.180])-exp[:,1]
 p2 = ax[1,0].bar(exp[:,0],exp[:,1],color='cornflowerblue',edgecolor='black',
-        yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT')
+        yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'Expt')
 ax[1,0].set_xlim(-0.5,3.5)
 ax[1,0].set_ylim(0,0.9)
 ax[1,0].annotate(r'N$\downarrow$', ha="left",**annotate_args)
@@ -80,7 +80,7 @@ ax[1,0].annotate(r'N$\downarrow$', ha="left",**annotate_args)
 exp = np.loadtxt('v03_ofirst_950.txt')
 err = np.array([0.143,0.165,0.401,0.456])-exp[:,1]
 p3 = ax[1,1].bar(exp[:,0],exp[:,1],color="lightcoral",edgecolor='black',
-        yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'EXPT'))#,label=r'EXPT')
+        yerr=err,capsize=3, error_kw={'elinewidth' : 1})#,label=r'Expt'))#,label=r'Expt')
 ax[1,1].set_xlim(-0.5,3.5)
 ax[1,1].set_ylim(0,0.9)
 ax[1,1].annotate(r'O$\downarrow$', ha="left",**annotate_args)
@@ -210,7 +210,7 @@ ax[1,1].xaxis.set_major_locator(MultipleLocator(1))
 handles,labels = ax[0,1].get_legend_handles_labels()
 
 handles.append((p1,p2,p3))
-labels.append('EXPT')
+labels.append('Expt')
 
 ax[0,1].legend(handles,labels,numpoints=1,
                 handler_map={tuple: HandlerTuple(ndivide=None)},

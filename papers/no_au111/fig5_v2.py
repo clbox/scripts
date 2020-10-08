@@ -93,7 +93,7 @@ s = 0.6
 x = np.linspace(0,6,5000)
 c1 = 'grey'
 gauss = (np.exp(-0.5*((x-x0)*(x-x0))/(s*s))/(s*np.sqrt(np.pi)))*(1/np.sqrt(2))
-ax[0,1].plot(x,gauss,'--',color=c1,linewidth=2)
+ax[0,1].plot(x,gauss,'--',color=c1,linewidth=1.2)
 # ax[0,1].fill_between(x, gauss,np.zeros_like(gauss),color=c1,alpha=0.4)
 
 filename = 'spec/projected_memory_kernel.out'
@@ -142,7 +142,7 @@ ax[1,0].set_xlim(0,12)
 ax[1,0].annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 #v16
-ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='EXPT')#,label=r'$v_i=16$ exp')
+ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt')#,label=r'$v_i=16$ exp')
 ax[1,1].set_ylim(0,0.3)
 ax[1,1].set_xlim(0,18)
 ax[1,1].annotate(r'$v_i = 16$',ha="right", **annotate_args)
@@ -267,7 +267,7 @@ ax[1,1].set_ylabel('Population',fontname=font,color='black')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
 fig.set_figheight(5)
 fig.set_figwidth(3.25)
-plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 2.8), loc='center')
+plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=1.9,bbox_to_anchor=(0.47, 2.8), loc='center')
 #plt.tight_layout()
 #plt.subplots_adjust(hspace=1.2)
 #plt.gcf().subplots_adjust(right=0.01)

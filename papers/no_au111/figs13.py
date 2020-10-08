@@ -25,7 +25,7 @@ colours2 = ['blue','dodgerblue','black','magenta','orange','orange']
 
 
 fig, ax = plt.subplots(2, 2, sharex='all')#,sharey='all')#, constrained_layout=True)
-for m,mode in enumerate(['','ldfa/']):
+for m,mode in enumerate(['ldfa/','']):
     for v,vib in enumerate(['v03','v16']):
         time_axis = np.loadtxt(vib+'/'+mode+'timeaxis_1.txt')
         projected_tensors = vjp.read_array(vib+'/'+mode+'projected_tensors1.txt')
@@ -84,10 +84,10 @@ ax[1,0].annotate(r'$v_i = 16$',ha="right", **annotate_args)
 ax[1,1].annotate(r'$v_i = 16$',ha="right", **annotate_args)
 
 annotate_args = {'xy' : (0.97,0.75), 'xycoords' : 'axes fraction'}
-ax[0,0].annotate(r'ODF',ha="right", **annotate_args)
-ax[0,1].annotate(r'LDFA',ha="right", **annotate_args)
-ax[1,0].annotate(r'ODF',ha="right", **annotate_args)
-ax[1,1].annotate(r'LDFA',ha="right", **annotate_args)
+ax[0,1].annotate(r'ODF',ha="right", **annotate_args)
+ax[0,0].annotate(r'LDFA',ha="right", **annotate_args)
+ax[1,1].annotate(r'ODF',ha="right", **annotate_args)
+ax[1,0].annotate(r'LDFA',ha="right", **annotate_args)
 
 
 
