@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 from matplotlib.gridspec import GridSpec
+import seaborn as sns
+import seaborn.distributions as sd
+from seaborn.palettes import color_palette, blend_palette
+from six import string_types
 
 SMALL_SIZE = 9.5
 MEDIUM_SIZE = 9.5
@@ -29,16 +33,65 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
 markers = ['o','x','s','v','.','x']
-colours = ['navy','maroon','darkgreen','goldenrod','violet','pink']
+linestyles = ['-','--']
+
+red = sns.color_palette("Reds")[-2]
+blue = sns.color_palette("Blues")[-2]
+colours = [blue,red,'darkgreen','goldenrod','violet','pink']
 
 O_mass = 14.0067
 N_mass = 15.999
 
-marker_args = [{'linewidth' : 0.7, 's' : 10,'facecolor' : 'none','alpha' : 0.6},{'linewidth' : 0.7, 's' : 20, 'facecolor' : 'maroon', 'alpha' : 0.6}]
+marker_args = [{'linewidth' : 0.7, 's' : 10,'facecolor' : 'none','alpha' : 0.6,},{'linewidth' : 0.7, 's' : 20, 'facecolor' : 'maroon', 'alpha' : 0.6}]
+def _bivariate_kdeplot(x, y, filled, fill_lowest,
+                       kernel, bw, gridsize, cut, clip,
+                       axlabel, cbar, cbar_ax, cbar_kws, ax, **kwargs):
+    """Plot a joint KDE estimate as a bivariate contour plot."""
+    # Determine the clipping
+    if clip is None:
+        clip = [(-np.inf, np.inf), (-np.inf, np.inf)]
+    elif np.ndim(clip) == 1:
+        clip = [clip, clip]
 
+    # Calculate the KDE
+    if sd._has_statsmodels:
+        xx, yy, z = sd._statsmodels_bivariate_kde(x, y, bw, gridsize, cut, clip)
+    else:
+        xx, yy, z = sd._scipy_bivariate_kde(x, y, bw, gridsize, cut, clip)
+
+    # Plot the contours
+    n_levels = kwargs.pop("n_levels", 10)
+    cmap = kwargs.get("cmap", "BuGn" if filled else "BuGn_d")
+    if isinstance(cmap, string_types):
+        if cmap.endswith("_d"):
+            pal = ["#333333"]
+            pal.extend(color_palette(cmap.replace("_d", "_r"), 2))
+            cmap = blend_palette(pal, as_cmap=True)
+        else:
+            cmap = plt.cm.get_cmap(cmap)
+
+    kwargs["cmap"] = cmap
+    contour_func = ax.contourf if filled else ax.contour
+    cset = contour_func(xx, yy, z, n_levels, **kwargs)
+    if filled and not fill_lowest:
+        cset.collections[0].set_alpha(0)
+    kwargs["n_levels"] = n_levels
+
+    if cbar:
+        cbar_kws = {} if cbar_kws is None else cbar_kws
+        ax.figure.colorbar(cset, cbar_ax, ax, **cbar_kws)
+
+    # Label the axes
+    if hasattr(x, "name") and axlabel:
+        ax.set_xlabel(x.name)
+    if hasattr(y, "name") and axlabel:
+        ax.set_ylabel(y.name)
+
+    return ax, cset
 
 mode2 = 'orient' #orient or final
-
+N_trajs_r = []
+N_trajs_theta = []
 results = {'final_v' : [],'atom_first' : [], 'pos1' : [], 'pos2' : []}
 filenames = sys.argv[1:]
 for i,filename in enumerate(filenames):
@@ -103,7 +156,10 @@ for i,filename in enumerate(filenames):
 
 
 
+weights = [1,0.2]
 
+cmaps = ['Blues','Reds']
+kwargs = {'levels': np.arange(0, 0.15, 0.01)}
 
 com_bins = np.linspace(1,3,100)
 for mode in ['theta', 'r']:
@@ -148,15 +204,23 @@ for mode in ['theta', 'r']:
         r = np.sqrt(dx**2 + dy**2 + dz**2)
         angle = np.arcsin((y1-y2)/r) * 180/np.pi
 
+        weights = np.ones_like(r)/len(r)
+        sd._bivariate_kdeplot = _bivariate_kdeplot
+
         if mode == 'r':
             r_bins = np.linspace(1,2.,100)
-            ax_joint.scatter(r,centre_mass_z,zorder=zorder,label=label,marker=markers[i], **marker_args[i],edgecolors=colours[i])
+            N_trajs_r.append(len(r))
+            #ax_joint.scatter(r,centre_mass_z,zorder=zorder,label=label,marker=markers[i], **marker_args[i],edgecolors=colours[i])
+            _, cs = sns.kdeplot(r,centre_mass_z,cmap=cmaps[i],ax=ax_joint,shade=False,gridsize=100,cbar=False,shade_lowest=True,levels=5)#**kwargs)
             ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
         else:
             theta_bins = np.linspace(-90,90,100)
-            ax_joint.scatter(angle,centre_mass_z,zorder=zorder,label=label,marker=markers[i], **marker_args[i],edgecolors=colours[i])
+            N_trajs_theta.append(len(angle))
+            #ax_joint.scatter(angle,centre_mass_z,zorder=zorder,label=label,marker=markers[i], **marker_args[i],edgecolors=colours[i])
+            _, cs  = sns.kdeplot(angle,centre_mass_z,cmap=cmaps[i],ax=ax_joint,shade=False,gridsize=100,cbar=False,shade_lowest=True,levels=5)#,**kwargs)
             ax_marg_x.hist(angle,bins=theta_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
         ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
+        #plt.clabel(cs, cs.levels, inline=True,fontsize=4)
 
 
 
@@ -166,7 +230,7 @@ for mode in ['theta', 'r']:
 
 
     #Limits
-    ax_joint.legend(ncol=2,handletextpad=0.15,columnspacing=0.2,fancybox=True,framealpha=1,handlelength=1,bbox_to_anchor=(0.5, 1.05), loc='center')
+    #ax_joint.legend(ncol=2,handletextpad=0.15,columnspacing=0.2,fancybox=True,framealpha=1,handlelength=1,bbox_to_anchor=(0.5, 1.05), loc='center')
 
 
     annotate_args = {'xy' : (0.01,0.05), 'xycoords' : 'axes fraction'}
@@ -190,6 +254,10 @@ for mode in ['theta', 'r']:
         ax_marg_y.set_ylim(1.25,3)
         ax_joint.set_ylim(1.25,3)
         ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")
+        ax_joint.text(1.2, 1.5, "Trapped", size=12, color=blue,ha='left')
+        ax_joint.text(1.2, 1.3, r"$n$ ="+str(N_trajs_r[0]), size=12, color=blue,ha='left')
+        ax_joint.text(1.07, 2.75, "$v_f = 2$", size=12, color=red,ha='left')
+        ax_joint.text(1.07, 2.55, r"$n$ ="+str(N_trajs_r[1]), size=12, color=red,ha='left')
     else:
         ax_marg_x.set_xlim(-90,90)
         ax_joint.set_xlim(-90,90)
@@ -210,6 +278,10 @@ for mode in ['theta', 'r']:
 
         ax_marg_x.yaxis.set_major_locator(MultipleLocator(60))
         ax_marg_x.yaxis.set_minor_locator(MultipleLocator(10))
+        ax_joint.text(0, 1.5, "Trapped", size=12, color=blue)
+        ax_joint.text(0, 1.3, r"$n$ ="+str(N_trajs_theta[0]), size=12, color=blue,ha='left')
+        ax_joint.text(-30, 2.8, "$v_f = 2$", size=12, color=red)
+        ax_joint.text(-30, 2.6, r"$n$ ="+str(N_trajs_theta[1]), size=12, color=red,ha='left')
 
 
 
@@ -238,5 +310,5 @@ for mode in ['theta', 'r']:
 
     fig.savefig('figs12'+mode+'.pdf',transparent=True,bbox_inches='tight')
     fig.savefig('figs12'+mode+'.png',transparent=True,bbox_inches='tight',dpi=300)
-    fig.savefig('figs12'+mode+'.eps',transparent=False,bbox_inches='tight')
+    #fig.savefig('figs12'+mode+'.eps',transparent=False,bbox_inches='tight')
     fig.savefig('figs12'+mode+'scatter.tiff',dpi=600,transparent=True,bbox_inches='tight')

@@ -199,8 +199,10 @@ for initial_state in [2,3]:
                 model = 'ODF(rr)*4'
             if mode=='odf[rs]':
                 mode_args = odf_pes_args
+                model = 'ODF[RS]'
             if mode=='bomd[rs]':
                 mode_args = bomd_pes_args
+                model = 'BOMD[RS]'
 
             idx = np.argwhere((all_modes==mode) & (all_initials == initial_state) & (all_finals == final_state)).flatten()
             incidence_es = all_eis[idx]
@@ -210,7 +212,7 @@ for initial_state in [2,3]:
             incidence_es = incidence_es[order]
             ratios = ratios[order]
             a = ax[map_plot[c]].plot(incidence_es,ratios,**mode_args,markersize=4,markeredgecolor='black',zorder=zorder)
-            if model in ['BOMD','LDFA','ODF','LDFA*4','ODF(rr)*4']:
+            if model in ['BOMD','LDFA','ODF','LDFA*4','ODF(rr)*4','BOMD[RS]','ODF[RS]']:
                 with open('figs7.txt','a+') as f:
                     f.write('initial vib '+str(initial_state) + '\n')
                     f.write('final vib '+str(final_state) + '\n')

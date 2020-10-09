@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 from matplotlib.gridspec import GridSpec
+import seaborn as sns
+
 
 SMALL_SIZE = 9.5
 MEDIUM_SIZE = 9.5
@@ -29,13 +31,16 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
 markers = ['o','x','s','v','.','x']
-colours = ['navy','maroon','darkgreen','goldenrod','violet','pink']
+linestyles = ['-','--']
 
 O_mass = 14.0067
 N_mass = 15.999
 
-marker_args = [{'linewidth' : 0.7, 's' : 10,'facecolor' : 'none','alpha' : 0.6},{'linewidth' : 0.7, 's' : 20, 'facecolor' : 'maroon', 'alpha' : 0.6}]
+marker_args = [{'linewidth' : 0.7, 's' : 10,'facecolor' : 'none','alpha' : 1,},{'linewidth' : 0.7, 's' : 20, 'facecolor' : 'maroon', 'alpha' : 1}]
 
+red = sns.color_palette("Reds")[-2]
+blue = sns.color_palette("Blues")[-2]
+colours = [blue,red,'darkgreen','goldenrod','violet','pink']
 
 mode2 = 'orient' #orient or final
 
@@ -102,9 +107,10 @@ for i,filename in enumerate(filenames):
 
 
 
+N_trajs_r = []
+N_trajs_theta = []
 
-
-
+cmaps = ['Blues','Reds']
 com_bins = np.linspace(1,3,100)
 for mode in ['theta', 'r']:
     fig = plt.figure()
@@ -141,11 +147,15 @@ for mode in ['theta', 'r']:
 
             if mode == 'r':
                 r_bins = np.linspace(1,2.,100)
-                ax_joint.scatter(r,centre_mass_z,zorder=zorder,label=labels[i],marker=markers[i], **marker_args[i],edgecolors=colours[i])
+                N_trajs_r.append(len(r))
+                #ax_joint.scatter(r,centre_mass_z,zorder=zorder,label=labels[i],marker=markers[i], **marker_args[i],edgecolors=colours[i])
+                sns.kdeplot(r,centre_mass_z,cmap=cmaps[i],ax=ax_joint,shade=False,gridsize=100,cbar=False,shade_lowest=True,levels=5)#**kwargs)
                 ax_marg_x.hist(r,bins=r_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
             else:
                 theta_bins = np.linspace(-90,90,100)
-                ax_joint.scatter(angle,centre_mass_z,zorder=zorder,label=labels[i],marker=markers[i], **marker_args[i],edgecolors=colours[i])
+                N_trajs_theta.append(len(r))
+                sns.kdeplot(angle,centre_mass_z,cmap=cmaps[i],ax=ax_joint,shade=False,gridsize=100,cbar=False,shade_lowest=True,levels=5)#,**kwargs)
+                #ax_joint.scatter(angle,centre_mass_z,zorder=zorder,label=labels[i],marker=markers[i], **marker_args[i],edgecolors=colours[i])
                 ax_marg_x.hist(angle,bins=theta_bins,color=colours[i],alpha=0.5,zorder=zorder,density=False)
             ax_marg_y.hist(centre_mass_z,bins=com_bins,color=colours[i],alpha=0.5,orientation="horizontal",zorder=zorder,density=False)
     else:
@@ -159,7 +169,7 @@ for mode in ['theta', 'r']:
 
 
     #Limits
-    ax_joint.legend(ncol=2,handletextpad=0.15,columnspacing=0.2,fancybox=True,framealpha=1,handlelength=1,bbox_to_anchor=(0.5, 1.05), loc='center')
+    #ax_joint.legend(ncol=2,handletextpad=0.15,columnspacing=0.2,fancybox=True,framealpha=1,handlelength=1,bbox_to_anchor=(0.5, 1.05), loc='center')
 
 
     annotate_args = {'xy' : (0.01,0.05), 'xycoords' : 'axes fraction'}
@@ -183,6 +193,11 @@ for mode in ['theta', 'r']:
         ax_marg_y.set_ylim(1.25,3)
         ax_joint.set_ylim(1.25,3)
         ax_joint.set_ylabel(r"COM height / $\mathrm{\AA{}}$")
+        ax_joint.text(1.3, 1.5, "N$\downarrow$", size=12, color=blue)
+        ax_joint.text(1.3, 2.8, "O$\downarrow$", size=12, color=red)
+
+        ax_joint.text(1.3, 1.3, r"$n$ ="+str(N_trajs_r[0]), size=12, color=blue,ha='left')
+        ax_joint.text(1.3, 2.6, r"$n$ ="+str(N_trajs_r[1]), size=12, color=red,ha='left')
     else:
         ax_marg_x.set_xlim(-90,90)
         ax_joint.set_xlim(-90,90)
@@ -203,6 +218,11 @@ for mode in ['theta', 'r']:
 
         ax_marg_x.yaxis.set_major_locator(MultipleLocator(150))
         ax_marg_x.yaxis.set_minor_locator(MultipleLocator(50))
+        ax_joint.text(30, 1.5, "N$\downarrow$", size=12, color=blue)
+        ax_joint.text(-30, 2.8, "O$\downarrow$", size=12, color=red)
+
+        ax_joint.text(30, 1.3, r"$n$ ="+str(N_trajs_theta[0]), size=12, color=blue,ha='left')
+        ax_joint.text(-30, 2.6, r"$n$ ="+str(N_trajs_theta[1]), size=12, color=red,ha='left')
 
 
 
@@ -231,5 +251,5 @@ for mode in ['theta', 'r']:
 
     fig.savefig('figs10'+mode+'.pdf',transparent=True,bbox_inches='tight')
     fig.savefig('figs10'+mode+'.png',transparent=True,bbox_inches='tight',dpi=300)
-    fig.savefig('figs10'+mode+'.eps',transparent=False,bbox_inches='tight')
+    #fig.savefig('figs10'+mode+'.eps',transparent=False,bbox_inches='tight')
     fig.savefig('figs10'+mode+'scatter.tiff',dpi=600,transparent=True,bbox_inches='tight')
