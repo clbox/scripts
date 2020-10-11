@@ -281,21 +281,21 @@ ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
     # marker='s',linestyle='-',color='blue',label=r'LDFA $\times 4$')
 
 
-np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1.3f')
+np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1.7f')
 
 
 if not mode==-1:
-    np.savetxt('states_1.txt', np.c_[state_list,ntraj_single_list/np.sum(ntraj_single_list)],fmt='%1.3f')
-    np.savetxt('states_2.txt', np.c_[state_list,ntraj_double_list/np.sum(ntraj_double_list)],fmt='%1.3f')
-    np.savetxt('states_multi.txt', np.c_[state_list,ntraj_multi_list/np.sum(ntraj_multi_list)],fmt='%1.3f')
+    np.savetxt('states_1.txt', np.c_[state_list,ntraj_single_list/np.sum(ntraj_single_list)],fmt='%1.7f')
+    np.savetxt('states_2.txt', np.c_[state_list,ntraj_double_list/np.sum(ntraj_double_list)],fmt='%1.7f')
+    np.savetxt('states_multi.txt', np.c_[state_list,ntraj_multi_list/np.sum(ntraj_multi_list)],fmt='%1.7f')
 
     if orientated==True:
-        np.savetxt('states_n.txt', np.c_[state_list,n_first_list/np.sum(n_first_list)],fmt='%1.3f')
-        np.savetxt('states_o.txt', np.c_[state_list,o_first_list/np.sum(o_first_list)],fmt='%1.3f')
+        np.savetxt('states_n.txt', np.c_[state_list,n_first_list/np.sum(n_first_list)],fmt='%1.7f')
+        np.savetxt('states_o.txt', np.c_[state_list,o_first_list/np.sum(o_first_list)],fmt='%1.7f')
 
 
-        np.savetxt('states_1_n.txt', np.c_[state_list,n_first_single_list/np.sum(n_first_single_list)],fmt='%1.3f')
-        np.savetxt('states_1_o.txt', np.c_[state_list,o_first_single_list/np.sum(o_first_single_list)],fmt='%1.3f')
+        np.savetxt('states_1_n.txt', np.c_[state_list,n_first_single_list/np.sum(n_first_single_list)],fmt='%1.7f')
+        np.savetxt('states_1_o.txt', np.c_[state_list,o_first_single_list/np.sum(o_first_single_list)],fmt='%1.7f')
 
 
     bounce_prob = []
@@ -308,7 +308,7 @@ if not mode==-1:
 state_list.append(-1)
 ntraj_list = np.append(ntraj_list,n_trapped)
 
-np.savetxt('absolute_pops.txt',np.c_[state_list,ntraj_list],fmt='%1.3f')
+np.savetxt('absolute_pops.txt',np.c_[state_list,ntraj_list],fmt='%1.6f')
 #V16
 # ax.bar(x16_exp,v16_exp,color='black',label=r'$v_i=16$ exp')
 # ax.set_ylim(0,0.5)
