@@ -30,23 +30,6 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
 
-
-x16_exp = np.arange(0,17,1)
-v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
-
-x3_exp = np.arange(0,7,1)
-v3_exp = [0.0,0.2195652173913044,0.42391304347826086,0.35434782608695653,0.0,0,0]
-
-x15_exp = np.arange(5,16)
-v15_exp = [0.115,0.1339,0.194,0.192,0.125,0.082,0.04,0.05,0.019,0.015,0.036]
-
-x11_exp = np.arange(2,12)
-v11_exp = [0.047,0.099,0.18,0.18,0.18,0.12,0.068,0.052,0.036,0.025]
-
-x2_exp = np.arange(1,4,1)
-v2_exp = [0.33,0.66,0.00038]
-
-
 #mode 0 = bomd, mode 1 = ldfa, mode 2 = tdpt
 mode = int(sys.argv[1])
 
@@ -274,12 +257,6 @@ fig2.text(0.01, 0.5, r'E$_i$ - E$_f$ / eV', va='center', rotation='vertical',fon
 fig2.savefig('energy_distribution.pdf',transparent=True,bbox_inches='tight')
 
 ntraj_list = np.array(ntraj_list)
-fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
-ax.plot(state_list,ntraj_list/np.sum(ntraj_list),
-   # '.-',color='purple',label=r'TDPT')# $\times 2$')
-    marker='^',linestyle='-',color='red',label=r'BOMD')
-    # marker='s',linestyle='-',color='blue',label=r'LDFA $\times 4$')
-
 
 np.savetxt('states.txt', np.c_[state_list,ntraj_list/np.sum(ntraj_list)],fmt='%1.7f')
 
@@ -309,45 +286,6 @@ state_list.append(-1)
 ntraj_list = np.append(ntraj_list,n_trapped)
 
 np.savetxt('absolute_pops.txt',np.c_[state_list,ntraj_list],fmt='%1.6f')
-#V16
-# ax.bar(x16_exp,v16_exp,color='black',label=r'$v_i=16$ exp')
-# ax.set_ylim(0,0.5)
-# ax.set_xlim(0,20)
-
-#V3
-# ax.bar(x3_exp,v3_exp,color='black',label=r'$v_i=3$ exp')
-# ax.set_xlim(0,6)
-# ax.set_ylim(0,0.8)
-
-#V15
-# ax.bar(x15_exp,v15_exp,color='black',label=r'$v_i=15$ exp')
-# ax.set_xlim(0,17)
-# ax.set_ylim(0,0.8)
-
-#V11
-# ax.bar(x11_exp,v11_exp,color='black',label=r'$v_i=11$ exp')
-# ax.set_xlim(0,20)
-# ax.set_ylim(0,0.5)
-
-#V2
-ax.bar(x2_exp,v2_exp,color='black',label=r'$v_i=2$ exp')
-ax.set_xlim(0,4)
-ax.set_ylim(0,0.8)
-
-
-ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-ax.legend()
-
-
-fig.set_figheight(4)
-fig.set_figwidth(5)
-fig.text(0.5, 0.00, r"Final vibrational state ($v_f$)", ha='center',fontsize=15)
-fig.text(0.01, 0.5, 'Population', va='center', rotation='vertical',fontsize=15)
-fig.savefig('probability.pdf',transparent=True,bbox_inches='tight')
-
-
-
-
 
 #PLOT SCATTERING ANGULAR DISTRIBUTION
 #fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')

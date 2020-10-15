@@ -37,7 +37,7 @@ bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD'
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF Ref', 'alpha' : 1.0}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'label' : r'IESH Ref', 'alpha' : 1.0}
 mfcs = ['None','']
 annotate_args = {'xy' : (0.03,0.91), 'xycoords' : 'axes fraction'}
 
@@ -53,6 +53,10 @@ exp1 = np.loadtxt('exp/1/1050.txt',delimiter=',')
 exp2 = np.loadtxt('exp/2/1050.txt',delimiter=',')
 a = ax.plot(exp1[:,0],exp1[:,1,],color='black',marker='o',linestyle='-',markersize=4,markeredgecolor='black')
 a = ax.plot(exp2[:,0],exp2[:,1,],mfc='None',color='black',marker='s',linestyle='--',markersize=4,markeredgecolor='black')
+exp1 = np.loadtxt('ref/1/1050.txt',delimiter=',')
+exp2 = np.loadtxt('ref/2/1050.txt',delimiter=',')
+a = ax.plot(exp1[:,0],exp1[:,1,],mfc='#9ABD8F',markersize=4,markeredgecolor='black',**iesh_args)
+a = ax.plot(exp2[:,0],exp2[:,1,],mfc='white',markersize=4,markeredgecolor='black',**iesh_args)
 
 for i,filename in enumerate(filenames):
     ei = float(os.path.basename(os.path.dirname(filename)))
