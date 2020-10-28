@@ -45,7 +45,6 @@ traj_dict = {'mode' : [],
             'f_v' : [],
             'f_r' : [],
             'f_t' : [],
-            'i_t' : [],
                             }
 
 ntrajs=0
@@ -114,12 +113,17 @@ ax.set_yscale('log')
 fig.savefig('f_t.pdf',transparent=True,bbox_inches='tight')
 
 fig, ax = plt.subplots(1, 1, sharex='all',sharey='all')
-for mode in unique:
-    idx = (np.where((np.array(traj_dict['mode'])==mode)))[0]
+cmaps = ['Blues','Reds','Greens']
+#for i,mode in enumerate(unique):
+for i,mode in enumerate([0,1,2]):
+    idx = (np.where((np.array(traj_dict['vf'])==mode)))[0]
     f_r = np.array(np.array(traj_dict['f_r'])[idx])
-    sns.distplot(f_r,ax=ax,label=mode)
+    f_t = np.array(np.array(traj_dict['f_t'])[idx])
+    sns.kdeplot(f_t,f_r,ax=ax,label=mode,cmap=cmaps[i],gridsize=60)
 ax.legend()
+#ax.set_ylim(0,0.2)
 #ax.set_xlim(-0.12,0.8)
-ax.set_xlabel(r'$E_{r,f}$ / eV')
-ax.set_yscale('log')
+ax.set_xlabel(r'$E_{f}$ / eV')
+ax.set_xlabel(r'$E_{rot}$ / eV')
+#ax.set_yscale('log')
 fig.savefig('f_r.pdf',transparent=True,bbox_inches='tight')
