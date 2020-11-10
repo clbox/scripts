@@ -100,7 +100,7 @@ class friction_gamma_parser():
 
 class friction_tensor():
     def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,friction_masses,temp,sigma,nspin):
-        self.weighted_couplings = couplings
+        self.couplings = couplings
         self.coords = coords
         self.eis = eis
         self.ejs = ejs
@@ -119,7 +119,7 @@ class friction_tensor():
         max_k = np.max(ks)
         eis = self.eis
         ejs = self.ejs
-        couplings = self.weighted_couplings
+        couplings = self.couplings
         tensor = np.zeros((ndim+1,ndim+1))
         chem_pot = self.chem_pot
         temp = self.temp
@@ -151,6 +151,59 @@ class friction_tensor():
 
         return tensor*ps
 
+class calc_gamma():
+    #discretize ei and ejs with gaussian functions of smearing width sigma
+    def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,sigma,nspin,min_e,max_e,npoints):
+        self.couplings = couplings
+        self.coords = coords
+        self.eis = eis
+        self.ejs = ejs
+        self.ks = ks
+        self.chem_pot = chem_pot
+        self.kweights=kweights
+        self.sigma = sigma
+        self.nspin = nspin
+        self.min_e = min_e
+        self.max_e = max_e
+        self.npoints = npoints
+
+    def dos_binning(self):
+        min_e = self.min_e
+        max_e = self.max_e
+        npoints = self.npoints
+        coords = self.coords
+        ndim = np.max(coords)
+
+        h_grid = np.linspace(min_e,max_e,npoints) #eV
+        e_grid =  np.linspace(min_e,max_e,npoints)
+
+        eis = self.eis
+        ejs = self.ejs
+        couplings = self.couplings
+
+
+        gamma = np.zeros((ndim+1,len(e_grid),len(h_grid)),dtype=np.complex128)
+
+        for n in range(ndim+1):
+            idx = np.where((coords == n))[0]
+            cs = couplings[idx]
+            eis_n = eis[idx]
+            ejs_n = ejs[idx]
+            for i,c in enumerate(cs):
+                gauss_mat = np.outer(gaussian_function(eis_n[i],e_grid,0.01),gaussian_function(ejs_n[i],h_grid,0.01))
+                gamma[n,:,:] +=gauss_mat*c
+
+
+        return gamma
+
+
+
+
+        
+
+
+
+# class calc_lambda():
                 
 
 
