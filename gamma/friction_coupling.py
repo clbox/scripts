@@ -4,6 +4,7 @@ import os
 from ase import Atoms
 from scipy import special
 from ase.units import _hbar, J, s, fs
+from scipy.integrate import simps
 hbar = _hbar * J * s
 ps = fs*1000
 boltzmann_kB = 8.617333262145e-5 #eV K-1
@@ -197,13 +198,110 @@ class calc_gamma():
         return gamma
 
 
+class calc_A():
+    #discretize ei and ejs with gaussian functions of smearing width sigma
+    def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,temp,sigma,nspin,min_e,max_e,npoints,friction_masses):
+        self.couplings = couplings
+        self.coords = coords
+        self.eis = eis
+        self.ejs = ejs
+        self.ks = ks
+        self.chem_pot = chem_pot
+        self.kweights=kweights
+        self.temp = temp
+        self.sigma = sigma
+        self.nspin = nspin
+        self.min_e = min_e
+        self.max_e = max_e
+        self.npoints = npoints
+        self.ndim = np.max(coords)
+        self.friction_masses = friction_masses
+
+    def get_e_grid(self):
+        min_e = self.min_e
+        max_e = self.max_e
+        npoints = self.npoints
+        e_grid =  np.linspace(min_e,max_e,npoints)
+        return e_grid
+
+    def get_h_grid(self):
+        min_e = self.min_e
+        max_e = self.max_e
+        npoints = self.npoints
+        h_grid = np.linspace(min_e,max_e,npoints)
+        return h_grid
+
+    def dos_couple_binning(self):
+
+        coords = self.coords
+        ndim = self.ndim
+        temp = self.temp
+        chem_pot = self.chem_pot
+        e_grid = self.get_e_grid()
+        h_grid = self.get_h_grid()
+        eis = self.eis
+        ejs = self.ejs
+        couplings = self.couplings
+        sigma = self.sigma
+
+        A = np.zeros((ndim+1,ndim+1,len(e_grid),len(h_grid)),dtype=np.complex128)
+
+        for n1 in range(ndim+1):
+            for n2 in range(ndim+1):
+                if n2< n1:
+                    continue
+                idx = np.where((coords == n1))[0]
+                idx2 = np.where((coords == n2))[0]
+                cs = couplings[idx]
+                cs2 = couplings[idx2]
+                eis_n = eis[idx]
+                ejs_n = ejs[idx2]
+                for i,c2 in enumerate(cs2):
+                    c = np.conjugate(cs[i])
+                    gauss_mat = np.outer(gaussian_function(eis_n[i],e_grid,sigma),gaussian_function(ejs_n[i],h_grid,sigma))\
+                        *(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
+                    #print(np.max(gaussian_function(ejs_n[i],h_grid,0.01)))
+                    A[n1,n2,:,:] +=gauss_mat*c*c2
+        return A
+
+    def mass_weight(self,tensor):
+        ndim = self.ndim
+        for i in range(ndim+1):
+            mass_i = self.friction_masses[i // 3]
+            for j in range(ndim+1):
+                if j < i:
+                    continue
+                mass_j = self.friction_masses[j // 3]
+                tensor[i,j] = tensor[i,j]/np.sqrt(mass_i*mass_j)
+                tensor[j,i] = tensor[i,j]
+        return tensor
+
+    def evaluate_tensor(self):
+        ndim = self.ndim
+        h_grid = self.get_h_grid()
+        e_grid =  self.get_e_grid()
+        A = self.dos_couple_binning()
+        for i in range(len(e_grid)):
+            for j in range(len(h_grid)):
+                if (h_grid[j]-e_grid[i])==0:
+                    A[:,:,i,j]=0
+                else:
+                    A[:,:,i,j] = A[:,:,i,j]/(h_grid[j]-e_grid[i])
 
 
-        
+        tensor = np.zeros((ndim+1,ndim+1))
+        for n1 in range(ndim+1):
+            for n2 in range(ndim+1):
+                if n2< n1:
+                    continue
+                b = simps(A[n1,n2,:,:],e_grid,axis=0)
+                tensor[n1,n2] = simps(b,h_grid)
+                tensor[n2,n1] = tensor[n1,n2]
 
+        tensor = self.mass_weight(tensor)
+        tensor *= 2*ps*ps
+        return tensor
 
-
-# class calc_lambda():
                 
 
 
