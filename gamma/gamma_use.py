@@ -18,13 +18,22 @@ a = fc.friction_gamma_parser(aims_file=aims2,gamma_files=gamma_files2)
 
 
 
-c = fc.calc_A(a.ks,a.coords,a.eis,a.ejs,a.couplings,a.kweights,a.chem_pot,friction_masses=a.friction_masses,
-    temp=300,sigma=0.01,nspin=1,min_e=-8,max_e=-2,npoints=100)
+# c = fc.calc_time_tensor(a.ks,a.coords,a.eis,a.ejs,a.couplings,a.kweights,a.chem_pot,friction_masses=a.friction_masses,
+#     temp=300,sigma=0.01,nspin=1,min_e=-8,max_e=-2,npoints=100)
 
-tensor = c.evaluate_tensor()
+# tensor = c.evaluate_tensor()
+# print(tensor)
+
+d = fc.calc_time_tensor(a.ks,a.coords,a.eis,a.ejs,a.couplings,a.kweights,a.chem_pot,friction_masses=a.friction_masses,
+    temp=300,sigma=0.01,nspin=1,min_e=0,max_e=2.4,npoints=100)
+tensor = d.evaluate_tensor2()
 print(tensor)
 
-
+y = fc.gaussian_function(np.linspace(0,1,100),0,0.01)
+fig,ax = plt.subplots(1,1)
+ax.plot(np.linspace(0,1,100),y)
+ax.plot(np.linspace(0,1,100),fc.gaussian_norm(np.linspace(0,1,100),0.01))
+fig.savefig('gauss.pdf')
 # print('Max excitation')
 # print(np.max(a.ejs-a.eis))
 # print('Max imaginary component of A')

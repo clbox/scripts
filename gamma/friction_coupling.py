@@ -5,6 +5,8 @@ from ase import Atoms
 from scipy import special
 from ase.units import _hbar, J, s, fs
 from scipy.integrate import simps
+import time
+start_time = time.time()
 hbar = _hbar * J * s
 ps = fs*1000
 boltzmann_kB = 8.617333262145e-5 #eV K-1
@@ -69,6 +71,7 @@ class friction_gamma_parser():
     def parse_gamma_couplings(self,gamma_files):
         #Parsing all for now but in future less memory intensive to 
         #process whilst parsing
+        print("--- %s Start parser ---" % (time.time() - start_time))
         ks = [] 
         coords = []
         eis = []
@@ -96,7 +99,7 @@ class friction_gamma_parser():
                         ejs.append(ej)
                         couplings.append(coupling)
                         kweights.append(kweight)
-
+        print("--- %s End parser ---" % (time.time() - start_time))
         return ks,coords,eis,ejs,couplings,kweights
 
 class friction_tensor():
@@ -114,6 +117,7 @@ class friction_tensor():
         self.nspin = nspin
 
     def calc_tensor(self):
+        print("--- %s Start calc tensor ---" % (time.time() - start_time))
         ks = self.ks
         coords = self.coords
         ndim = np.max(coords)
@@ -149,7 +153,7 @@ class friction_tensor():
                 tensor[i,j] = tensor[i,j]/np.sqrt(mass_i*mass_j)
                 tensor[j,i] = tensor[i,j]
 
-
+        print("--- %s End calc tensor ---" % (time.time() - start_time))
         return tensor*ps
 
 class calc_gamma():
@@ -169,6 +173,7 @@ class calc_gamma():
         self.npoints = npoints
 
     def dos_binning(self):
+        print("--- %s Start dos binning ---" % (time.time() - start_time))
         min_e = self.min_e
         max_e = self.max_e
         npoints = self.npoints
@@ -194,13 +199,13 @@ class calc_gamma():
                 gauss_mat = np.outer(gaussian_function(eis_n[i],e_grid,0.01),gaussian_function(ejs_n[i],h_grid,0.01))
                 gamma[n,:,:] +=gauss_mat*c
 
-
+        print("--- %s End dos binning ---" % (time.time() - start_time))
         return gamma
 
 
-class calc_A():
+class calc_time_tensor():
     #discretize ei and ejs with gaussian functions of smearing width sigma
-    def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,temp,sigma,nspin,min_e,max_e,npoints,friction_masses):
+    def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,nspin,min_e,max_e,npoints,friction_masses,temp=300,sigma=0.01):
         self.couplings = couplings
         self.coords = coords
         self.eis = eis
@@ -230,8 +235,16 @@ class calc_A():
         npoints = self.npoints
         h_grid = np.linspace(min_e,max_e,npoints)
         return h_grid
+    
+    def get_ex_grid(self):
+        min_e = self.min_e
+        max_e = self.max_e
+        npoints = self.npoints
+        h_grid = np.linspace(min_e,max_e,npoints)
+        return h_grid
 
-    def dos_couple_binning(self):
+    def calc_A(self):
+        print("--- %s Start calc A ---" % (time.time() - start_time))
 
         coords = self.coords
         ndim = self.ndim
@@ -262,6 +275,40 @@ class calc_A():
                         *(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
                     #print(np.max(gaussian_function(ejs_n[i],h_grid,0.01)))
                     A[n1,n2,:,:] +=gauss_mat*c*c2
+        print("--- %s End calc A ---" % (time.time() - start_time))
+        return A
+    
+    def calc_A2(self):
+        print("--- %s Start calc A2 ---" % (time.time() - start_time))
+        coords = self.coords
+        ndim = self.ndim
+        temp = self.temp
+        chem_pot = self.chem_pot
+        ex_grid = self.get_ex_grid()
+        eis = self.eis
+        ejs = self.ejs
+        couplings = self.couplings
+        sigma = self.sigma
+
+        A = np.zeros((ndim+1,ndim+1,len(ex_grid)),dtype=np.complex128)
+
+        for n1 in range(ndim+1):
+            for n2 in range(ndim+1):
+                if n2< n1:
+                    continue
+                idx = np.where((coords == n1))[0]
+                idx2 = np.where((coords == n2))[0]
+                cs = couplings[idx]
+                cs2 = couplings[idx2]
+                eis_n = eis[idx]
+                ejs_n = ejs[idx2]
+                for i,c2 in enumerate(cs2):
+                    c = np.conjugate(cs[i])
+                    gauss_mat = gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)*gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)\
+                        /
+                        #*(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
+                    A[n1,n2,:] +=gauss_mat*c*c2
+        print("--- %s End calc A2 ---" % (time.time() - start_time))
         return A
 
     def mass_weight(self,tensor):
@@ -277,10 +324,11 @@ class calc_A():
         return tensor
 
     def evaluate_tensor(self):
+        print("--- %s Start eval tensor ---" % (time.time() - start_time))
         ndim = self.ndim
         h_grid = self.get_h_grid()
         e_grid =  self.get_e_grid()
-        A = self.dos_couple_binning()
+        A = self.calc_A()
         for i in range(len(e_grid)):
             for j in range(len(h_grid)):
                 if (h_grid[j]-e_grid[i])==0:
@@ -300,6 +348,33 @@ class calc_A():
 
         tensor = self.mass_weight(tensor)
         tensor *= 2*ps*ps
+        print("--- %s End eval tensor ---" % (time.time() - start_time))
+        return tensor
+
+    
+    def evaluate_tensor2(self):
+        print("--- %s Start eval tensor2 ---" % (time.time() - start_time))
+        ndim = self.ndim
+        ex_grid = self.get_ex_grid()
+        A = self.calc_A2()
+        for i in range(len(ex_grid)):
+            if (ex_grid[i])==0:
+                A[:,:,i]=0
+            else:
+                A[:,:,i] = A[:,:,i]/(ex_grid[i])
+
+
+        tensor = np.zeros((ndim+1,ndim+1))
+        for n1 in range(ndim+1):
+            for n2 in range(ndim+1):
+                if n2< n1:
+                    continue
+                tensor[n1,n2] = simps(A[n1,n2,:],ex_grid)
+                tensor[n2,n1] = tensor[n1,n2]
+
+        tensor = self.mass_weight(tensor)
+        tensor *= 2*ps*ps
+        print("--- %s End eval tensor2 ---" % (time.time() - start_time))
         return tensor
 
                 
