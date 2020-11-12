@@ -289,25 +289,25 @@ class calc_time_tensor():
         ejs = self.ejs
         couplings = self.couplings
         sigma = self.sigma
+        de = ex_grid[1]-ex_grid[0]
 
         A = np.zeros((ndim+1,ndim+1,len(ex_grid)),dtype=np.complex128)
 
         for n1 in range(ndim+1):
+            idx = np.where((coords == n1))[0]
+            cs = couplings[idx]
+            eis_n = eis[idx]
             for n2 in range(ndim+1):
                 if n2< n1:
                     continue
-                idx = np.where((coords == n1))[0]
                 idx2 = np.where((coords == n2))[0]
-                cs = couplings[idx]
                 cs2 = couplings[idx2]
-                eis_n = eis[idx]
                 ejs_n = ejs[idx2]
                 for i,c2 in enumerate(cs2):
-                    c = np.conjugate(cs[i])
-                    gauss_mat = gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)*gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)\
-                        /
+                    c = np.conjugate(cs[i])*c2
+                    gauss_mat = gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)*gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)
                         #*(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
-                    A[n1,n2,:] +=gauss_mat*c*c2
+                    A[n1,n2,:] +=gauss_mat*c/(np.sum(gauss_mat)*de)
         print("--- %s End calc A2 ---" % (time.time() - start_time))
         return A
 
