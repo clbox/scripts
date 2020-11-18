@@ -51,7 +51,7 @@ fig, ax = plt.subplots(1, 1)#, sharex='all',sharey='all')#, constrained_layout=T
 
 exp1 = np.loadtxt('exp/1/1050.txt',delimiter=',')
 exp2 = np.loadtxt('exp/2/1050.txt',delimiter=',')
-a = ax.plot(exp1[:,0],exp1[:,1,],color='black',marker='o',linestyle='-',markersize=4,markeredgecolor='black')
+a = ax.plot(exp1[:,0],exp1[:,1,],color='black',marker='o',linestyle='-',markersize=4,markeredgecolor='black',label='Expt')
 a = ax.plot(exp2[:,0],exp2[:,1,],mfc='None',color='black',marker='s',linestyle='--',markersize=4,markeredgecolor='black')
 exp1 = np.loadtxt('ref/1/1050.txt',delimiter=',')
 exp2 = np.loadtxt('ref/2/1050.txt',delimiter=',')
@@ -149,8 +149,8 @@ for f,final_state in enumerate(final_states):
         elif f == 1:
             a = ax.plot(incidence_es,ratios,**mode_args,mfc='None',markersize=4,markeredgecolor='black',zorder=zorder)
 
-ax.annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(1),xy=(0.2,0.91),xycoords='axes fraction')
-ax.annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(2),xy=(0.2,0.11),xycoords='axes fraction')
+ax.annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(1),xy=(0.3,0.91),xycoords='axes fraction')
+ax.annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(2),xy=(0.2,0.36),xycoords='axes fraction')
         #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')
     
 ax.set_yscale('log')  
@@ -161,9 +161,13 @@ ax.set_xlim(0,1200)
 ax.set_xlabel('$T_s$ / K')
 ax.set_ylabel('$P(v_f)$')
 
+handles,labels = ax.get_legend_handles_labels()
+print(labels)
+handles = handles[0:2] + handles[3:7]
+labels = labels[0:2] + labels[3:7]
 
-fig.set_figheight(4.)
+fig.set_figheight(3.)
 fig.set_figwidth(3.25)
-plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
 plt.subplots_adjust(hspace=0.3,wspace=0.2)
 fig.savefig('excitation.pdf',transparent=True,bbox_inches='tight')
