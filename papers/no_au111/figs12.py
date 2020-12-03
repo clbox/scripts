@@ -242,7 +242,7 @@ for mode in ['theta', 'r']:
         ax_joint.annotate(r'(b)',ha="left", **annotate_args)
         ax_joint.xaxis.set_minor_locator(MultipleLocator(0.05))
         ax_joint.xaxis.set_major_locator(MultipleLocator(0.1))
-        ax_joint.set_xlabel(r"r / $\mathrm{\AA{}}$")
+        ax_joint.set_xlabel(r"$r$ / $\mathrm{\AA{}}$")
         ax_marg_x.xaxis.set_minor_locator(MultipleLocator(0.05))
         ax_marg_x.xaxis.set_major_locator(MultipleLocator(0.2))
         ax_marg_y.set_xlim(0,60)
@@ -258,13 +258,15 @@ for mode in ['theta', 'r']:
         ax_joint.text(1.2, 1.3, r"$n$ ="+str(N_trajs_r[0]), size=12, color=blue,ha='left')
         ax_joint.text(1.07, 2.75, "$v_f = 2$", size=12, color=red,ha='left')
         ax_joint.text(1.07, 2.55, r"$n$ ="+str(N_trajs_r[1]), size=12, color=red,ha='left')
+        ax_marg_x.set_ylabel(r'Freq / $\mathrm{\AA{}}^{-1}$')
+        ax_marg_y.set_xlabel(r'Freq / $\mathrm{\AA{}}^{-1}$')
     else:
         ax_marg_x.set_xlim(-90,90)
         ax_joint.set_xlim(-90,90)
         ax_joint.annotate(r'(a)',ha="left", **annotate_args)
         ax_joint.xaxis.set_minor_locator(MultipleLocator(5))
         ax_joint.xaxis.set_major_locator(MultipleLocator(30))
-        ax_joint.set_xlabel(r"$\theta$")
+        ax_joint.set_xlabel(r"$\theta_\mathrm{{o}}$")
         ax_marg_x.xaxis.set_minor_locator(MultipleLocator(5))
         ax_marg_x.xaxis.set_major_locator(MultipleLocator(30))
         ax_marg_y.set_ylim(1.25,3)
@@ -282,6 +284,8 @@ for mode in ['theta', 'r']:
         ax_joint.text(0, 1.3, r"$n$ ="+str(N_trajs_theta[0]), size=12, color=blue,ha='left')
         ax_joint.text(-30, 2.8, "$v_f = 2$", size=12, color=red)
         ax_joint.text(-30, 2.6, r"$n$ ="+str(N_trajs_theta[1]), size=12, color=red,ha='left')
+        ax_marg_x.set_ylabel('Freq')
+        ax_marg_y.set_xlabel(r'Freq / $\mathrm{\AA{}}^{-1}$')
 
 
 
@@ -298,10 +302,6 @@ for mode in ['theta', 'r']:
     # 
 
 
-
-    # Set labels on marginals
-    ax_marg_x.set_ylabel('Frequency')
-    ax_marg_y.set_xlabel('Frequency')
 
     # 
     plt.subplots_adjust(hspace=0.6,wspace=0.6)

@@ -53,10 +53,10 @@ v15_exp = [0.115,0.1339,0.194,0.192,0.125,0.082,0.04,0.05,0.019,0.015,0.036]
 x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'grey', 'label' : r'MDEF(ODF', 'alpha' : 1.0}
 #tdpt_args = {'marker' : '^', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA', 'alpha' : 1.0}
 
 annotate_args = {'xy' : (0.96,0.80), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
@@ -65,12 +65,12 @@ if os.path.exists("fig5.txt"):
 
 #fig, ax = plt.subplots(2, 2, gridspec_kw={'width_ratios': [2,1]})#, sharex='all',sharey='all')#, constrained_layout=True)
 fig = plt.figure()
-gs0 = gridspec.GridSpec(3,1,height_ratios=[0.6,0.1,1])
+gs0 = gridspec.GridSpec(3,1,height_ratios=[0.5,0.1,1])
 
-gs00 = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=gs0[0], hspace=0)
+gs00 = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=gs0[0], hspace=0.)
 ax0 = fig.add_subplot(gs00[0])
 
-gs01 = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs0[2], hspace=0.6)
+gs01 = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=gs0[2], hspace=0.4)
 ax1 = fig.add_subplot(gs01[0])
 ax2 = fig.add_subplot(gs01[1])
 # gs = gridspec.GridSpec(nrows=3, ncols=1, height_ratios=[1, 1, 1] )
@@ -142,7 +142,7 @@ ax[1,0].set_xlim(0,12)
 ax[1,0].annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 #v16
-ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt')#,label=r'$v_i=16$ exp')
+ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Exp')#,label=r'$v_i=16$ exp')
 ax[1,1].set_ylim(0,0.3)
 ax[1,1].set_xlim(0,18)
 ax[1,1].annotate(r'$v_i = 16$',ha="right", **annotate_args)
@@ -183,15 +183,15 @@ for i,filename in enumerate(filenames):
         mode_args['marker'] = 'v'
 
     if 'i2' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 2$]'
+        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 2$])'
         mode_args['linestyle'] = '--'
 
     if 'i3' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 3$]'
+        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 3$])'
         mode_args['linestyle'] = ':'
     
     if 'i4' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 4$]'
+        mode_args['label'] = mode_args['label'] + r'[$ \mathbf{\Lambda} \times 4$])'
         
 
         if 'tdpt' in os.path.abspath(filename):
@@ -209,7 +209,7 @@ for i,filename in enumerate(filenames):
         mode_args['linestyle'] = '-.'
 
     if 'd4' in os.path.abspath(filename):
-        mode_args['label'] = mode_args['label'] + r'[$\Lambda_{rr} \times 4$]'
+        mode_args['label'] = mode_args['label'] + r'[$\Lambda_{rr} \times 4$])'
         mode_args['linestyle'] = '-'
         mode_args['marker'] = '^'
         mode_args['color'] = 'mediumorchid'
@@ -265,9 +265,14 @@ for i in [1]:
 ax[1,0].set_ylabel('Population',fontname=font,color='black')
 ax[1,1].set_ylabel('Population',fontname=font,color='black')
 ax[1,1].xaxis.set_major_locator(MultipleLocator(3))
-fig.set_figheight(5)
+fig.set_figheight(6)
 fig.set_figwidth(3.25)
-plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=1.9,bbox_to_anchor=(0.47, 2.8), loc='center')
+
+handles,labels = ax[1,1].get_legend_handles_labels()
+
+labels[0] = labels[0] + ')'
+
+plt.legend(handles=handles,labels=labels,ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=1.9,bbox_to_anchor=(0.425, 2.6), loc='center')
 #plt.tight_layout()
 #plt.subplots_adjust(hspace=1.2)
 #plt.gcf().subplots_adjust(right=0.01)

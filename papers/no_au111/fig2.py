@@ -53,12 +53,12 @@ v15_exp = [0.115,0.1339,0.194,0.192,0.125,0.082,0.04,0.05,0.019,0.015,0.036]
 x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'MDEF(ODF)', 'alpha' : 1.0}
 #tdpt_args = {'marker' : '^', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-mdef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF ref', 'alpha' : 1.0}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
+mdef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{31}$', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{31}$', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.98,0.8), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
 
@@ -98,7 +98,7 @@ ax[1,0].set_xlim(0,12)
 ax[1,0].annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 #v16
-ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt')#,label=r'$v_i=16$ exp')
+ax[1,1].bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Exp')#,label=r'$v_i=16$ exp')
 ax[1,1].set_ylim(0,0.4)
 ax[1,1].set_xlim(0,18)
 ax[1,1].annotate(r'$v_i = 16$',ha="right", **annotate_args)
@@ -252,7 +252,7 @@ order = np.array([2,0,
 handles = [handles[i] for i in order]
 labels = [labels[i] for i in order]
 
-plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 3.8), loc='center')
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 3.8), loc='center')
 #plt.tight_layout()
 plt.subplots_adjust(hspace=0.45)
 #plt.gcf().subplots_adjust(right=0.01)

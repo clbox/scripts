@@ -31,14 +31,14 @@ filenames = sys.argv[1:]
 
 
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'MDEF(ODF)', 'alpha' : 1.0}
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'indigo', 'label' : r'ODF [$\Lambda_{\mathrm{rr}} \times 4$]', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
-tdpt_pes_args = {'marker' : 'D', 'linestyle' : '-','color' : 'orange', 'label' : r'ODF[RS]', 'alpha' : 1.0}
+tdpt_pes_args = {'marker' : 'D', 'linestyle' : '-','color' : 'orange', 'label' : r'MDEF(ODF)[RS]', 'alpha' : 1.0}
 bomd_pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'cyan', 'label' : r'BOMD[RS]', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.98,0.94), 'xycoords' : 'axes fraction'}
 
@@ -187,7 +187,7 @@ ax[0].plot(np.linspace(0,1,100), func(np.linspace(0,1,100), *popt), '--', color=
 ax[0].errorbar(exp[:,0],exp[:,1],yerr=exp[:,2]-exp[:,1],markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='none',color='black')
 #Fake line for legend entry
 
-ax[0].errorbar([-100,-50],[-60,-70],yerr=10,markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='--',color='black',label='Expt')
+ax[0].errorbar([-100,-50],[-60,-70],yerr=10,markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='--',color='black',label='Exp')
 ###########################
 ax[0].annotate(r'$v_i = 2$',ha="right", **annotate_args)
 ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
@@ -317,10 +317,9 @@ labels = [labels[0], labels[4],
             labels[2], labels[5]]
 
 
-ax[0].legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.6, 1.1), loc='center')
+ax[0].legend(handles=handles,labels=labels,ncol=3,handletextpad=0.1,columnspacing=0.3,fancybox=True,framealpha=0,handlelength=1.5,bbox_to_anchor=(0.7, 1.1), loc='center')
 #plt.gcf().subplots_adjust(left=0.3,bottom=0.3)
-
-plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
+#plt.legend(ncol=3,handletextpad=0.1,columnspacing=0.2,fancybox=True,framealpha=0,handlelength=1.7,bbox_to_anchor=(0.6, 1.1), loc='center')
 plt.subplots_adjust(hspace=0.1,wspace=0.3)
 fig.savefig('fig6.pdf',transparent=True,bbox_inches='tight')
 fig.savefig('fig6.tiff',transparent=True,bbox_inches='tight',dpi=600)

@@ -31,14 +31,14 @@ filenames = sys.argv[1:]
 if os.path.exists("figs7.txt"):
     os.remove("figs7.txt")
 
-tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'MDEF(ODF)', 'alpha' : 1.0}
 bomd_pes_args = {'marker' : 'v', 'linestyle' : '-','color' : 'cyan', 'label' : r'BOMD[RS]', 'alpha' : 1.0}
-odf_pes_args = {'marker' : 'D', 'linestyle' : '-.','color' : 'orange', 'label' : r'ODF[RS]', 'alpha' : 1.0}
+odf_pes_args = {'marker' : 'D', 'linestyle' : '-.','color' : 'orange', 'label' : r'MDEF(ODF)[RS]', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt', 'alpha' : 1.0}
-ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF Ref', 'alpha' : 1.0}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH Ref', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
+ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{20}$', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{20}$', 'alpha' : 1.0}
 
 annotate_args = {'xy' : (0.03,0.91), 'xycoords' : 'axes fraction'}
 
@@ -290,18 +290,17 @@ ax[1,0].set_yticks(labels)
 
 handles,labels = ax[1,1].get_legend_handles_labels()
 print(labels)
-handles = [handles[1], handles[4], 
-            handles[0], handles[5], 
-            handles[2], handles[6],
-            handles[3], handles[7]]
-labels = [labels[1], labels[4], 
-            labels[0],labels[5], 
-            labels[2], labels[6],
-            labels[3], labels[7]]
+handles = [handles[1], handles[3], handles[6],
+            handles[0], handles[4], handles[7],
+            handles[2], handles[5]]
 
-fig.set_figheight(4.)
+labels = [labels[1], labels[3], labels[6],
+            labels[0],labels[4], labels[7],
+            labels[2], labels[5]]
+
+fig.set_figheight(4.5)
 fig.set_figwidth(3.25)
-plt.legend(handles=handles,labels=labels,ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.5), loc='center')
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.5), loc='center')
 plt.subplots_adjust(hspace=0.3,wspace=0.2)
 fig.savefig('fig3_all.pdf',transparent=True,bbox_inches='tight')
 fig.savefig('fig3_all.tiff',transparent=True,bbox_inches='tight',dpi=600)

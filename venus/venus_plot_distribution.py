@@ -339,6 +339,10 @@ plt.legend(ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=
 ax.set_xlim(-np.pi/2,np.pi/2)
 ax.set_ylim(0,1)
 
+#plt.arrow(0,0.95,0,-0.2,width = 0.015,edgecolor = 'black', facecolor = 'black', lw = 1, zorder = 5)
+plt.annotate("", 
+    xy=(0,0.5), xytext=(0,0.9),
+    arrowprops=dict(facecolor='black', shrink=0.1, width=0.7, headwidth=6))
 #plt.gcf().subplots_adjust(bottom=-5.5,top=-1.6)
 # fig.set_figheight(2.3)
 # fig.set_figwidth(3.25)

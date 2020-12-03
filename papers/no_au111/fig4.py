@@ -39,10 +39,10 @@ matplotlib.rcParams['font.family'] = "sans-serif"
 
 
 filenames = sys.argv[1:]
-tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'ODF', 'alpha' : 1.0}
+tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'MDEF(ODF)', 'alpha' : 1.0}
 #tdpt_args = {'marker' : '^', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
-ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'LDFA', 'alpha' : 1.0}
+ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
 
 annotate_args = {'xy' : (0.05,0.65), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
@@ -210,7 +210,7 @@ ax[1,1].xaxis.set_major_locator(MultipleLocator(1))
 handles,labels = ax[0,1].get_legend_handles_labels()
 
 handles.append((p1,p2,p3))
-labels.append('Expt')
+labels.append('Exp')
 
 ax[0,1].legend(handles,labels,numpoints=1,
                 handler_map={tuple: HandlerTuple(ndivide=None)},
