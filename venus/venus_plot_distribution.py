@@ -91,12 +91,26 @@ for i,filename in enumerate(filenames):
                 ntrajs += 1
             
             elif 'Lifetime' in line:
-                numbers = line.replace(',','')
-                lifetime = float(numbers.split()[2])
-                scat = float(numbers.split()[7])
-                jf = int(numbers.split()[-1])
+                if 'Scattering' in line:
+                    numbers = line.replace(',','')
+                    lifetime = float(numbers.split()[2])
+                    scat = float(numbers.split()[7])
+                    jf = int(numbers.split()[-1])
 
-                misc.append([lifetime,scat,jf])
+                    misc.append([lifetime,scat,jf])
+                else:
+                    numbers = line.replace(',','')
+                    lifetime = float(numbers.split()[2])
+                    theta = float(numbers.split()[7])
+                    Chi = float(numbers.split()[10])
+                    
+                    if Chi > 180 and Chi < 360:
+                        scat = -1*theta
+                    else:
+                        scat = theta
+                    jf = int(numbers.split()[-1])
+
+                    misc.append([lifetime,scat,jf])
 
             elif 'Total' in line:
                 numbers = line.replace(',','')
