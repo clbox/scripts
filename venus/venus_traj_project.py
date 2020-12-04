@@ -62,7 +62,8 @@ class venus_analysis():
                             Jf = float(line.split()[-1]) #rot
 
                         elif 'SCATTERING_ANG' in line:
-                            scat_angle = float(line.split()[-2])
+                            theta_f = float(line.split()[-2])
+                            chi_f = float(line.split()[-1])
                             break
 
                         elif 'TOTAL_ENERGY=' in line:
@@ -76,7 +77,7 @@ class venus_analysis():
                         break
 
 
-        return lifetime*fs,Nf,Jf,scat_angle
+        return lifetime*fs,Nf,Jf,theta_f,chi_f
 
     def parse_traj_velocities(self,traj_no):
         """reads in fort.(1000+traj_no) and returns velocities for all atoms and 
@@ -489,7 +490,7 @@ class venus_analysis():
 
         self.trapped = False
         try:
-            lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
+            lifetime,Nf,Jf,theta_f,chi_f = self.parse_traj_summary()
         except:
             print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
             self.trapped = True
@@ -580,7 +581,7 @@ class venus_analysis():
 
         self.trapped = False
         try:
-            lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
+            lifetime,Nf,Jf,theta_f,chi_f = self.parse_traj_summary()
         except:
             print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
             self.trapped = True
@@ -595,8 +596,8 @@ class venus_analysis():
             Jf = self.bin_quantum(Jf)
             self.get_n_bounces()
             
-            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
-                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+            self.traj_text = r"""Lifetime = {:0.2f} fs, Theta = {:0.2f}, Chi = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
+                .format(lifetime/fs,theta_f,chi_f,Ni,Nf,Ji,Jf)
             fig.text(0.5,0.92,self.traj_text,ha='center',fontsize=15)
             self.output_dir = 'Ni={}_Ji={}/Nf={}/Jf={}/'.format(str(Ni),str(Ji),str(Nf),str(Jf))
             self.summary_dir = 'Ni={}_Ji={}/Nf={}/'.format(str(Ni),str(Ji),str(Nf))
@@ -625,7 +626,7 @@ class venus_analysis():
 
         self.trapped = False
         try:
-            lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
+            lifetime,Nf,Jf,theta_f,chi_f = self.parse_traj_summary()
         except:
             print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
             self.trapped = True
@@ -640,8 +641,8 @@ class venus_analysis():
             self.Jf_raw = Jf
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
-            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
-                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+            self.traj_text = r"""Lifetime = {:0.2f} fs, Theta = {:0.2f}, Chi = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
+                .format(lifetime/fs,theta_f,chi_f,Ni,Nf,Ji,Jf)
             self.output_dir = 'Ni={}_Ji={}/Nf={}/Jf={}/'.format(str(Ni),str(Ji),str(Nf),str(Jf))
             self.summary_dir = 'Ni={}_Ji={}/Nf={}/'.format(str(Ni),str(Ji),str(Nf))
         else:
@@ -666,7 +667,7 @@ class venus_analysis():
     
         self.trapped = False
         try:
-            lifetime,Nf,Jf,scat_angle = self.parse_traj_summary()
+            lifetime,Nf,Jf,theta_f,chi_f = self.parse_traj_summary()
         except:
             print('Trajectory number {} was not analysed in fort.26, it was trapped!'.format(traj_no))
             self.trapped = True
@@ -678,8 +679,8 @@ class venus_analysis():
             self.Jf_raw = Jf
             Nf = self.bin_quantum(Nf)
             Jf = self.bin_quantum(Jf)
-            self.traj_text = r"""Lifetime = {:0.2f} fs, Scattering angle = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
-                .format(lifetime/fs,scat_angle,Ni,Nf,Ji,Jf)
+            self.traj_text = r"""Lifetime = {:0.2f} fs, Theta = {:0.2f}, Chi = {:0.2f}, N$_i$ = {}, N$_f$ = {}, J$_i$ = {}, J$_f$ = {}"""\
+                .format(lifetime/fs,theta_f,chi_f,Ni,Nf,Ji,Jf)
             self.summary_dir = 'Ni={}_Ji={}/Nf={}/'.format(str(Ni),str(Ji),str(Nf))
         else:
 
