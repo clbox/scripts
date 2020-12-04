@@ -101,8 +101,8 @@ for i,filename in enumerate(filenames):
                 else:
                     numbers = line.replace(',','')
                     lifetime = float(numbers.split()[2])
-                    theta = float(numbers.split()[7])
-                    Chi = float(numbers.split()[10])
+                    theta = float(numbers.split()[6])
+                    Chi = float(numbers.split()[9])
                     
                     if Chi > 180 and Chi < 360:
                         scat = -1*theta
