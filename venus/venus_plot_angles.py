@@ -29,10 +29,19 @@ matplotlib.rcParams['font.sans-serif'] = "Arial"
 # Then, "ALWAYS use sans-serif fonts"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
+labels = ['Single bounce', 'Double', 'Multi', 'All bounce']
+colours = ['dodgerblue','maroon','navy','black']
+linestyles=['-.','--',':','-']
+markers =['^','s','.','o']
+def cosine_fit(x,m,x0):
 
+    y = np.cos(x-x0)**m
+
+    return y
 filenames = sys.argv[2:]
 angles = []
 bounces = []
+ntrajs=0
 for i,filename in enumerate(filenames):
 
     print(filename)
@@ -55,7 +64,7 @@ for i,filename in enumerate(filenames):
             elif 'bounces' in line:
                 bounces.append(int(line.split()[-1]))
 
-angles = np.array(angles)
+angles = np.array(angles) * np.pi/180
 bounces = np.array(bounces)
 
 single_bounce_angles = []
@@ -63,55 +72,73 @@ double_bounce_angles = []
 multi_bounce_angles = []
 for t in range(len(bounces)):
             if bounces[t] == 1:
-                single_bounce_angles.append(bounces[t])
+                single_bounce_angles.append(angles[t])
 
             elif bounces[t] == 2:
-                double_bounce_angles.append(bounces[t])
+                double_bounce_angles.append(angles[t])
             
             elif bounces[t] > 2:
-                multi_bounce_angles.append(bounces[t])
+                multi_bounce_angles.append(angles[t])
+
+
+
+sb = np.array(single_bounce_angles)
+ab = np.array(angles)
+
+
+
+# fig, ax = plt.subplots(1, 1, figsize=(3,3.25))
+# bins = np.linspace(-110*np.pi/180, 100*np.pi/180, 40)
+
+
+# x = (bins[1:] + bins[:-1]) / 2
+
+# hist, bin_edges = np.histogram(ab,bins=bins)
+# hist = hist / np.sin(x)
+# hist = hist / np.max(hist)
+
+# ax.plot(x*180/np.pi,hist,'.-')
+# ax.set_xlim(-30,30)
+# fig.savefig('angles.pdf',transparent=True,bbox_inches='tight')
+
+
+
 
 fig, ax = plt.subplots(1, 1, figsize=(3,3.25), subplot_kw={'projection': 'polar'})
-def cosine_fit(x,m,x0):
-
-    y = np.cos(x-x0)**m
-
-    return y
+bins = np.arange(-100,100,10) * np.pi/180
 
 
-bins = np.linspace(-100, 100, 20)
-theta = np.linspace(-2*np.pi,2*np.pi,200)
-rho = np.cos(theta)
+#bin centres
 x = (bins[1:] + bins[:-1]) / 2
-labels = ['Single bounce', 'Double', 'Multi', 'All bounce']
-colours = ['dodgerblue','maroon','navy','black']
-linestyles=['-.','--',':','-']
-all_angles = single_bounce_angles+double_bounce_angles+multi_bounce_angles
-print(np.shape(all_angles))
-list_of_angles = [single_bounce_angles,double_bounce_angles,multi_bounce_angles,all_angles]
-
-markers =['^','s','.','o']
-for i in range(4):
-    #digitized = np.digitize(list_of_angles[i], bins)
-    if i in [1,2]:
-        continue
-    hist, bin_edges = np.histogram(list_of_angles[i],bins=bins)
-    hist = hist / np.max(hist)
 
 
+#sb
+hist, bin_edges = np.histogram(sb,bins=bins)
+hist = hist / np.abs(np.sin(x))
+hist = hist / np.max(hist)
+ax.plot(x,hist, '.',color=colours[0],label = labels[0],marker=markers[0],markersize=3,mfc='none')
 
-    ax.plot(x*np.pi/180,hist, '.',color=colours[i],label = labels[i],marker=markers[i],markersize=3,mfc='none')
-    
-    popt, pcov = scipy.optimize.curve_fit(cosine_fit,x*np.pi/180,hist)
-    print('m, theta0')
-    print(popt)
-    if i == 3:
-        ax.plot(theta,cosine_fit(theta,*popt),'-',color=colours[i],linewidth=0.9,linestyle=linestyles[i],label = r'cos$^{:.0f}(\theta - {:.0f})$'.format(popt[0],popt[1]*180/np.pi))
-ax.plot(theta,rho,linestyle='--',color='firebrick',label=r'cos$(\theta)$',linewidth=.9)
+
+#ab
+hist, bin_edges = np.histogram(ab,bins=bins)
+print(bin_edges * 180/np.pi)
+hist = hist / np.abs(np.sin(x))
+hist = hist / np.max(hist)
+ax.plot(x,hist, '.',color=colours[3],label = labels[3],marker=markers[3],markersize=3,mfc='none')
+
+
+
+theta = np.linspace(0,2*np.pi,200)
+ax.plot(theta,np.cos(theta),linestyle='--',color='firebrick',label=r'cos$(\theta)$',linewidth=.9)
+
+popt, pcov = scipy.optimize.curve_fit(cosine_fit,np.abs(x),hist)
+print('m, theta0')
+print(popt)
+ax.plot(theta,cosine_fit(theta,*popt),'-',color=colours[3],linewidth=0.9,linestyle=linestyles[3],label = r'cos$^{:.0f}(\theta - {:.0f})$'.format(popt[0],popt[1]*180/np.pi))
 
 ax.tick_params(axis='both', which='major')
 ax.set_theta_zero_location("N")
-ax.set_xticks(np.arange(-90, 100, 10)*np.pi/180)
+ax.set_xticks(np.arange(-90, 100, 30)*np.pi/180)
 
 plt.legend(ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 0.95), loc='center')
 ax.set_xlim(-np.pi/2,np.pi/2)
