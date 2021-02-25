@@ -283,8 +283,8 @@ ax[3].set_ylabel(r'$B(v_f)$',color='black')
 
 
 ax[1].set_ylim(0,0.3)
-ax[2].set_ylim(0,1.2)
-ax[3].set_ylim(0,1.2)
+ax[2].set_ylim(0,1.)
+ax[3].set_ylim(0,1.)
 
 ax[0].set_xlim(0,0.7)
 ax[0].set_yscale('log')  
@@ -310,9 +310,9 @@ handles,labels = ax[2].get_legend_handles_labels()
 #             labels[2], labels[5]]
 
 fig.set_figheight(10.)
-fig.set_figwidth(4.)
-plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 8.5), loc='center')
-plt.subplots_adjust(hspace=1.1,wspace=0.2)
+fig.set_figwidth(3.)
+plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 6.2), loc='center')
+plt.subplots_adjust(hspace=0.6,wspace=0.2)
 fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight')
 # fig.savefig('fig3.tiff',transparent=True,bbox_inches='tight',dpi=600)
 # fig.savefig('fig3.eps',transparent=True,bbox_inches='tight')

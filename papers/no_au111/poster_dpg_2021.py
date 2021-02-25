@@ -21,7 +21,7 @@ plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-plt.style.use('dark_background')
+#plt.style.use('dark_background')
 # from matplotlib import rc
 # #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 # rc('font',**{'family':'serif','serif':['Times']})
@@ -69,7 +69,7 @@ v2_bomd = np.loadtxt('v02/translational/bomd/300K/640/states_1_e.txt')
 v2_odf = np.loadtxt('v02/translational/tdpt/300K/640/states_1_e.txt')
 
 a = ax.plot(v2_bomd[:,0],v2_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
-b = ax.plot(v2_odf[:,0],v2_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+#b = ax.plot(v2_odf[:,0],v2_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -80,11 +80,11 @@ ax.set_ylabel('Population',)
 
 handles,labels = ax.get_legend_handles_labels()
 print(labels)
-plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.1), loc='center')
+#plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.1), loc='center')
 
 fig.set_figheight(2.)
 fig.set_figwidth(2.25)
-fig.savefig('poster_dpg_2021.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('poster_dpg_2021_bomd.pdf',transparent=True,bbox_inches='tight')
 
 
 ######################### v3 #################################
