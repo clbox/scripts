@@ -8,7 +8,7 @@ import numpy as np
 import glob
 
 aims1 = 'aims.out'
-gamma_files1 = glob.glob("friction_gamma*")
+gamma_files1 = glob.glob("friction_couplings*")
 
 
 a = fc.friction_gamma_parser(aims_file=aims1,gamma_files=gamma_files1)
