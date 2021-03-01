@@ -103,17 +103,17 @@ class friction_gamma_parser():
         return ks,coords,eis,ejs,couplings,kweights
 
 class friction_tensor():
-    def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,friction_masses,temp,sigma,nspin):
-        self.couplings = couplings
-        self.coords = coords
-        self.eis = eis
-        self.ejs = ejs
-        self.ks = ks
-        self.chem_pot = chem_pot
+    def __init__(self,parser,temp,sigma,nspin):
+        self.couplings = parser.couplings
+        self.coords = parser.coords
+        self.eis = parser.eis
+        self.ejs = parser.ejs
+        self.ks = parser.ks
+        self.chem_pot = parser.chem_pot
         self.temp = temp
-        self.kweights=kweights
+        self.kweights=parser.kweights
         self.sigma = sigma
-        self.friction_masses = friction_masses
+        self.friction_masses = parser.friction_masses
         self.nspin = nspin
 
     def calc_tensor(self):
@@ -132,12 +132,19 @@ class friction_tensor():
 
         for k in range(max_k):
             kw = self.kweights[k]
+
             for i in range(ndim+1):
+                print('i' + str(i))
                 i_idx = np.where((coords == i) & (ks == k))[0]
+                print('i_idx' + str(len(i_idx)))
+
                 for j in range(ndim+1):
+                    print('j' + str(j))
                     if j < i:
                         continue
                     j_idx = np.where((coords == j) & (ks == k))[0]
+                    print('j_idx' + str(len(j_idx)))
+
                     es = ejs[j_idx]-eis[i_idx]
                     tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                     (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
