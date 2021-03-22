@@ -134,16 +134,11 @@ class friction_tensor():
             kw = self.kweights[k]
 
             for i in range(ndim+1):
-                print('i' + str(i))
                 i_idx = np.where((coords == i) & (ks == k))[0]
-                print('i_idx' + str(len(i_idx)))
-
                 for j in range(ndim+1):
-                    print('j' + str(j))
                     if j < i:
                         continue
                     j_idx = np.where((coords == j) & (ks == k))[0]
-                    print('j_idx' + str(len(j_idx)))
 
                     es = ejs[j_idx]-eis[i_idx]
                     tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
