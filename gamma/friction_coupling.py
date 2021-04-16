@@ -141,10 +141,13 @@ class friction_tensor():
                     j_idx = np.where((coords == j) & (ks == k))[0]
 
                     es = ejs[j_idx]-eis[i_idx]
-                    tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+
+                    tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\ 
                     (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                         *(gaussian_function(es,0,self.sigma)/gaussian_norm(es,self.sigma))*kw*2/nspin)
-        tensor *= hbar*np.pi*2
+        #tensor *= hbar*np.pi*2 
+        #CLB 2021: don't think should have factor 2, removing it gives right tensor value
+        tensor *= hbar*np.pi
 
         for i in range(ndim+1):
             mass_i = self.friction_masses[i // 3]
