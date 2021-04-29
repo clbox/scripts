@@ -142,7 +142,7 @@ class friction_tensor():
 
                     es = ejs[j_idx]-eis[i_idx]
 
-                    tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\ 
+                    tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                     (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                         *(gaussian_function(es,0,self.sigma)/gaussian_norm(es,self.sigma))*kw*2/nspin)
         #tensor *= hbar*np.pi*2 

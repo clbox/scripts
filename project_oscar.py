@@ -100,6 +100,7 @@ def calc_modes(atoms,friction_atoms):
         for i in range(ndim):
             modes[i,:]/=np.linalg.norm(modes[i,:])
         return modes
+        #return modes.transpose() #test
 
 def calc_modes2(atoms,friction_atoms):
         """Calculates required transformation matrix to convert diatomic
@@ -168,6 +169,7 @@ def calc_modes2(atoms,friction_atoms):
         modes[:,5] = [0.,0.,1.,0.,0.,1.]
 
         return modes.transpose()
+        #return modes
 
 for output_dir in sys.argv[1:]:
     output = (glob.glob(output_dir+'/*aims.out'))[0]
@@ -210,10 +212,11 @@ for output_dir in sys.argv[1:]:
             elif pvecs:
                 raw_vecs.append(line)
 
+    print('Friction atoms:' + str(friction_atoms))
 
     friction_tensor,ndim = build_tensor(raw_tensor)
     friction_vecs, ndim = build_tensor(raw_vecs)
-
+    friction_tensor *= 1.66054e-27
     atoms = read(geo_file)
     modes = get_modes(atoms,friction_atoms,mode=1)
 
@@ -250,7 +253,8 @@ for output_dir in sys.argv[1:]:
     for i in range(ndim):
         string = ''
         for j in range(ndim):
-            string += ' {0:14.8f} '.format(A[i,j])
+            #string += ' {0:14.8f} '.format(A[i,j])
+            string += ' {0:14.8e} '.format(A[i,j])
         print(string)
 
     np.savetxt(output_dir+'/projected_tensor.out',A,delimiter='  ',fmt='%.4e')
