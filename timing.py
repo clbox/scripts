@@ -28,12 +28,16 @@ for filename in filenames:
     #Whether to read line as timing output
     #Should only be active towards end of file
     read_total_times = False
+    use_scalapack = False
 
     with open(filename,'r') as f:
 
 
         for line in f:
 
+            if 'ELPA' in line:
+                use_scalapack = True
+                
             if 'Using' in line and 'parallel tasks' in line:
                 n_tasks = int(line.split()[-3])
                 continue
@@ -72,6 +76,7 @@ for filename in filenames:
 
         with open(outfile,'a+') as f:
             f.write('Filename: '+filename+'\n')
+            f.write('   Scalapack: '+str(use_scalapack)+'\n')
             f.write('   N_tasks: '+str(n_tasks)+'\n')
             f.write('   N_atoms: '+str(n_atoms)+'\n')
             f.write('   N_scf_iter: '+str(n_scf)+'\n')
