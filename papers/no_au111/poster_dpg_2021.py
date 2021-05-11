@@ -57,6 +57,7 @@ x16_exp = np.arange(0,17,1)
 v16_exp = [0.0,0.0,0.04,0.08,0.13,0.15,0.19,0.11,0.12,0.07,0.04,0.02,0.03,0.02,0.01,0.02,0.02]
 
 ######################### v02 ############################
+
 fig, ax = plt.subplots(1, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 #v02 exp
 ax.bar(x2_exp,v2_exp,color=exp_colour,edgecolor='black',label='Expt')#label=r'$v_i=2$ exp')
@@ -69,7 +70,7 @@ v2_bomd = np.loadtxt('v02/translational/bomd/300K/640/states_1_e.txt')
 v2_odf = np.loadtxt('v02/translational/tdpt/300K/640/states_1_e.txt')
 
 a = ax.plot(v2_bomd[:,0],v2_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
-#b = ax.plot(v2_odf[:,0],v2_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+b = ax.plot(v2_odf[:,0],v2_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -84,12 +85,13 @@ print(labels)
 
 fig.set_figheight(2.)
 fig.set_figwidth(2.25)
-fig.savefig('poster_dpg_2021_bomd.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('poster_dpg_2021.pdf',transparent=True,bbox_inches='tight')
 
 
 ######################### v3 #################################
 ########################################################################
 ########################################################################
+
 fig, ax = plt.subplots(1, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 #v03 exp
 ax.bar(x3_exp,v3_exp,color=exp_colour,edgecolor='black',label=r'$v_i=3$ exp')
@@ -125,7 +127,7 @@ fig.savefig('poster_dpg_2021_2.pdf',transparent=True,bbox_inches='tight')
 
 
 ######################### v11 ############################
-plt.style.use('default')
+
 fig, ax = plt.subplots(1, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 #v02 exp
 ax.bar(x11_exp,v11_exp,color=exp_colour,edgecolor='black',label=r'$v_i=11$ exp')
@@ -136,9 +138,13 @@ ax.annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 v11_bomd = np.loadtxt('v11/overview/bomd/states_1_e.txt')
 v11_odf = np.loadtxt('v11/overview/tdpt/states_1_e.txt')
+v11_iesh = np.loadtxt('v11/overview/ref/iesh/states_1_e.txt')
+v11_mdef = np.loadtxt('v11/overview/ref/mdef/states_1_e.txt')
 
 a = ax.plot(v11_bomd[:,0],v11_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
 b = ax.plot(v11_odf[:,0],v11_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+c = ax.plot(v11_iesh[:,0],v11_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
+d = ax.plot(v11_mdef[:,0],v11_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -160,7 +166,7 @@ fig.savefig('poster_dpg_2021_3.pdf',transparent=True,bbox_inches='tight')
 ##########################################################################################
 
 ######################### v16 ############################
-plt.style.use('default')
+
 fig, ax = plt.subplots(1, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 #v02 exp
 ax.bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt')#,label=r'$v_i=16$ exp')
@@ -188,7 +194,7 @@ ax.set_ylabel('Population',)
 
 handles,labels = ax.get_legend_handles_labels()
 print(labels)
-plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.2), loc='center')
+plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.4), loc='center')
 
 fig.set_figheight(1.5)
 fig.set_figwidth(3.25)
