@@ -83,6 +83,7 @@ for filename in filenames:
             f.write('   N_scf_cycles: '+str(n_scf_cycles)+'\n')
 
             if use_dfpt:
+                f.write('   DFPT in use')
                 f.write('   N_cpscf_iter: '+str(n_cpscf)+'\n')
                 f.write('   N_cpscf_cycles: '+str(n_cpscf_cycles)+'\n')
 

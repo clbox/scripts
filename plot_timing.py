@@ -21,14 +21,18 @@ y_string = 'Total_time'
 markers = ['o','t','s','.']
 linestyles = ['-',':','-.','--']
 
-for i,filename in enumerate)filenames):
+for i,filename in enumerate(filenames):
     x_vals = []
     y_vals = []
+    use_dfpt = False
     with open(filename,'r') as f:
         for line in f:
             if 'Filename' in line:
                 current_x_val = None
                 current_y_val = None
+
+            if 'DFPT' in line:
+                use_dfpt = True
 
              #Assuming all same in one file
             if 'Scalapack' in line:
@@ -54,6 +58,8 @@ for i,filename in enumerate)filenames):
     y_vals = y_vals[index]
 
 
+    if use_dfpt:
+        label = 'DFPT '+label
 
 
 
