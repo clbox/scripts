@@ -18,7 +18,7 @@ x_string = 'N_tasks'
 
 y_string = 'Total_time'
 
-markers = ['o','t','s','.']
+markers = ['o','^','s','.']
 linestyles = ['-',':','-.','--']
 
 for i,filename in enumerate(filenames):
