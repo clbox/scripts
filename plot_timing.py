@@ -67,6 +67,7 @@ for i,filename in enumerate(filenames):
         mfc='none',linewidth=0.4,markersize=5,markeredgewidth=0.4,
         label=label,marker=markers[i],color='black',linestyle=linestyles[i])
 
+ax.set_xlim(left=0)
 ax.legend()
 
 #ax.set_yscale('log')
