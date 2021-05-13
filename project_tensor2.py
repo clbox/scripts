@@ -46,14 +46,14 @@ for i,e in enumerate(E):
     #mode[6:] = 0.
     #mode /= np.linalg.norm(mode)
     string +=  str((1./(np.dot(mode,np.dot(friction_tensor[:,:],mode))))) + ' '
-print string
+print(string)
 
 #transform friction matrix into normalmode space
 A = np.dot(modes,np.dot(friction_tensor,modes.transpose()))
-print 'A'
-print A ,'\n'
+print ('A')
+print (A ,'\n')
 for i in range(len(E)):
-    print 1./A[i,i]
+    print (1./A[i,i])
     
 fl = open('relax_rate', 'w')
 for i in range(len(E)):
@@ -69,15 +69,14 @@ fl.close()
 
 
 
-print 'A trace'
-print A.trace(), '\n'
-print 'friction_tensor trace'
-print friction_tensor.trace(), '\n'
+print ('A trace')
+print (A.trace(), '\n')
+print ('friction_tensor trace')
+print (friction_tensor.trace(), '\n')
 
-print 'normalmode transformed friction tensor' 
+print ('normalmode transformed friction tensor')
 for i in range(ndim):
     string = ''
     for j in range(ndim):
         string += ' {0:14.8f} '.format(A[i,j])
-    print string
-
+    print (string)
