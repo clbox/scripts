@@ -69,7 +69,7 @@ for i,filename in enumerate(filenames):
 
 ax.legend()
 
-ax.set_yscale('log')
+#ax.set_yscale('log')
 
 #ax.set_xlabel('Number of atoms')
 ax.set_xlabel('Number of processes')
