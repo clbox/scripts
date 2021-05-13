@@ -8,7 +8,7 @@ lines = open(argv[1]).readlines() #friction_tensor.out
 lines2 = open(argv[2]).readlines() #NORMALMODES_OUTPUT
 
 
-ndim = (len(lines)-1)/2 #dimensions of tensor assuming one title line and one header line for each line
+ndim = int((len(lines)-1)/2) #dimensions of tensor assuming one title line and one header line for each line
 print(ndim)
 friction_tensor = np.zeros((ndim,ndim))
 i = 0
