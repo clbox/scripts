@@ -139,7 +139,10 @@ class friction_tensor():
 
         for k in range(max_k):
             #Loop over k_points 
-            kw = self.kweights[k]
+            #kw = self.kweights[k]
+
+            i_kw = np.where(ks == k)[0]
+            kw = self.kweights[i_kw[0]]
 
             for i in range(ndim+1):
                 i_idx = np.where((coords == i) & (ks == k))[0]
