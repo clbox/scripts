@@ -22,6 +22,9 @@ def gaussian_function(x,x0,s):
 def gaussian_norm(x0, s):
     return 0.5 * (1-special.erf((-x0/s)*(1/np.sqrt(2))))
 
+def gaussian_norm2(x0, s):
+    return 0.5 * (1-special.erf((-x0))))
+
 class friction_gamma_parser():
     def __init__(self,aims_file,gamma_files):
         self.chem_pot = self.parse_chem_pot(aims_file)
@@ -116,7 +119,7 @@ class friction_tensor():
         self.friction_masses = parser.friction_masses
         self.nspin = nspin
 
-    def calc_tensor(self):
+    def calc_tensor(self,mode='default'):
         print("--- %s Start calc tensor ---" % (time.time() - start_time))
         ks = self.ks
         coords = self.coords
@@ -142,9 +145,33 @@ class friction_tensor():
 
                     es = ejs[j_idx]-eis[i_idx]
 
-                    tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                    (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                        *(gaussian_function(es,0,self.sigma)/gaussian_norm(es,self.sigma))*kw*2/nspin)
+                    if mode=='default':
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
+                            *(gaussian_function(es,0,self.sigma)/gaussian_norm(es,self.sigma))*kw*2/nspin)
+
+                    elif mode=='double_delta':
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                            (gaussian_function(eis[i_idx]-chem_pot,0,self.sigma)*gaussian_function(ejs[j_idx]-chem_pot,0,self.sigma))*\
+                            kw*2/nspin)
+
+                    elif mode=='double_delta_half_sigma':
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                            (gaussian_function(eis[i_idx]-chem_pot,0,self.sigma/2)*gaussian_function(ejs[j_idx]-chem_pot,0,self.sigma/2))*\
+                            kw*2/nspin)
+
+                    elif mode=='prb_print':
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
+                            *(gaussian_function(es,0,self.sigma)/gaussian_norm2(es,self.sigma))*kw*2/nspin)
+
+                    elif mode=='no_norm':
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
+                            *(gaussian_function(es,0,self.sigma))*kw*2/nspin)
+                    else:
+                        print('No viable tensor mode selected')
+                    
         #tensor *= hbar*np.pi*2 
         #CLB 2021: don't think should have factor 2, removing it gives right tensor value
         tensor *= hbar*np.pi

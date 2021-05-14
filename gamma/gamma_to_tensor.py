@@ -19,3 +19,14 @@ b = fc.friction_tensor(a,300,0.6,nspin=1)
 tensor = b.calc_tensor()
 print(tensor)
 
+modes = ['default','double_delta','double_delta_half_sigma','prb_print','no_norm']
+for mode in modes:
+    print('---------'+mode+'-----------')
+    tensor = b.calc_tensor()
+    print(tensor)
+    fl = open('friction_tensor_'+mode+'.out', 'w')
+    for i in range(np.shape(tensor)[0]):
+        string = ''
+        for j in range(np.shape(tensor)[1]):
+            string = '{0:.15f}'.format(tensor[i,j])
+            fl.write(string+'\n')
