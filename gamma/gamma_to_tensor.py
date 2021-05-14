@@ -15,7 +15,8 @@ a = fc.friction_gamma_parser(aims_file=aims1,gamma_files=gamma_files1)
 
 
 #########CALC friction_tensor.out#################
-b = fc.friction_tensor(a,300,0.6,nspin=1)
+#b = fc.friction_tensor(a,300,0.6,nspin=1)
+b = fc.friction_tensor(a,0,0.6,nspin=1)
 tensor = b.calc_tensor()
 print(tensor)
 
@@ -28,5 +29,5 @@ for mode in modes:
     for i in range(np.shape(tensor)[0]):
         string = ''
         for j in range(np.shape(tensor)[1]):
-            string = '{0:.15f}'.format(tensor[i,j])
-            fl.write(string+'\n')
+            string += '{0:.15f}    '.format(tensor[i,j])
+        fl.write(string+'\n')
