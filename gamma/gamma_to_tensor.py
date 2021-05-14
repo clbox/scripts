@@ -22,7 +22,7 @@ print(tensor)
 modes = ['default','double_delta','double_delta_half_sigma','prb_print','no_norm']
 for mode in modes:
     print('---------'+mode+'-----------')
-    tensor = b.calc_tensor()
+    tensor = b.calc_tensor(mode=mode)
     print(tensor)
     fl = open('friction_tensor_'+mode+'.out', 'w')
     for i in range(np.shape(tensor)[0]):
