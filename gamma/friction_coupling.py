@@ -28,6 +28,7 @@ def gaussian_norm2(x0, s):
 class friction_gamma_parser():
     def __init__(self,aims_file,gamma_files):
         self.chem_pot = self.parse_chem_pot(aims_file)
+        gamma_files=gamma_files.sort()
         ks,coords,eis,ejs,couplings,kweights = self.parse_gamma_couplings(gamma_files)
         self.ks = np.array(ks)
         self.coords = np.array(coords)
@@ -81,7 +82,6 @@ class friction_gamma_parser():
         ejs = []
         couplings = []
         kweights = []
-        gamma_files.sort()
         for file in gamma_files:
             print(file)
             with open(file, "r") as f:
