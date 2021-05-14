@@ -23,7 +23,7 @@ def gaussian_norm(x0, s):
     return 0.5 * (1-special.erf((-x0/s)*(1/np.sqrt(2))))
 
 def gaussian_norm2(x0, s):
-    return 0.5 * (1-special.erf((-x0))))
+    return 0.5 * (1-special.erf((-x0)))
 
 class friction_gamma_parser():
     def __init__(self,aims_file,gamma_files):
