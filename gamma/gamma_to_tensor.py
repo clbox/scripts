@@ -15,8 +15,8 @@ a = fc.friction_gamma_parser(aims_file=aims1,gamma_files=gamma_files1)
 
 
 #########CALC friction_tensor.out#################
-#b = fc.friction_tensor(a,300,0.6,nspin=1)
-b = fc.friction_tensor(a,0,0.6,nspin=1)
+b = fc.friction_tensor(a,300,0.6,nspin=1)
+#b = fc.friction_tensor(a,0,0.6,nspin=1)
 tensor = b.calc_tensor()
 print(tensor)
 
