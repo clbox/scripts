@@ -7,19 +7,24 @@ from sys import argv as argv
 lines = open(argv[1]).readlines() #friction_tensor.out
 lines2 = open(argv[2]).readlines() #NORMALMODES_OUTPUT
 
+try:
+    ndim = int((len(lines)-1)/2) #dimensions of tensor assuming one title line and one header line for each line
+    print(ndim)
+    friction_tensor = np.zeros((ndim,ndim))
+    i = 0
+    for line in lines:
+        if '#' in line:
+            continue
+        else:
+            for j in range(ndim):
+                friction_tensor[i,j]=float(line.split()[j])
 
-ndim = int((len(lines)-1)/2) #dimensions of tensor assuming one title line and one header line for each line
-print(ndim)
-friction_tensor = np.zeros((ndim,ndim))
-i = 0
-for line in lines:
-    if '#' in line:
-        continue
-    else:
-        for j in range(ndim):
-            friction_tensor[i,j]=float(line.split()[j])
+            i+=1
+except:
+    friction_tensor = np.loadtxt(argv[1])
+    print(np.shape(friction_tensor))
+    ndim = np.shape(friction_tensor)[0]
 
-        i+=1
 
 
 modes = np.zeros([ndim,ndim])
@@ -76,7 +81,6 @@ print (friction_tensor.trace(), '\n')
 
 print ('normalmode transformed friction tensor')
 for i in range(ndim):
-    string = ''
-    for j in range(ndim):
+
         string += ' {0:14.8f} '.format(A[i,j])
     print (string)

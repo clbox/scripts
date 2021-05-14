@@ -81,7 +81,9 @@ class friction_gamma_parser():
         ejs = []
         couplings = []
         kweights = []
+        gamma_files.sort()
         for file in gamma_files:
+            print(file)
             with open(file, "r") as f:
                 read_gamma = False
                 for line in f:
@@ -106,6 +108,8 @@ class friction_gamma_parser():
         return ks,coords,eis,ejs,couplings,kweights
 
 class friction_tensor():
+    #So ks are base zero (i.e first k_point = 0)
+    #ks is just a list of what k point each excitation is associated with
     def __init__(self,parser,temp,sigma,nspin):
         self.couplings = parser.couplings
         self.coords = parser.coords
@@ -134,6 +138,7 @@ class friction_tensor():
         nspin = self.nspin
 
         for k in range(max_k):
+            #Loop over k_points 
             kw = self.kweights[k]
 
             for i in range(ndim+1):
