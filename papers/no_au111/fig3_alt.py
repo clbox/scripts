@@ -203,7 +203,7 @@ for initial_state in [2,3]:
                 mode_args = ldfa_args.copy()
                 zorder=2
                 model = 'LDFA'
-                continue
+                #continue
             if mode=='d4':
                 mode_args = d4_args.copy()
                 model = 'ODF(rr)*4'
@@ -226,7 +226,11 @@ for initial_state in [2,3]:
                         f.write(str(incidence_es[s])+'    ')
                         f.write(str(ratios[s]))
                         f.write('\n')
-        ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.2,0.85),xycoords='axes fraction')
+        if final_state==3:
+            ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.2,0.1),xycoords='axes fraction')
+        else:
+            ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.2,0.85),xycoords='axes fraction')
+
 
 
         #ax[map_plot[c]].annotate(str(initial_state)+r'$\rightarrow$'+str(final_state),xy=(0.5,0.9),xycoords='axes fraction')

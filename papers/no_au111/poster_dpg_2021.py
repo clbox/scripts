@@ -67,9 +67,11 @@ ax.annotate(r'$v_i = 2$',ha="right", **annotate_args)
 
 
 v2_bomd = np.loadtxt('v02/translational/bomd/300K/640/states_1_e.txt')
+v2_ldfa = np.loadtxt('v02/translational/ldfa/300K/640/states_1_e.txt')
 v2_odf = np.loadtxt('v02/translational/tdpt/300K/640/states_1_e.txt')
 
 a = ax.plot(v2_bomd[:,0],v2_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
+c = ax.plot(v2_ldfa[:,0],v2_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
 b = ax.plot(v2_odf[:,0],v2_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
@@ -102,9 +104,11 @@ ax.annotate(r'$v_i = 3$',ha="right", **annotate_args)
 
 v3_bomd = np.loadtxt('v03/overview/bomd/states_1_e.txt')
 v3_odf = np.loadtxt('v03/overview/tdpt/states_1_e.txt')
+v3_ldfa = np.loadtxt('v03/overview/ldfa/states_1_e.txt')
 
 a = ax.plot(v3_bomd[:,0],v3_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
 b = ax.plot(v3_odf[:,0],v3_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+c = ax.plot(v3_ldfa[:,0],v3_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -138,6 +142,7 @@ ax.annotate(r'$v_i = 11$',ha="right", **annotate_args)
 
 v11_bomd = np.loadtxt('v11/overview/bomd/states_1_e.txt')
 v11_odf = np.loadtxt('v11/overview/tdpt/states_1_e.txt')
+v11_ldfa = np.loadtxt('v11/overview/ldfa/states_1_e.txt')
 v11_iesh = np.loadtxt('v11/overview/ref/iesh/states_1_e.txt')
 v11_mdef = np.loadtxt('v11/overview/ref/mdef/states_1_e.txt')
 
@@ -145,7 +150,7 @@ a = ax.plot(v11_bomd[:,0],v11_bomd[:,1],markersize=6,markeredgecolor='black',**b
 b = ax.plot(v11_odf[:,0],v11_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
 c = ax.plot(v11_iesh[:,0],v11_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
 d = ax.plot(v11_mdef[:,0],v11_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
-
+#e = ax.plot(v11_ldfa[:,0],v11_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
 
@@ -157,8 +162,8 @@ handles,labels = ax.get_legend_handles_labels()
 print(labels)
 #plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.1), loc='center')
 
-fig.set_figheight(1.5)
-fig.set_figwidth(3.25)
+fig.set_figheight(2.5)
+fig.set_figwidth(4.25)
 fig.savefig('poster_dpg_2021_3.pdf',transparent=True,bbox_inches='tight')
 
 
@@ -179,11 +184,13 @@ v16_bomd = np.loadtxt('v16/overview/bomd/states_1_e.txt')
 v16_odf = np.loadtxt('v16/overview/tdpt/states_1_e.txt')
 v16_iesh = np.loadtxt('v16/overview/ref/iesh/states_1_e.txt')
 v16_mdef = np.loadtxt('v16/overview/ref/mdef/states_1_e.txt')
+v16_ldfa = np.loadtxt('v16/overview/ldfa/states_1_e.txt')
 
 a = ax.plot(v16_bomd[:,0],v16_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
 b = ax.plot(v16_odf[:,0],v16_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
 c = ax.plot(v16_iesh[:,0],v16_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
 d = ax.plot(v16_mdef[:,0],v16_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
+#e = ax.plot(v16_ldfa[:,0],v16_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(2))
@@ -196,8 +203,8 @@ handles,labels = ax.get_legend_handles_labels()
 print(labels)
 plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.4), loc='center')
 
-fig.set_figheight(1.5)
-fig.set_figwidth(3.25)
+fig.set_figheight(2.5)
+fig.set_figwidth(4.25)
 fig.savefig('poster_dpg_2021_4.pdf',transparent=True,bbox_inches='tight')
 
 
