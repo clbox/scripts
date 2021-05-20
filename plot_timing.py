@@ -60,12 +60,21 @@ for i,filename in enumerate(filenames):
 
     if use_dfpt:
         label = 'DFPT '+label
+        color = 'blue'
+    else:
+        label = 'FD '+label
+        color = 'black'
 
-
+    if 'really_tight' in filename:
+        label = label + ' Really_tight'
+        linestyle = '--'
+    else:
+        linestyle = '-'
+        
 
     ax.plot(x_vals,y_vals,
         mfc='none',linewidth=0.4,markersize=5,markeredgewidth=0.4,
-        label=label,marker=markers[i],color='black',linestyle=linestyles[i])
+        label=label,marker=markers[i],color=color,linestyle=linestyle)
 
 ax.set_xlim(left=0)
 ax.legend()
