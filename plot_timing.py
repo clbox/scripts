@@ -25,6 +25,7 @@ for i,filename in enumerate(filenames):
     x_vals = []
     y_vals = []
     use_dfpt = False
+    marker = 'o'
     with open(filename,'r') as f:
         for line in f:
             if 'Filename' in line:
@@ -40,6 +41,7 @@ for i,filename in enumerate(filenames):
                     label = 'LAPACK'
                 if 'True' in line:
                     label = 'ScaLAPACK'
+                    marker = '^'
 
             if x_string in line:
                 current_x_val = int(line.split()[-1])
@@ -71,15 +73,15 @@ for i,filename in enumerate(filenames):
     else:
         linestyle = '-'
         
-
     ax.plot(x_vals,y_vals,
-        mfc='none',linewidth=0.4,markersize=5,markeredgewidth=0.4,
-        label=label,marker=markers[i],color=color,linestyle=linestyle)
+        mfc='none',linewidth=0.4,markersize=3,markeredgewidth=0.4,
+        label=label,marker=marker,color=color,linestyle=linestyle)
 
 ax.set_xlim(left=0)
+ax.set_ylim(bottom=1e3,top=1e5)
 ax.legend()
 
-#ax.set_yscale('log')
+ax.set_yscale('log')
 
 #ax.set_xlabel('Number of atoms')
 ax.set_xlabel('Number of processes')
