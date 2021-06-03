@@ -35,7 +35,7 @@ tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'indigo', 'label' : r'ODF [$\Lambda_{\mathrm{rr}} \times 4$]', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Exp$^{[1]}$', 'alpha' : 1.0}
 ef_args = {'marker' : 's','linestyle' : '-','color' : 'darkorange', 'markerfacecolor' : 'white', 'label' : r'EF ref', 'alpha' : 0.5}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : 'green', 'markerfacecolor' : 'white', 'label' : r'IESH ref', 'alpha' : 0.5}
 tdpt_pes_args = {'marker' : 'D', 'linestyle' : '-','color' : 'orange', 'label' : r'MDEF(ODF)[RS]', 'alpha' : 1.0}
@@ -187,7 +187,7 @@ ax[0].plot(np.linspace(0,1,100), func(np.linspace(0,1,100), *popt), '--', color=
 ax[0].errorbar(exp[:,0],exp[:,1],yerr=exp[:,2]-exp[:,1],markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='none',color='black')
 #Fake line for legend entry
 
-ax[0].errorbar([-100,-50],[-60,-70],yerr=10,markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='--',color='black',label='Exp')
+ax[0].errorbar([-100,-50],[-60,-70],yerr=10,markersize=4,capsize=3,elinewidth=1,zorder=-10,linestyle='--',color='black',label=r'Exp$^{[1]}$')
 ###########################
 ax[0].annotate(r'$v_i = 2$',ha="right", **annotate_args)
 ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))

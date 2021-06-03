@@ -35,8 +35,8 @@ tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label
 #tdpt_args = {'marker' : '^', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
-mdef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{2}$', 'alpha' : 1.0}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{2}$', 'alpha' : 1.0}
+mdef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{[1]}$', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{[1]}$', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.98,0.8), 'xycoords' : 'axes fraction'}
 exp_colour = 'gold'
 
@@ -174,7 +174,7 @@ fig.savefig('poster_dpg_2021_3.pdf',transparent=True,bbox_inches='tight')
 
 fig, ax = plt.subplots(1, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
 #v02 exp
-ax.bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt')#,label=r'$v_i=16$ exp')
+ax.bar(x16_exp,v16_exp,color=exp_colour,edgecolor='black',label='Expt$^{[2]}$')#,label=r'$v_i=16$ exp')
 ax.set_ylim(0,0.4)
 ax.set_xlim(0,18)
 ax.annotate(r'$v_i = 16$',ha="right", **annotate_args)

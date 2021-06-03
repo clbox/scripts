@@ -34,9 +34,9 @@ tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label
 pes_args = {'marker' : 'v', 'linestyle' : 'None','color' : 'green', 'label' : r'ODF PES(2)', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
-exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt', 'alpha' : 1.0}
-ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{3}$', 'alpha' : 1.0}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{3}$', 'alpha' : 1.0}
+exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt$^{[1,2]}$', 'alpha' : 1.0}
+ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{[1]}$', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{[1]}$', 'alpha' : 1.0}
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'indigo', 'label' : r'ODF [$\Lambda_{rr} \times 4$]', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.03,0.85), 'xycoords' : 'axes fraction'}
 
@@ -104,12 +104,12 @@ for i in range(2):
             ef_pos = np.loadtxt(directory+'ef_'+str(final_state)+'_SB_pos.txt',delimiter=',')
 
             err = iesh_pos - iesh_results[:,1]
-            a = ax[c].errorbar(iesh_results[:,0],iesh_results[:,1],markersize=4,
-                yerr=err,capsize=3,elinewidth=1,zorder=-11,**iesh_args)
+            #a = ax[c].errorbar(iesh_results[:,0],iesh_results[:,1],markersize=4,
+            #    yerr=err,capsize=3,elinewidth=1,zorder=-11,**iesh_args)
 
             err = ef_pos - ef_results[:,1] 
-            a = ax[c].errorbar(ef_results[:,0],ef_results[:,1],markersize=4,
-                    yerr=err,capsize=3,elinewidth=1,zorder=-10,**ef_args)
+            #a = ax[c].errorbar(ef_results[:,0],ef_results[:,1],markersize=4,
+             #       yerr=err,capsize=3,elinewidth=1,zorder=-10,**ef_args)
 
 
             exp = v3_exp[final_state-1]
@@ -191,6 +191,7 @@ for initial_state in [2,3]:
         model =''
         
         for mode in ['ldfa','bomd','tdpt']: #,'pes','d4']:
+        #for mode in ['bomd','tdpt']:
             if mode=='tdpt':
                 mode_args = tdpt_args.copy()
                 zorder=3
@@ -315,7 +316,7 @@ handles,labels = ax[2].get_legend_handles_labels()
 
 fig.set_figheight(10.)
 fig.set_figwidth(3.)
-plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 6.2), loc='center')
+plt.legend(handles=handles,labels=labels,ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 6.2), loc='center')
 plt.subplots_adjust(hspace=0.6,wspace=0.2)
 fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight')
 # fig.savefig('fig3.tiff',transparent=True,bbox_inches='tight',dpi=600)
