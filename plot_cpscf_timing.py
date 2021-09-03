@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator)
 
-
+matplotlib.rcParams['font.sans-serif'] = "Arial"
 #Reads output from timing.py
 
 filenames = sys.argv[1:]
@@ -17,21 +17,20 @@ fig, ax = plt.subplots(1, 1)
 x_string = 'N_tasks'
 y_string = 'Total_time'
 
-markers = ['o','^','s','.']
+markers = ['o','.','^','s']
 linestyles = ['-',':','-.','--']
-colours = ['black','red','blue','orange','brown','darkgreen','purple']
+colours = ['red','blue','orange','brown','darkgreen','purple']
 marker_size = 3
 
 
-n_atoms_per_file = []
-avg_iter_time_per_file = []
-avg_scf_iter_time_per_file = []
 
-colours = ['red','black']
 
-labels = ['CPSCF (v0.01)', 'Legacy']
+labels = ['CPSCF legacy','CPSCF (v0.01)']
 
-for m,mode in enumerate(['v001','legacy']):
+for m,mode in enumerate(['legacy','v001']):
+    n_atoms_per_file = []
+    avg_iter_time_per_file = []
+    avg_scf_iter_time_per_file = []
     for i,filename in enumerate(filenames):
 
         if mode not in filename:
@@ -96,8 +95,13 @@ for m,mode in enumerate(['v001','legacy']):
     avg_iter_time_per_file = avg_iter_time_per_file[idx]
     avg_scf_iter_time_per_file = avg_scf_iter_time_per_file[idx]
 
-    ax.plot(n_atoms_per_file,avg_iter_time_per_file,linestyle='-',linewidth=0.15,marker=markers[m],mfc='none',color=colours[m],label=labels[m])
-    #ax.plot(n_atoms_per_file,avg_scf_iter_time_per_file,linestyle='-',linewidth=0.15,marker='^',mfc='none',color='black',label='SCF')
+
+    ax.plot(n_atoms_per_file,avg_iter_time_per_file,linestyle='-',linewidth=0.7,marker=markers[m],mfc='none',color=colours[m],label=labels[m])
+
+    if 'legacy' in mode:
+        continue
+
+    ax.plot(n_atoms_per_file,avg_scf_iter_time_per_file,linestyle='-',linewidth=0.7,marker='^',mfc='none',color='black',label='SCF')
 
 
 
