@@ -81,6 +81,6 @@ print (friction_tensor.trace(), '\n')
 
 print ('normalmode transformed friction tensor')
 for i in range(ndim):
-
+    for j in range(ndim):
         string += ' {0:14.8f} '.format(A[i,j])
-    print (string)
+        print(string)

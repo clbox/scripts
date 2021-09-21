@@ -76,7 +76,7 @@ for m,mode in enumerate(['legacy','v001']):
         scf_iteration_times = np.array(scf_iteration_times)
 
         average_iter_time = np.mean(iteration_times)
-        average_scf_iter_time = np.mean(scf_iteration_times)
+        average_scf_iter_time = np.mean(scf_iteration_times[:-2])
 
         avg_iter_time_per_file.append(average_iter_time)
         avg_scf_iter_time_per_file.append(average_scf_iter_time)
@@ -86,12 +86,14 @@ for m,mode in enumerate(['legacy','v001']):
     
 
     n_atoms_per_file = np.array(n_atoms_per_file)
+
     avg_iter_time_per_file = np.array(avg_iter_time_per_file)
     avg_scf_iter_time_per_file = np.array(avg_scf_iter_time_per_file)
 
     idx = np.argsort(n_atoms_per_file)
 
     n_atoms_per_file = n_atoms_per_file[idx]
+
     avg_iter_time_per_file = avg_iter_time_per_file[idx]
     avg_scf_iter_time_per_file = avg_scf_iter_time_per_file[idx]
 
@@ -106,14 +108,15 @@ for m,mode in enumerate(['legacy','v001']):
 
 
 # x = np.linspace(0,np.max(n_atoms_per_file),200)
-# y = x**3
+# y = 2*x
+
 # ax.plot(x,y,linestyle='--',linewidth=0.1)
 ax.set_xscale('log')
 # ax.set_xticks(n_atoms_per_file)
 # ax.set_xticklabels(n_atoms_per_file)
 
-ax.set_xticks([10,50,100,250,500])
-ax.set_xticklabels([10,50,100,250,500])
+ax.set_xticks([5,10,25,50,100,250,500])
+ax.set_xticklabels([5,10,25,50,100,250,500])
 
 ax.set_xlabel('Number of atoms')
 ax.set_ylabel('Average time per iteration / s')
