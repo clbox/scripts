@@ -13,22 +13,11 @@ import sys
 import glob
 from mem_energy_loss import read_memory_kernel
 
-SMALL_SIZE = 9.5
-MEDIUM_SIZE = 9.5
-BIGGER_SIZE = 9.5
-
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+line_width = 0.4
+matplotlib.rcParams['axes.linewidth'] = line_width
 matplotlib.rcParams['font.sans-serif'] = "Arial"
-# Then, "ALWAYS use sans-serif fonts"
-matplotlib.rcParams['font.family'] = "sans-serif"
-#labels = ['Reactant','Adsorption','Transition state','Dissociated']
-#labels = ['Adsorption','Transition state','Dissociated']
+matplotlib.rcParams['lines.markeredgewidth'] = 0.6
+matplotlib.rcParams['lines.linewidth'] = 0.6
 
 #labels = list(range(0,15))
 
@@ -46,12 +35,16 @@ element = int(sys.argv[2])
 
 filenames = sys.argv[3:]
 
+filenames.sort()
+print(filenames)
+
 print('Element: ' + str(element))
 
 
 fig, ax = plt.subplots(1, 1, sharex='all', sharey='all')
 color_idx = np.linspace(0, 1, len(filenames))
-linestyles = ['-','--']*50
+#linestyles = ['-','--']*50
+linestyles = ['-']*100
 
 if style == 'rc':
     labels = np.arange(0,len(filenames))
@@ -77,9 +70,9 @@ for i,filename in enumerate(filenames):
         ytop = ymax
     output_dir = os.path.dirname(filename)
     if style == 'rc':
-        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=labels[i],color=plt.cm.copper(color_idx[len(filenames)-i-1]))
+        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=labels[i],color=plt.cm.Blues(color_idx[len(filenames)-i-1]))
     else:
-        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=label,color=plt.cm.copper(color_idx[len(filenames)-i-1]))
+        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=label,color=plt.cm.Blues(color_idx[len(filenames)-i-1]))
 
 
    
@@ -112,17 +105,22 @@ if ytop > 5 and ytop < 15:
 
 
 
+ax.xaxis.set_tick_params(which='major', size=4, width=line_width, direction='in', top='on')
+ax.xaxis.set_tick_params(which='minor', size=2, width=line_width, direction='in', top='on')
+ax.yaxis.set_tick_params(which='major', size=4, width=line_width, direction='in', right='on')
+ax.yaxis.set_tick_params(which='minor', size=2, width=line_width, direction='in', right='on')
 
 ax.set_xlim(left=0,right=1)
 #if len(filenames) > 1:
 #    ax.legend(loc=1,ncol=1,fancybox=True,framealpha=0)
 ax.set_xlabel("Excitation energy / eV")
 ax.set_ylabel(r'$\Lambda_{ij}(\epsilon)\ /\ \mathrm{ps}^{-1} $')
-fig.set_figheight(2.0)
-fig.set_figwidth(3.25)
+fig.set_figheight(4)
+fig.set_figwidth(5)
 #plt.gcf().subplots_adjust(left=0.2,bottom=0.2)
 #fig.text(0.01, 0.5, r'$\Lambda(\epsilon)\ /\ \mathrm{ps}^{-1} $', va='center', rotation='vertical',fontsize=15)
-plt.legend(ncol=5,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
+#plt.legend(ncol=5,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.1), loc='center')
+ax.legend(fancybox=True,framealpha=0)
 fig.savefig('memory_element_'+str(element)+'.pdf',transparent=True,bbox_inches='tight')
 
 
