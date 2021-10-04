@@ -1,6 +1,6 @@
 from ase.build import molecule
 from ase.io import read,write
-from ase.build import surface, add_adsorbate, fcc111, hcp0001
+from ase.build import surface, add_adsorbate, fcc111, hcp0001, sort
 import numpy as np
 import os
 
@@ -9,6 +9,14 @@ substrate = 'Cu'
 min_layers = 3
 # Parse structure
 full_structure = read('geometry.in')
+
+# Sort structure depending on z height
+idx = np.argsort(full_structure.positions[:,2])
+print(full_structure.positions[:,2])
+print(idx)
+full_structure = full_structure[idx]
+#full_structure = sort(full_structure,tags=idx)
+print(full_structure.positions[:,2])
 
 # Find atoms per layer (assume same for now)
 bottom_layer_height = full_structure.positions[0,2]
