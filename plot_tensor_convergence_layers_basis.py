@@ -1,11 +1,9 @@
-from matplotlib.pyplot import legend
 import numpy as np
 import sys
 import os
 import glob
 from pathlib import Path
 import matplotlib
-from numpy.testing._private.utils import jiffies
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
