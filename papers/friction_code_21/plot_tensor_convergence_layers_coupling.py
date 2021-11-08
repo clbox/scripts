@@ -68,7 +68,7 @@ vals = np.array(results['val'])
 dimension = np.shape(vals)[1]
 
 list_of_used_basis =  np.array(results['basis'])
-for b,basis in enumerate(['light','light+','tight','really_tight']):
+for b,basis in enumerate(['hgt','c2']):
 
     basis_index = np.argwhere(list_of_used_basis==basis)
     c=0
@@ -77,10 +77,10 @@ for b,basis in enumerate(['light','light+','tight','really_tight']):
             for j in range(dimension):
                 #if i == j: #or j == 3:
                 if i == 2 and j == 2:
-                    if basis == 'really_tight':
-                        label = r'really\_tight'
+                    if basis == 'c2':
+                        label = r'$\boldsymbol{G}$'
                     else:
-                        label= basis
+                        label= r'$\boldsymbol{G}^{\mathrm{HGT}}$'
 
 
                     x = idxs[basis_index]
@@ -113,4 +113,4 @@ ax.legend(fancybox=True,framealpha=1,edgecolor='black',handletextpad=0.05,border
 #plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 1.15), loc='center')
 fig.set_figheight(3)
 fig.set_figwidth(2)
-fig.savefig('basis.pdf',transparent=True,bbox_inches='tight')
+fig.savefig('coupling.pdf',transparent=True,bbox_inches='tight')
