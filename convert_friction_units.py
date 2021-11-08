@@ -30,6 +30,8 @@ def parse_fiction_masses(aims_file):
 aims_file = sys.argv[1] #Just for atoms
 friction_tensor_file = sys.argv[2]  #friction_tensor.out (mass_weighted)
 
+#could overwrite tensor if not in .out file
+output_file = friction_tensor_file.replace('.out','proper.out')
 
 friction_masses = parse_fiction_masses(aims_file)
 print(friction_masses)
@@ -52,3 +54,5 @@ ft = ft * meV
 ft = ft / ps
 
 print(ft) #meV ps Ang-2
+
+np.savetxt(output_file,ft)
