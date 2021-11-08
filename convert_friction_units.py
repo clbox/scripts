@@ -51,4 +51,4 @@ ft = ft / ps
 ft = ft * meV 
 ft = ft / ps
 
-print(ft)
+print(ft) #meV ps Ang-2
