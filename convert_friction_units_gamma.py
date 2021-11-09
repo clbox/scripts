@@ -37,7 +37,7 @@ aims_file = sys.argv[1] #Just for atoms
 friction_tensor_file = sys.argv[2]  #friction_tensor.out (mass_weighted)
 
 #could overwrite tensor if not in .out file
-output_file = friction_tensor_file.replace('.out','_proper.out')
+output_file = friction_tensor_file.replace('.txt','_proper.txt')
 
 friction_masses = parse_fiction_masses(aims_file)
 print(friction_masses)
@@ -47,12 +47,15 @@ mass_weighted_ft = np.loadtxt(friction_tensor_file)
 ft = np.zeros_like(mass_weighted_ft)
 
 
-dimension = np.shape(mass_weighted_ft)[0]
-for i in range(dimension):
-    i_atom = i // 3
-    for j in range(dimension):
-        j_atom = j // 3
-        ft[i,j] = mass_weighted_ft[i,j]*np.sqrt(friction_masses[i_atom]*friction_masses[j_atom])
+#dimension = np.shape(mass_weighted_ft)[0]
+#for i in range(dimension):
+    #i_atom = i // 3
+    #for j in range(dimension):
+        #j_atom = j // 3
+i_atom = int(friction_tensor_file.replace('.txt','').split('_')[-1]) // 3
+j_atom = i_atom
+print(friction_masses[i_atom])
+ft[:] = mass_weighted_ft[:]*np.sqrt(friction_masses[i_atom]*friction_masses[j_atom])
 
 # ft is now not mass weighted but in units of amu ps-1
 ft = ft / ps 
