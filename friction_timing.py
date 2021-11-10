@@ -31,7 +31,7 @@ for filename in filenames:
 
                 fd_scf = int(line.split()[1])
 
-            if 'Convergence:' in line and fd_scf > 0:
+            if ' Re-initialization.' in line and fd_scf > 0:
                 finite_scfs.append(fd_scf)
 
 
@@ -66,7 +66,7 @@ for filename in filenames:
 
         key_times = np.array((ground_state_time.total_seconds(),finite_difference_time.total_seconds(),tensor_time.total_seconds()))
 
-        np.savetxt(output_dir+'/timing.txt',np.c_[key_times,scfs])
+        np.savetxt(output_dir+'/timing.txt',np.c_[key_times,scfs],fmt='%10.5f', header ='Time / s , N_cycles' )
         print(output_dir)
         print(ground_state_time)
         print(finite_difference_time)
