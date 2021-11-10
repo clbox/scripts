@@ -137,7 +137,8 @@ class friction_tensor():
         temp = self.temp
         nspin = self.nspin
 
-        for k in range(max_k):
+        #for k in range(max_k):
+        for k in ks:
             #Loop over k_points 
             #kw = self.kweights[k]
 
