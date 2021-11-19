@@ -33,6 +33,9 @@ def gaussian_norm(x0, s):
 def gaussian_norm2(x0, s):
     return 0.5 * (1-special.erf((-x0)))
 
+def lorentzian_function(x,x0,s):
+    return (1./np.pi)*((0.5*s)/((x-x0)*(x-x0)+(0.5*s)*(0.5*s)))
+
 class friction_gamma_parser():
     def __init__(self,aims_file,gamma_files):
         self.chem_pot = self.parse_chem_pot(aims_file)
@@ -196,6 +199,11 @@ class friction_tensor():
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                             *(gaussian_function(es,0,self.sigma))*kw*2/nspin)
+                            
+                    elif mode='lorentzian': #no additional normalisation
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
+                            *(lorentzian_function(es,0,self.sigma))*kw*2/nspin)
                     else:
                         print('No viable tensor mode selected')
                     
