@@ -13,7 +13,15 @@ boltzmann_kB = 8.617333262145e-5 #eV K-1
 #TODO spin
 
 def fermi_pop(x,x0,T):
-    fermi_pop = (1./(np.exp((x-x0)/(boltzmann_kB*T))+1))
+    if T<1e-10:
+        fermi_pop = np.zeros_like(x)
+        for i,ex in enumerate(x):
+            if ex<x0:
+                fermi_pop[i] = 1.0
+            else:
+                fermi_pop[i] = 0.0
+    else:
+        fermi_pop = (1./(np.exp((x-x0)/(boltzmann_kB*T))+1))
     return fermi_pop
 
 def gaussian_function(x,x0,s):
@@ -90,6 +98,7 @@ class friction_gamma_parser():
                     if '| k-point:' in line:
                         k = int(line.split()[2])
                         kweight = float(line.split()[-1])
+                        kweights.append(kweight)
                     elif 'Friction component ' in line:
                         read_gamma = True
                         coord = int(line.split()[-1])-1
@@ -98,12 +107,24 @@ class friction_gamma_parser():
                         ej = float(line.split()[1])
                         coupling = complex(float(line.split()[2]),float(line.split()[3]))
                         
-                        ks.append(k-1)
+                        if ei>ej:
+                            continue
+                        if ei == ej:
+                            continue
+                        if abs(ei-ej)<1e-30:
+                            continue
+                        if ej-ei > 3.0:
+                            continue
+                        if ei > 0.:
+                            continue
+                        if ej < -6:
+                            continue
+                        #ks.append(k-1)
+                        ks.append(k)
                         coords.append(coord)
                         eis.append(ei)
                         ejs.append(ej)
                         couplings.append(coupling)
-                        kweights.append(kweight)
         print("--- %s End parser ---" % (time.time() - start_time))
         return ks,coords,eis,ejs,couplings,kweights
 
@@ -136,15 +157,12 @@ class friction_tensor():
         chem_pot = self.chem_pot
         temp = self.temp
         nspin = self.nspin
-
-        #for k in range(max_k):
-        for k in ks:
+        for k in range(1,max_k+1):
             #Loop over k_points 
             #kw = self.kweights[k]
-
-            i_kw = np.where(ks == k)[0]
-            kw = self.kweights[i_kw[0]]
-
+            #i_kw = np.where(ks == k)[0]
+            kw = self.kweights[k-1]
+            
             for i in range(ndim+1):
                 i_idx = np.where((coords == i) & (ks == k))[0]
                 for j in range(ndim+1):
