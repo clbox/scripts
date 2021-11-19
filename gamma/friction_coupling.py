@@ -36,6 +36,35 @@ def gaussian_norm2(x0, s):
 def lorentzian_function(x,x0,s):
     return (1./np.pi)*((0.5*s)/((x-x0)*(x-x0)+(0.5*s)*(0.5*s)))
 
+def methfessel_paxton_function(e,e0,s,N)
+    x = (e-e0)/s 
+
+    delta_function_methfessel = 0.
+
+    for i in range(0, N+1):
+        tmp = 0.
+        if i==0:
+            tmp = np.exp(-x*x)/np.sqrt(np.pi)
+        elif i==1:
+            tmp = -(4.*x*x-2)*np.exp(-x*x)/(4*np.sqrt(np.pi))
+        elif i==2:
+            tmp = (16.*x**4-48.*x*x*12)*np.exp(-x*x)/(32.*np.sqrt(np.pi))
+        elif i==3:
+            tmp = -(64.*x**6-480.*x**4+720.*x*x-120.)*np.exp(-x*x)/(384.*np.sqrt(np.pi))
+        elif i==4:
+            tmp = (256.*x**8-3584.*x**6+13440.*x**4-13440.*x*x+1680.)*\
+                np.exp(-x*x)/(6144.*np.sqrt(np.pi))
+        elif i==5:
+            tmp = -(1024.*x**10-23040.*x**8+161280.*x**6-403200.*x**4+302400.*x*x-30240.)*\
+                np.exp(-x*x)/(122880.*np.sqrt(np.pi))
+        elif i==6:
+            tmp = (1024.*x**10-23040.*x**8+161280.*x**6-403200.*x**4+302400.*x*x-30240.)*\
+                np.exp(-x*x)/(122880.*np.sqrt(np.pi))
+        else:
+            print('delta_function_methfessel: N>6 not allowed')
+        delta_function_methfessel = delta_function_methfessel + tmp
+    return delta_function_methfessel
+
 class friction_gamma_parser():
     def __init__(self,aims_file,gamma_files):
         self.chem_pot = self.parse_chem_pot(aims_file)
@@ -200,10 +229,15 @@ class friction_tensor():
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                             *(gaussian_function(es,0,self.sigma))*kw*2/nspin)
                             
-                    elif mode='lorentzian': #no additional normalisation
+                    elif mode=='lorentzian': #no additional normalisation
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                             *(lorentzian_function(es,0,self.sigma))*kw*2/nspin)
+
+                    elif mode=='methfessel_paxton': #no additional normalisation
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
+                            *(methfessel_paxton_function(es,0,self.sigma,1))*kw*2/nspin)
                     else:
                         print('No viable tensor mode selected')
                     
