@@ -113,7 +113,11 @@ class friction_gamma_parser():
                             continue
                         if abs(ei-ej)<1e-30:
                             continue
-                        if ej-ei > 4:
+                        if ej-ei > 3.0:
+                            continue
+                        if ei > 0.:
+                            continue
+                        if ej < -6:
                             continue
                         #ks.append(k-1)
                         ks.append(k)

@@ -19,10 +19,11 @@ for mode in modes:
     print(mode)
     tensors = []
     for sigma in sigmas:
+        print('sigma: '+str(sigma))
         b = fc.friction_tensor(a,0.,sigma,nspin=1)
         tensor = b.calc_tensor(mode=mode)
         tensors.append(tensor)
-    
+        print(tensor) 
         dimension = np.shape(tensor)[0]
     
     print('Begin output')
