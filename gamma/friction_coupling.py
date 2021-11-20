@@ -27,6 +27,9 @@ def fermi_pop(x,x0,T):
 def gaussian_function(x,x0,s):
     return 1./np.sqrt(2*np.pi*s*s)*np.exp(-0.5*(((x-x0) / (s))**2))
 
+def gaussian_function2(x,x0,s):
+    return 1./np.sqrt(np.pi*s*s)*np.exp(-(((x-x0) / (s))**2))
+
 def gaussian_norm(x0, s):
     return 0.5 * (1-special.erf((-x0/s)*(1/np.sqrt(2))))
 
@@ -236,6 +239,11 @@ class friction_tensor():
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                             *(gaussian_function(es,perturbing_energy,self.sigma))*kw*2/nspin)
+
+                    elif mode=='gaussian2_no_norm':
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
+                            *(gaussian_function2(es,perturbing_energy,self.sigma))*kw*2/nspin)
                             
                     elif mode=='lorentzian': #no additional normalisation
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
