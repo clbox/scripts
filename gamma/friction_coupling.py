@@ -176,7 +176,7 @@ class friction_tensor():
         self.friction_masses = parser.friction_masses
         self.nspin = nspin
 
-    def calc_tensor(self,mode='default',order=2):
+    def calc_tensor(self,mode='default',order=2,perturbing_energy=0.):
         print("--- %s Start calc tensor ---" % (time.time() - start_time))
         ks = self.ks
         coords = self.coords
@@ -205,21 +205,29 @@ class friction_tensor():
                     es = ejs[j_idx]-eis[i_idx]
 
                     if mode=='default':
+                        if perturbing_energy!=0.:
+                            print('default mode can only deal with 0 perturbing energy')
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                             *(gaussian_function(es,0,self.sigma)/gaussian_norm(es,self.sigma))*kw*2/nspin)
 
                     elif mode=='double_delta':
+                        if perturbing_energy!=0.:
+                            print('double delta mode can only deal with 0 perturbing energy')
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                             (gaussian_function(eis[i_idx]-chem_pot,0,self.sigma)*gaussian_function(ejs[j_idx]-chem_pot,0,self.sigma))*\
                             kw*2/nspin)
 
-                    elif mode=='double_delta_half_sigma':
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                            (gaussian_function(eis[i_idx]-chem_pot,0,self.sigma/2)*gaussian_function(ejs[j_idx]-chem_pot,0,self.sigma/2))*\
-                            kw*2/nspin)
+                    # elif mode=='double_delta_half_sigma':
+                    #     if perturbing_energy!=0.:
+                    #         print('double delta mode can only deal with 0 perturbing energy')
+                    #     tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                    #         (gaussian_function(eis[i_idx]-chem_pot,0,self.sigma/2)*gaussian_function(ejs[j_idx]-chem_pot,0,self.sigma/2))*\
+                    #         kw*2/nspin)
 
                     elif mode=='prb_print':
+                        if perturbing_energy!=0.:
+                            print('prb print mode can only deal with 0 perturbing energy')
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                             *(gaussian_function(es,0,self.sigma)/gaussian_norm2(es,self.sigma))*kw*2/nspin)
@@ -227,19 +235,21 @@ class friction_tensor():
                     elif mode=='no_norm':
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(gaussian_function(es,0,self.sigma))*kw*2/nspin)
+                            *(gaussian_function(es,perturbing_energy,self.sigma))*kw*2/nspin)
                             
                     elif mode=='lorentzian': #no additional normalisation
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(lorentzian_function(es,0,self.sigma))*kw*2/nspin)
+                            *(lorentzian_function(es,perturbing_energy,self.sigma))*kw*2/nspin)
 
                     elif mode=='methfessel_paxton': #no additional normalisation
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(methfessel_paxton_function(es,0,self.sigma,order))*kw*2/nspin)
+                            *(methfessel_paxton_function(es,perturbing_energy,self.sigma,order))*kw*2/nspin)
 
                     elif mode=='double_delta_methfessel_paxton':
+                        if perturbing_energy!=0.:
+                            print('double delta mode can only deal with 0 perturbing energy')
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                             (methfessel_paxton_function(eis[i_idx]-chem_pot,0,self.sigma,order)*methfessel_paxton_function(ejs[j_idx]-chem_pot,0,self.sigma,order))*\
                             kw*2/nspin)
