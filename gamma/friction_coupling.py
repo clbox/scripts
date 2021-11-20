@@ -238,6 +238,11 @@ class friction_tensor():
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
                             *(methfessel_paxton_function(es,0,self.sigma,order))*kw*2/nspin)
+
+                    elif mode=='double_delta_methfessel_paxton':
+                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
+                            (methfessel_paxton_function(eis[i_idx]-chem_pot,0,self.sigma,order)*methfessel_paxton_function(ejs[j_idx]-chem_pot,0,self.sigma,order))*\
+                            kw*2/nspin)
                     else:
                         print('No viable tensor mode selected')
                     
