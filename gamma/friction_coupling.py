@@ -36,7 +36,7 @@ def gaussian_norm2(x0, s):
 def lorentzian_function(x,x0,s):
     return (1./np.pi)*((0.5*s)/((x-x0)*(x-x0)+(0.5*s)*(0.5*s)))
 
-def methfessel_paxton_function(e,e0,s,N)
+def methfessel_paxton_function(e,e0,s,N):
     x = (e-e0)/s 
 
     delta_function_methfessel = 0.
@@ -176,7 +176,7 @@ class friction_tensor():
         self.friction_masses = parser.friction_masses
         self.nspin = nspin
 
-    def calc_tensor(self,mode='default'):
+    def calc_tensor(self,mode='default',order=2):
         print("--- %s Start calc tensor ---" % (time.time() - start_time))
         ks = self.ks
         coords = self.coords
@@ -237,7 +237,7 @@ class friction_tensor():
                     elif mode=='methfessel_paxton': #no additional normalisation
                         tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
                         (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(methfessel_paxton_function(es,0,self.sigma,1))*kw*2/nspin)
+                            *(methfessel_paxton_function(es,0,self.sigma,order))*kw*2/nspin)
                     else:
                         print('No viable tensor mode selected')
                     
