@@ -53,12 +53,12 @@ parser = fc.friction_output_parser_2021()
 for dir_name in dir_names:
     gamma_files = glob.glob(dir_name+'/*friction_gamma*.out')
     chem_pot = parser.parse_chem_pot(dir_name+'/aims.out')
-    print('Chemical potential / eV : '+ str(chem_pot))
+    #print('Chemical potential / eV : '+ str(chem_pot))
     chem_pots.append(chem_pot)
 
 
 
-ax.plot(time_axis,chem_pots,color='black',linestyle='none',mfc='orangered',marker='o')
+ax.plot(time_axis,chem_pots,color='black',linestyle='none',mfc='orangered',marker='o',markersize=4)
 
 
 
