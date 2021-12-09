@@ -52,7 +52,7 @@ for dir_name in dir_names:
 
 
 
-ax.plot(time_axis,chem_pots,color='orangered')
+ax.plot(time_axis,chem_pots,color='black',linestyle='none',mfc='orangered',marker='o')
 
 
 
