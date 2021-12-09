@@ -326,153 +326,152 @@ class calc_gamma():
         print("--- %s End dos binning ---" % (time.time() - start_time))
         return gamma
 
+#class calc_time_tensor():
+    # #discretize ei and ejs with gaussian functions of smearing width sigma
+    # def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,nspin,min_e,max_e,npoints,friction_masses,temp=300,sigma=0.01):
+    #     self.couplings = couplings
+    #     self.coords = coords
+    #     self.eis = eis
+    #     self.ejs = ejs
+    #     self.ks = ks
+    #     self.chem_pot = chem_pot
+    #     self.kweights=kweights
+    #     self.temp = temp
+    #     self.sigma = sigma
+    #     self.nspin = nspin
+    #     self.min_e = min_e
+    #     self.max_e = max_e
+    #     self.npoints = npoints
+    #     self.ndim = np.max(coords)
+    #     self.friction_masses = friction_masses
 
-class calc_time_tensor():
-    #discretize ei and ejs with gaussian functions of smearing width sigma
-    def __init__(self,ks,coords,eis,ejs,couplings,kweights,chem_pot,nspin,min_e,max_e,npoints,friction_masses,temp=300,sigma=0.01):
-        self.couplings = couplings
-        self.coords = coords
-        self.eis = eis
-        self.ejs = ejs
-        self.ks = ks
-        self.chem_pot = chem_pot
-        self.kweights=kweights
-        self.temp = temp
-        self.sigma = sigma
-        self.nspin = nspin
-        self.min_e = min_e
-        self.max_e = max_e
-        self.npoints = npoints
-        self.ndim = np.max(coords)
-        self.friction_masses = friction_masses
+    # def get_e_grid(self):
+    #     min_e = self.min_e
+    #     max_e = self.max_e
+    #     npoints = self.npoints
+    #     e_grid =  np.linspace(min_e,max_e,npoints)
+    #     return e_grid
 
-    def get_e_grid(self):
-        min_e = self.min_e
-        max_e = self.max_e
-        npoints = self.npoints
-        e_grid =  np.linspace(min_e,max_e,npoints)
-        return e_grid
-
-    def get_h_grid(self):
-        min_e = self.min_e
-        max_e = self.max_e
-        npoints = self.npoints
-        h_grid = np.linspace(min_e,max_e,npoints)
-        return h_grid
+    # def get_h_grid(self):
+    #     min_e = self.min_e
+    #     max_e = self.max_e
+    #     npoints = self.npoints
+    #     h_grid = np.linspace(min_e,max_e,npoints)
+    #     return h_grid
     
-    def get_ex_grid(self):
-        min_e = self.min_e
-        max_e = self.max_e
-        npoints = self.npoints
-        h_grid = np.linspace(min_e,max_e,npoints)
-        return h_grid
+    # def get_ex_grid(self):
+    #     min_e = self.min_e
+    #     max_e = self.max_e
+    #     npoints = self.npoints
+    #     h_grid = np.linspace(min_e,max_e,npoints)
+    #     return h_grid
 
-    def calc_A(self):
-        print("--- %s Start calc A ---" % (time.time() - start_time))
+    # def calc_A(self):
+    #     print("--- %s Start calc A ---" % (time.time() - start_time))
 
-        coords = self.coords
-        ndim = self.ndim
-        temp = self.temp
-        chem_pot = self.chem_pot
-        e_grid = self.get_e_grid()
-        h_grid = self.get_h_grid()
-        eis = self.eis
-        ejs = self.ejs
-        couplings = self.couplings
-        sigma = self.sigma
+    #     coords = self.coords
+    #     ndim = self.ndim
+    #     temp = self.temp
+    #     chem_pot = self.chem_pot
+    #     e_grid = self.get_e_grid()
+    #     h_grid = self.get_h_grid()
+    #     eis = self.eis
+    #     ejs = self.ejs
+    #     couplings = self.couplings
+    #     sigma = self.sigma
 
-        A = np.zeros((ndim+1,ndim+1,len(e_grid),len(h_grid)),dtype=np.complex128)
+    #     A = np.zeros((ndim+1,ndim+1,len(e_grid),len(h_grid)),dtype=np.complex128)
 
-        for n1 in range(ndim+1):
-            for n2 in range(ndim+1):
-                if n2< n1:
-                    continue
-                idx = np.where((coords == n1))[0]
-                idx2 = np.where((coords == n2))[0]
-                cs = couplings[idx]
-                cs2 = couplings[idx2]
-                eis_n = eis[idx]
-                ejs_n = ejs[idx2]
-                for i,c2 in enumerate(cs2):
-                    c = np.conjugate(cs[i])
-                    gauss_mat = np.outer(gaussian_function(eis_n[i],e_grid,sigma),gaussian_function(ejs_n[i],h_grid,sigma))\
-                        *(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
-                    #print(np.max(gaussian_function(ejs_n[i],h_grid,0.01)))
-                    A[n1,n2,:,:] +=gauss_mat*c*c2
-        print("--- %s End calc A ---" % (time.time() - start_time))
-        return A
+    #     for n1 in range(ndim+1):
+    #         for n2 in range(ndim+1):
+    #             if n2< n1:
+    #                 continue
+    #             idx = np.where((coords == n1))[0]
+    #             idx2 = np.where((coords == n2))[0]
+    #             cs = couplings[idx]
+    #             cs2 = couplings[idx2]
+    #             eis_n = eis[idx]
+    #             ejs_n = ejs[idx2]
+    #             for i,c2 in enumerate(cs2):
+    #                 c = np.conjugate(cs[i])
+    #                 gauss_mat = np.outer(gaussian_function(eis_n[i],e_grid,sigma),gaussian_function(ejs_n[i],h_grid,sigma))\
+    #                     *(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
+    #                 #print(np.max(gaussian_function(ejs_n[i],h_grid,0.01)))
+    #                 A[n1,n2,:,:] +=gauss_mat*c*c2
+    #     print("--- %s End calc A ---" % (time.time() - start_time))
+    #     return A
     
-    def calc_A2(self):
-        print("--- %s Start calc A2 ---" % (time.time() - start_time))
-        coords = self.coords
-        ndim = self.ndim
-        temp = self.temp
-        chem_pot = self.chem_pot
-        ex_grid = self.get_ex_grid()
-        eis = self.eis
-        ejs = self.ejs
-        couplings = self.couplings
-        sigma = self.sigma
-        de = ex_grid[1]-ex_grid[0]
+    # def calc_A2(self):
+    #     print("--- %s Start calc A2 ---" % (time.time() - start_time))
+    #     coords = self.coords
+    #     ndim = self.ndim
+    #     temp = self.temp
+    #     chem_pot = self.chem_pot
+    #     ex_grid = self.get_ex_grid()
+    #     eis = self.eis
+    #     ejs = self.ejs
+    #     couplings = self.couplings
+    #     sigma = self.sigma
+    #     de = ex_grid[1]-ex_grid[0]
 
-        A = np.zeros((ndim+1,ndim+1,len(ex_grid)),dtype=np.complex128)
+    #     A = np.zeros((ndim+1,ndim+1,len(ex_grid)),dtype=np.complex128)
 
-        for n1 in range(ndim+1):
-            idx = np.where((coords == n1))[0]
-            cs = couplings[idx]
-            eis_n = eis[idx]
-            for n2 in range(ndim+1):
-                if n2< n1:
-                    continue
-                idx2 = np.where((coords == n2))[0]
-                cs2 = couplings[idx2]
-                ejs_n = ejs[idx2]
-                for i,c2 in enumerate(cs2):
-                    c = np.conjugate(cs[i])*c2
-                    gauss_mat = gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)*gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)
-                        #*(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
-                    A[n1,n2,:] +=gauss_mat*c/(np.sum(gauss_mat)*de)
-        print("--- %s End calc A2 ---" % (time.time() - start_time))
-        return A
+    #     for n1 in range(ndim+1):
+    #         idx = np.where((coords == n1))[0]
+    #         cs = couplings[idx]
+    #         eis_n = eis[idx]
+    #         for n2 in range(ndim+1):
+    #             if n2< n1:
+    #                 continue
+    #             idx2 = np.where((coords == n2))[0]
+    #             cs2 = couplings[idx2]
+    #             ejs_n = ejs[idx2]
+    #             for i,c2 in enumerate(cs2):
+    #                 c = np.conjugate(cs[i])*c2
+    #                 gauss_mat = gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)*gaussian_function(ejs_n[i]-eis_n[i],ex_grid,sigma)
+    #                     #*(fermi_pop(eis_n[i],chem_pot,temp)-fermi_pop(ejs_n[i],chem_pot,temp))
+    #                 A[n1,n2,:] +=gauss_mat*c/(np.sum(gauss_mat)*de)
+    #     print("--- %s End calc A2 ---" % (time.time() - start_time))
+    #     return A
 
-    def mass_weight(self,tensor):
-        ndim = self.ndim
-        for i in range(ndim+1):
-            mass_i = self.friction_masses[i // 3]
-            for j in range(ndim+1):
-                if j < i:
-                    continue
-                mass_j = self.friction_masses[j // 3]
-                tensor[i,j] = tensor[i,j]/np.sqrt(mass_i*mass_j)
-                tensor[j,i] = tensor[i,j]
-        return tensor
+    # def mass_weight(self,tensor):
+    #     ndim = self.ndim
+    #     for i in range(ndim+1):
+    #         mass_i = self.friction_masses[i // 3]
+    #         for j in range(ndim+1):
+    #             if j < i:
+    #                 continue
+    #             mass_j = self.friction_masses[j // 3]
+    #             tensor[i,j] = tensor[i,j]/np.sqrt(mass_i*mass_j)
+    #             tensor[j,i] = tensor[i,j]
+    #     return tensor
 
-    def evaluate_tensor(self):
-        print("--- %s Start eval tensor ---" % (time.time() - start_time))
-        ndim = self.ndim
-        h_grid = self.get_h_grid()
-        e_grid =  self.get_e_grid()
-        A = self.calc_A()
-        for i in range(len(e_grid)):
-            for j in range(len(h_grid)):
-                if (h_grid[j]-e_grid[i])==0:
-                    A[:,:,i,j]=0
-                else:
-                    A[:,:,i,j] = A[:,:,i,j]/(h_grid[j]-e_grid[i])
+    # def evaluate_tensor(self):
+    #     print("--- %s Start eval tensor ---" % (time.time() - start_time))
+    #     ndim = self.ndim
+    #     h_grid = self.get_h_grid()
+    #     e_grid =  self.get_e_grid()
+    #     A = self.calc_A()
+    #     for i in range(len(e_grid)):
+    #         for j in range(len(h_grid)):
+    #             if (h_grid[j]-e_grid[i])==0:
+    #                 A[:,:,i,j]=0
+    #             else:
+    #                 A[:,:,i,j] = A[:,:,i,j]/(h_grid[j]-e_grid[i])
 
 
-        tensor = np.zeros((ndim+1,ndim+1))
-        for n1 in range(ndim+1):
-            for n2 in range(ndim+1):
-                if n2< n1:
-                    continue
-                b = simps(A[n1,n2,:,:],e_grid,axis=0)
-                tensor[n1,n2] = simps(b,h_grid)
-                tensor[n2,n1] = tensor[n1,n2]
+    #     tensor = np.zeros((ndim+1,ndim+1))
+    #     for n1 in range(ndim+1):
+    #         for n2 in range(ndim+1):
+    #             if n2< n1:
+    #                 continue
+    #             b = simps(A[n1,n2,:,:],e_grid,axis=0)
+    #             tensor[n1,n2] = simps(b,h_grid)
+    #             tensor[n2,n1] = tensor[n1,n2]
 
-        tensor = self.mass_weight(tensor)
-        tensor *= 2*ps*ps
-        print("--- %s End eval tensor ---" % (time.time() - start_time))
+    #     tensor = self.mass_weight(tensor)
+    #     tensor *= 2*ps*ps
+    #     print("--- %s End eval tensor ---" % (time.time() - start_time))
         return tensor
 
     
@@ -501,6 +500,197 @@ class calc_time_tensor():
         print("--- %s End eval tensor2 ---" % (time.time() - start_time))
         return tensor
 
+
+# ..... 2021 rewrite 
+class friction_output_parser_2021():
+    def __init__(self):
+        print('Initialized')
+
+    def parse_chem_pot(self,aims_file):
+        chem_pot = 0
+        with open(aims_file, "r") as af:
+            for line in af:
+                if '--FRICTION--' in line or '**FRICTION**' in line:
+                    break
+                if '| Chemical potential (Fermi level):' in line:
+                    chem_pot = float(line.split()[-2])
+        return chem_pot
+
+    def parse_fiction_masses(self,aims_file):
+        friction_atoms = []
+        with open(aims_file, "r") as af:
+            read = False
+            for line in af:
+                if 'The contents of geometry.in will be repeated verbatim below' in line:
+                    read=True
+                if 'calculate_friction .true.' in line:
+                    friction_atoms.append(element)
+                if read:
+                    try:
+                        element = line.split()[-1]
+                    except:
+                        continue
+        
+        a = Atoms(symbols=friction_atoms)
+        friction_masses = a.get_masses()
+
+        return friction_masses
+
+    def parse_gamma_couplings(self,gamma_files):
+        #Parsing all for now but in future less memory intensive to 
+        #process whilst parsing
+        print("--- %s Start parser ---" % (time.time() - start_time))
+
+        print('Sort gamma files')
+        gamma_files.sort()
+
+
+        k_points = np.zeros((len(gamma_files),4)) # x  y z weight
+        couplings = []
+        eigenvalues = []
+        n_excits = []
+
+
+        for i,file in enumerate(gamma_files):
+            print(file)
+            with open(file, "r") as f:
+                read_gamma = False
+                for line in f:
+                    if '| k-point:' in line:
+                        k_points[i,0] = float(line.split()[4]) # x
+                        k_points[i,1] = float(line.split()[5]) # y
+                        k_points[i,2] = float(line.split()[6]) # z
+                        k_points[i,3] = float(line.split()[-1]) # k_weight
+                        continue
+
+                    if 'Friction component for' in line:
+                        dimension = int(line.split()[-1])
+                        continue
+
+
+            #  n_excits, 4
+            # 0 = ei , 1 = ej , 2 = Re(Y) , 3 = Im(Y)
+            gamma_k_data = np.loadtxt(file,comments='Friction',skiprows=4)
+            n_excits_k = int(np.shape(gamma_k_data)[0] / dimension)
+
+            gamma_k_reshape = np.reshape(gamma_k_data,(n_excits_k,dimension,4))
+
+            eigenvalues_k = np.zeros((n_excits_k,2))
+            eigenvalues_k = gamma_k_reshape[:,0,:1] #only  need first dimension since idetical for each coordinate [ground state]
+
+            couplings_k = np.zeros((n_excits_k,dimension),dtype=np.cdouble)
+            couplings_k = gamma_k_reshape[:,:,2] + 1j * gamma_k_reshape[:,:,3] 
+            
+
+            couplings.append(couplings_k)
+            eigenvalues.append(eigenvalues_k)  
+            n_excits.append(n_excits_k)
+            
+        print("--- %s End parser ---" % (time.time() - start_time))
+
+        return eigenvalues, couplings, n_excits, k_points
                 
+class calc_time_tensor_2021():
+
+    def __init__(self,chem_pot,e_cutoff,friction_masses,temp=300,sigma=0.01):
+
+        # couplings  [2,n_spin,n_k_points,dimension,3,max_n_excits]
+        # coupling list (n_k_points long) of arrays of dimension n_excits,dimension
+
+        # first dimension is for each structure
+        # penultimate dimension:  0 = ei,  1 = ej , 2 = coupling
 
 
+        # self.eigenvalues = eigenvalues
+        # self.couplings = couplings
+        # self.n_excits = n_excits
+
+
+        #self.n_spin = np.shape(couplings)[1] #number of spin dimensions, 1 or 2
+        self.n_spin = 1
+
+
+        # self.n_k_points = np.shape(couplings)[2]
+        # self.n_k_points = len(couplings)
+
+
+        #self.n_dim = np.shape(couplings)[3] # dimension of tensor = friction_atoms * 3
+        #self.n_dim = np.shape(couplings[0])[1]
+        
+        #self.max_n_excits = np.shape(couplings)[-1]
+
+        self.chem_pot = chem_pot # Chemical potential (i.e Fermi level) / eV
+        #self.k_weights=k_weights # list of k_weights , same order as n_k_points dimension
+        self.temp = temp  # Temperature / K
+        self.sigma = sigma # Broadening / eV
+
+        self.e_cutoff = e_cutoff # energy cutoff / eV
+
+        self.friction_masses = friction_masses # Masses of friction atoms, in same order as dimension (/3) / amu
+
+
+    def calculate_ex_energy_grid_tensor(self,eigenvalues1,eigenvalues2,couplings1,couplings2,n_excits1,n_excits2,k_weights,n_points):
+
+
+
+        n_dim = np.shape(couplings1[0])[1]
+        n_k_points = len(couplings1)
+
+
+        ex_energy_grid = np.linspace(0,self.e_cutoff,n_points) #eV
+        ex_energy_grid_tensor = np.zeros((self.dimension,self.dimension,n_points))
+
+        
+
+        for i_spin in range(0,self.n_spin):
+
+            for i_k_point in range (n_k_points):
+
+                spin_k_factor = self.k_weights[i_k_point] * 2/self.n_spin
+
+                eigenvalues1_k = eigenvalues1[i_k_point]
+                couplings1_k = couplings1[i_k_point]
+                n_excits1_k = n_excits1[i_k_point]
+
+                eigenvalues2_k = eigenvalues2[i_k_point]
+                couplings2_k = couplings2[i_k_point]
+                n_excits2_k = n_excits2[i_k_point]
+
+                fermi_occupation_factors = np.zeros((n_excits1_k))
+
+                for i_ex in range(n_excits1_k): # Approximation: use fermi occupation for structure 1
+                    # We could analyse the fermi occupation for other structure and take average? or compare size
+
+                    # assume n_excits1_k = n_excits2_k 
+                    fermi_occupation_factors[i_ex] = fermi_pop(eigenvalues1_k[i_ex,0],self.chem_pot,self.temp) - \
+                                                     fermi_pop(eigenvalues1_k[i_ex,1],self.chem_pot,self.temp)
+
+                for i_coord in range(self.dimension):
+
+                    for j_coord in range(self.dimension):
+
+                        # .... discretize excitations
+                        # don't need a separate loop over excitations in each structure since we
+                        # assume the KS state energies do not change much, not sure how valid this 
+                        # assumption is but I think its already implicit within MDEF anyway.
+                        for i_ex in range(n_excits1_k):
+                            
+                            ex1_e = eigenvalues1_k[i_ex,1] - eigenvalues1_k[i_ex,0]
+                            ex2_e = eigenvalues2_k[i_ex,1] - eigenvalues2_k[i_ex,0]
+
+                            ex_energy_grid_tensor[i_coord,j_coord,:] += fermi_occupation_factors[i_ex] * \
+                                np.conjg(couplings1_k[i_ex,i_coord]) * \
+                                couplings2_k[i_ex,j_coord] * \
+                                gaussian_function(ex1_e,ex_energy_grid[:],self.sigma) * \
+                                gaussian_function(ex2_e,ex_energy_grid[:],self.sigma) * \
+                                spin_k_factor
+
+        return ex_energy_grid_tensor
+
+
+# couplings  [2,n_spin,n_k_points,dimension,dimension,3,max_n_excits]
+
+# gamma_files = ['/Users/u1865573/Downloads/friction_gamma_k001.out','/Users/u1865573/Downloads/friction_gamma_k002.out']
+
+# a = friction_output_parser_2021()
+# a.parse_gamma_couplings(gamma_files)
