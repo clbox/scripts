@@ -41,7 +41,7 @@ dir_names = sys.argv[1:]
 
 dir_names.sort()
 
-dir_names_int = [int(i) for i in dir_names]
+dir_names_int = [int(i.replace('/','')) for i in dir_names]
 dir_names_int.sort()
 
 print(dir_names_int)
