@@ -38,6 +38,11 @@ fig, ax = plt.subplots(1, 1)
 
 
 dir_names = sys.argv[1:]
+
+dir_names.sort()
+
+print(dir_names)
+
 time_step = 1 #fs
 time_axis = np.arange(0,len(dir_names))
 time_axis = time_axis * time_step / 1000
