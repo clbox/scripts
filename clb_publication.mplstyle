@@ -1,0 +1,55 @@
+# MPL style file for publication images by Connor Box
+
+# Figure Properties
+figure.figsize: 3, 3
+
+# Font Properties
+font.family: Arial
+font.size: 12
+
+# Axes properties
+axes.linewidth: 1.
+
+#Tick labels and axis label spacing
+axes.labelpad: 10
+
+# Color cycle for plotting
+axes.prop_cycle: cycler(color=['FF4500','1F90FF','90EE90','BA55D3','00FFFF','FFD700','000000'])
+
+# Tick properties
+# x-axis
+xtick.top: True
+xtick.direction: in
+# y-axis
+ytick.right: True
+ytick.direction: in
+
+# x-axis
+xtick.major.size: 4
+xtick.major.width: 1
+xtick.minor.size: 2
+xtick.minor.width: 1
+xtick.minor.visible : True
+
+# y-axis
+ytick.major.size: 4
+ytick.major.width: 1
+ytick.minor.size: 2
+ytick.minor.width: 1
+ytick.minor.visible : True
+
+# Lines properties
+lines.linewidth: 1.2
+
+# Legend properties
+legend.framealpha: 1
+legend.frameon: True
+
+
+# Always save as 'tight'
+savefig.bbox : tight
+savefig.pad_inches : 0.05
+
+# Use LaTeX for math formatting
+text.usetex : True
+text.latex.preamble : \usepackage{amsmath} \usepackage{amssymb}

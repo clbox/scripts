@@ -44,7 +44,6 @@ dir_names.sort()
 dir_names_int = [int(i.replace('/','')) for i in dir_names]
 dir_names_int.sort()
 
-print(dir_names_int)
 
 time_step = 1 #fs
 time_axis = np.arange(0,len(dir_names))
@@ -55,7 +54,7 @@ chem_pots = []
 parser = fc.friction_output_parser_2021()
 for dir_name_int in dir_names_int:
     dir_name = str(dir_name_int)
-    gamma_files = glob.glob(dir_name+'/*friction_gamma*.out')
+    #gamma_files = glob.glob(dir_name+'/*friction_gamma*.out')
     chem_pot = parser.parse_chem_pot(dir_name+'/aims.out')
     #print('Chemical potential / eV : '+ str(chem_pot))
     chem_pots.append(chem_pot)
