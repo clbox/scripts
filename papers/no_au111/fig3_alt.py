@@ -9,22 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 import itertools
-SMALL_SIZE = 12
-MEDIUM_SIZE = 12
-BIGGER_SIZE = 12
-
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-
-annotate=True
-matplotlib.rcParams['font.sans-serif'] = "Arial"
-# Then, "ALWAYS use sans-serif fonts"
-matplotlib.rcParams['font.family'] = "sans-serif"
+plt.style.use('clb_publication')
 
 if os.path.exists("fig3.txt"):
     os.remove("fig3.txt")
@@ -86,7 +71,7 @@ v3_exp = [exp_v3tov1,exp_v3tov2,exp_v3tov3]
 
 
 
-fig, ax = plt.subplots(4, 1)#, sharex='all',sharey='all')#, constrained_layout=True)
+fig, ax = plt.subplots(1, 4)#, sharex='all',sharey='all')#, constrained_layout=True)
 
 final_state = 1
 c=-1
@@ -196,6 +181,7 @@ for initial_state in [2,3]:
                 mode_args = tdpt_args.copy()
                 zorder=3
                 model = 'ODF'
+                continue
             if mode=='bomd':
                 mode_args = bomd_args.copy()
                 zorder=1
@@ -204,6 +190,7 @@ for initial_state in [2,3]:
                 mode_args = ldfa_args.copy()
                 zorder=2
                 model = 'LDFA'
+                continue
                 #continue
             if mode=='d4':
                 mode_args = d4_args.copy()
@@ -284,7 +271,7 @@ ax[0].set_ylabel(r'$P(1)\ /\ P(2)$',color='black')
 
 ax[1].set_ylabel(r'$B(v_f)$',color='black')
 ax[2].set_ylabel(r'$B(v_f)$',color='black')
-ax[3].set_ylabel(r'$B(v_f)$',color='black')
+# ax[3].set_ylabel(r'$B(v_f)$',color='black')
 
 
 ax[1].set_ylim(0,0.3)
@@ -314,10 +301,11 @@ handles,labels = ax[2].get_legend_handles_labels()
 #             labels[0],labels[4], 
 #             labels[2], labels[5]]
 
-fig.set_figheight(10.)
-fig.set_figwidth(3.)
-plt.legend(handles=handles,labels=labels,ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 6.2), loc='center')
-plt.subplots_adjust(hspace=0.6,wspace=0.2)
+fig.delaxes(ax[0])
+fig.set_figheight(2.)
+fig.set_figwidth(10.)
+plt.legend(handles=handles,labels=labels,ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-1, 1.2), loc='center')
+plt.subplots_adjust(hspace=0.6,wspace=0.45)
 fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight')
 # fig.savefig('fig3.tiff',transparent=True,bbox_inches='tight',dpi=600)
 # fig.savefig('fig3.eps',transparent=True,bbox_inches='tight')

@@ -639,7 +639,7 @@ class calc_time_tensor_2021():
 
         ex_energy_grid = np.linspace(0,self.e_cutoff,n_points) #eV
         ex_energy_grid_tensor = np.zeros((dimension,dimension,n_points))
-
+        ex_energy_grid_dx = ex_energy_grid[1]-ex_energy_grid[0]
         
 
         for i_spin in range(0,self.n_spin):
@@ -675,18 +675,24 @@ class calc_time_tensor_2021():
                         # don't need a separate loop over excitations in each structure since we
                         # assume the KS state energies do not change much, not sure how valid this 
                         # assumption is but I think its already implicit within MDEF anyway.
+                        
                         for i_ex in range(n_excits_min):
-                            
+                            norm = 0.0
                             ex1_e = eigenvalues1_k[i_ex,1] - eigenvalues1_k[i_ex,0]
                             ex2_e = eigenvalues2_k[i_ex,1] - eigenvalues2_k[i_ex,0]
 
-                            ex_energy_grid_tensor[i_coord,j_coord,:] += fermi_occupation_factors[i_ex] * \
-                                np.real(np.conjugate(couplings1_k[i_ex,i_coord]) * \
-                                couplings2_k[i_ex,j_coord]) * \
-                                gaussian_function(ex1_e,ex_energy_grid[:],self.sigma) * \
-                                gaussian_function(ex2_e,ex_energy_grid[:],self.sigma) * \
-                                spin_k_factor
+                            delta = gaussian_function(ex1_e,ex_energy_grid[:],self.sigma) * \
+                                    gaussian_function(ex2_e,ex_energy_grid[:],self.sigma)
+                            norm = np.sum(delta)
+                            norm = norm * ex_energy_grid_dx
 
+                            if norm!=0.0:
+                                ex_energy_grid_tensor[i_coord,j_coord,:] += fermi_occupation_factors[i_ex] * \
+                                    np.real(np.conjugate(couplings1_k[i_ex,i_coord]) * \
+                                    couplings2_k[i_ex,j_coord]) * \
+                                    delta/norm * \
+                                    spin_k_factor
+  
         return ex_energy_grid, ex_energy_grid_tensor
 
 
@@ -731,6 +737,33 @@ class calc_time_tensor_2021():
         return time_axis, time_tensor
 
 
+    def evaluate_time_tensor_no_convolute(self,ex_energy_grid,ex_energy_grid_tensor,time_cutoff,n_time_points):
+
+        dimension = np.shape(ex_energy_grid_tensor)[0]
+        time_axis = np.linspace(0,time_cutoff,n_time_points)
+        time_tensor = np.zeros((dimension,dimension,len(time_axis)))
+        d_tau = time_axis[1]-time_axis[0]
+        frequency_cutoff = self.e_cutoff/hbar
+
+        # ..... Fourier transfoorm with cos
+
+
+        for i_coord in range(dimension):
+
+            for j_coord in range(dimension):
+
+                for t,tau in enumerate(time_axis):
+                    
+                    integrand = np.zeros_like(ex_energy_grid)
+                    
+                    # Ignore e=0
+                    integrand[1:] = ex_energy_grid_tensor[i_coord,j_coord,1:] * \
+                        np.cos(ex_energy_grid[1:]/hbar * tau) / ex_energy_grid[1:]
+
+                    time_tensor[i_coord,j_coord,t] =  simps(integrand,ex_energy_grid)
+
+
+        return time_axis, time_tensor
 
 # couplings  [2,n_spin,n_k_points,dimension,dimension,3,max_n_excits]
 
