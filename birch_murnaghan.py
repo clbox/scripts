@@ -4,6 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from ase.eos import calculate_eos
+from ase.calculators.aims import Aims
 
 matplotlib.use('PDF')
 matplotlib.rcParams['font.sans-serif'] = "Arial"
