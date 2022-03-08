@@ -18,6 +18,11 @@ element = 'Pt'
 structure = 'fcc'
 approx_constant = 3.6 # Check Haas 2009 paper for example
 number_of_values = 5
+
+# .... options: sjeous (default), taylor, murnaghan, birch, birchmurnaghan, pouriertarantola, vinet, antonschmidt, p3
+chosen_eos = 'birchmurnaghan' 
+
+# Aims directories
 aims_dir = '/home/chem/msrvhs/software/aims/FHIaims/'
 species_dir = aims_dir+'species_defaults/defaults_2020/'+'tight/'
 run_command = 'srun '+aims_dir+'build_master/aims.210825.scalapack.mpi.x > aims.out'
@@ -55,10 +60,10 @@ for x in np.linspace(0.95, 1.05, number_of_values):
 
 
 # Extract volumes and energies:
-configs = read('BM.traj')  # read 5 configurations
+configs = read('BM.traj@:')  #reread all data from trajectory file
 volumes = [atoms.get_volume() for atoms in configs]
 energies = [atoms.get_potential_energy() for atoms in configs]
-eos = EquationOfState(volumes, energies)
+eos = EquationOfState(volumes, energies,eos=chosen_eos)
 v0, e0, B = eos.fit()
 print(B / kJ * 1.0e24, 'GPa')
 
