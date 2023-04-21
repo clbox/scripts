@@ -72,7 +72,7 @@ for i,filename in enumerate(filenames):
 
     for en,d in enumerate(el_idx):
         label = str(en)
-        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=label,color=plt.cm.copper(color_idx[len(el_idx)-en-1]))
+        ax.plot(bins,re[d,:],linestyle=linestyles[i],linewidth=0.7,label=label)#color=plt.cm.copper(color_idx[len(el_idx)-en-1]))
 
 
    

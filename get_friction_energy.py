@@ -16,14 +16,18 @@ filenames = sys.argv[1:]
 outfile = 'energies.out'
 for i, filename in enumerate(filenames):
     energy  = False
-    with open(filename) as f:
-        for line in f:
-            if '************************FRICTION**********************************' in line:
-                break
-            if '| Total energy corrected  ' in line:
-                e_corr = float(line.split()[5])
-                energy = True
-                break
+
+    try:
+        with open(filename) as f:
+            for line in f:
+                if '************************FRICTION**********************************' in line:
+                    break
+                if '| Total energy corrected  ' in line:
+                    e_corr = float(line.split()[5])
+                    energy = True
+                    break
+    except:
+        print("cannot parse")
     if energy:
         with open(outfile,'a') as f:
             f.write(str(i)+'   '+ str(e_corr)+'\n')

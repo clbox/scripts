@@ -30,13 +30,21 @@ for i, line in enumerate(normalmodes):
 for i in range(ndim):
     modes[i,:]/=np.linalg.norm(modes[i,:])
 
-print(re)
+print(np.shape(re))
+re_tensor = np.zeros((np.shape(re)[1],ndim,ndim))
+e=0
+for i in range(ndim):
+    for j in range(i,ndim):
+        re_tensor[:,i,j] = re[e,:]
+        re_tensor[:,j,i] = re[e,:]
+        e+=1
 
-normal_re = np.zeros_like(re)
-for b, bin in enumerate(bins):
+normal_re = np.zeros_like(re_tensor)
+print(np.shape(normal_re))
+for b in range(len(bins)):
 
     #transform friction matrix into normalmode space
-    normal_re[b,:,:] = np.dot(modes,np.dot(re[b,:,:],modes.transpose()))
+    normal_re[b,:,:] = np.dot(modes,np.dot(re_tensor[b,:,:],modes.transpose()))
 
 
 

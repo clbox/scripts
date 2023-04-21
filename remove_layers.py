@@ -5,18 +5,17 @@ import numpy as np
 import os
 
 # Define slab
-substrate = 'Cu'
-min_layers = 3
+substrate = 'Pt'
+min_layers = 4
 # Parse structure
 full_structure = read('geometry.in')
 
 # Sort structure depending on z height
 idx = np.argsort(full_structure.positions[:,2])
-print(full_structure.positions[:,2])
-print(idx)
 full_structure = full_structure[idx]
-#full_structure = sort(full_structure,tags=idx)
-print(full_structure.positions[:,2])
+
+# shift cell to zero for bottom layer
+full_structure.positions[:,2] = full_structure.positions[:,2] - full_structure.positions[0,2]
 
 # Find atoms per layer (assume same for now)
 bottom_layer_height = full_structure.positions[0,2]
@@ -32,6 +31,13 @@ print('I think there is ' + str(number_of_layers) + ' layers')
 
 # Interlayer distance
 inter_layer_distance = full_structure.positions[atoms_per_layer,2]
+print('Inter layer distance: ' + str(inter_layer_distance))
+# Write original structure sorted
+sub_dir = '{:02d}'.format(number_of_layers)
+os.mkdir(sub_dir)
+z = full_structure.positions[0,2]
+full_structure.positions[:,2] -= z
+write(sub_dir+'/geometry.in', full_structure, format='aims')
 
 # Remove layer , reduce cell height, make subdirectory, write file to subdirectory
 for l in range(number_of_layers-min_layers):

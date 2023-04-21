@@ -92,7 +92,7 @@ for b,basis in enumerate(['light','light+','tight','really_tight']):
 
 
 #ax.set_ylabel(r'$\Lambda_{\mathrm{ij}}$ / ps$^{-1}$',color='black')
-ax.set_ylabel(r'$\Lambda_{\mathrm{C}_z,\mathrm{C}_z}$ / meV ps$^{-1}$ $\mathrm{\AA{}}^{-2}$',color='black')
+ax.set_ylabel(r'$\Lambda_{\mathrm{C}_z,\mathrm{C}_z}$ / $\mathrm{meV ps}$ $\mathrm{\AA{}}^{-2}$',color='black')
 ax.set_xlabel(r'$N_{\mathrm{layers}}$',color='black')
 
 ax.xaxis.set_tick_params(which='major', size=4, width=line_width, direction='in', top='on')

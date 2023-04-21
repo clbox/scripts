@@ -10,19 +10,31 @@ import pandas as pd
 
 
 #Reading tensor from aims.out
-lines = open('aims.out').readlines()
+
+try:
+    lines = open('aims.out').readlines()
+except:
+    print("No aims out")
+    exit()
+
 raw_lines = []
 copy = False
+friction_present = False
 for line in lines:
-    if '********Printing Friction Tensor in 1/ps*********' in line:
+    if 'Printing Friction Tensor in 1/ps' in line:
         copy = True
+        friction_present = True
         continue
-    if '**********END Printing Friction Tensor************' in line:
+    if 'END Printing Friction Tensor' in line:
         copy = False
     if copy:
         raw_lines.append(line)
         #for j in range(ndim):
             #friction_tensor[i,j]=float(line.split()[j])
+
+if friction_present == False:
+    print("No friction")
+    exit()
 
 lines = open('geometry.in').readlines()
 
@@ -36,10 +48,10 @@ for ii,line in enumerate(lines):
     if ii in friction_indices:
         friction_atoms.append(line.split()[-1])
 
-filename = '_tensor.csv' 
-for atom in list(set(friction_atoms)):
-    n = friction_atoms.count(atom)
-    filename = str(n)+atom+filename
+filename = 'tensor.csv' 
+#for atom in list(set(friction_atoms)):
+#    n = friction_atoms.count(atom)
+#    filename = str(n)+atom+filename
             
 a = len(raw_lines[0].split())
 lines_per_line = 0
@@ -63,7 +75,7 @@ for ii, line in enumerate(raw_lines):
         i+=1
         c=0
     
-    for j in range(ndim/(lines_per_line+1)):
+    for j in range(int(ndim/(lines_per_line+1))):
         if c ==0:
             friction_tensor[i,j]=float(line.split()[j+1])
         else:
@@ -75,7 +87,7 @@ for atom in friction_atoms:
     for cart in ['x','y','z']:
         labels.append(atom+'_'+cart)
 ft = pd.DataFrame(friction_tensor,columns=labels,index=labels)
-ft[(ft>=-0.005) & (ft<=0.005)] = ' '
-ft.round(3)
+# ft[(ft>=-0.005) & (ft<=0.005)] = ' '
+# ft.round(3)
 ft.to_csv(filename)
 
