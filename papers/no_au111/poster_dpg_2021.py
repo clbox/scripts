@@ -17,6 +17,8 @@ tdpt_d4_args = {'marker' : '^', 'linestyle' : '-','color' : 'cyan', 'label' : r'
 #tdpt_args = {'marker' : '^', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
+ldfa_i4_args = {'marker' : 's','linestyle' : '-.','color' : 'pink', 'label' : r'MDEF(LDFA) $\mathbf{\Lambda} \times 4$', 'alpha' : 1.0}
+
 mdef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{[1]}$', 'alpha' : 1.0}
 iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{[1]}$', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.98,0.8), 'xycoords' : 'axes fraction'}
@@ -53,8 +55,8 @@ v2_ldfa = np.loadtxt('v02/translational/ldfa/300K/640/states_1_e.txt')
 v2_odf = np.loadtxt('v02/translational/tdpt/300K/640/states_1_e.txt')
 
 a = ax.plot(v2_bomd[:,0],v2_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
-c = ax.plot(v2_ldfa[:,0],v2_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
-b = ax.plot(v2_odf[:,0],v2_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+# c = ax.plot(v2_ldfa[:,0],v2_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
+# b = ax.plot(v2_odf[:,0],v2_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -65,7 +67,7 @@ ax.set_ylabel('Population',)
 
 handles,labels = ax.get_legend_handles_labels()
 print(labels)
-#plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.1), loc='center')
+#plt.legend(ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.1), loc='center')
 
 fig.set_figheight(2.)
 fig.set_figwidth(2.25)
@@ -88,9 +90,16 @@ v3_bomd = np.loadtxt('v03/overview/bomd/states_1_e.txt')
 v3_odf = np.loadtxt('v03/overview/tdpt/states_1_e.txt')
 v3_ldfa = np.loadtxt('v03/overview/ldfa/states_1_e.txt')
 
-a = ax.plot(v3_bomd[:,0],v3_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
-b = ax.plot(v3_odf[:,0],v3_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
-c = ax.plot(v3_ldfa[:,0],v3_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
+v3_mdef = np.loadtxt('v03/overview/ref/mdef/states_1_e.txt')
+v3_iesh = np.loadtxt('v03/overview/ref/iesh/states_1_e.txt')
+
+# a = ax.plot(v3_bomd[:,0],v3_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
+# b = ax.plot(v3_odf[:,0],v3_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+# c = ax.plot(v3_ldfa[:,0],v3_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
+
+d = ax.plot(v3_mdef[:,0],v3_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
+e = ax.plot(v3_iesh[:,0],v3_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
+
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -129,12 +138,15 @@ v11_iesh = np.loadtxt('v11/overview/ref/iesh/states_1_e.txt')
 v11_mdef = np.loadtxt('v11/overview/ref/mdef/states_1_e.txt')
 v11_odf_rr4 = np.loadtxt('v11/scaled/tdpt/d4/states_1_e.txt')
 
+v11_ldfa_i4 = np.loadtxt('v11/scaled/ldfa/i4/states_1_e.txt')
+
 # a = ax.plot(v11_bomd[:,0],v11_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
-b = ax.plot(v11_odf[:,0],v11_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
-# c = ax.plot(v11_iesh[:,0],v11_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
-# d = ax.plot(v11_mdef[:,0],v11_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
+# b = ax.plot(v11_odf[:,0],v11_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+c = ax.plot(v11_iesh[:,0],v11_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
+d = ax.plot(v11_mdef[:,0],v11_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
 #e = ax.plot(v11_ldfa[:,0],v11_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
-f = ax.plot(v11_odf_rr4[:,0],v11_odf_rr4[:,1],markersize=6,markeredgecolor='black',**tdpt_d4_args)
+# f = ax.plot(v11_odf_rr4[:,0],v11_odf_rr4[:,1],markersize=6,markeredgecolor='black',**tdpt_d4_args)
+# g = ax.plot(v11_ldfa_i4[:,0],v11_ldfa_i4[:,1],markersize=6,markeredgecolor='black',**ldfa_i4_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
@@ -171,13 +183,16 @@ v16_iesh = np.loadtxt('v16/overview/ref/iesh/states_1_e.txt')
 v16_mdef = np.loadtxt('v16/overview/ref/mdef/states_1_e.txt')
 v16_ldfa = np.loadtxt('v16/overview/ldfa/states_1_e.txt')
 v16_odf_rr4 = np.loadtxt('v16/scaled/tdpt/d4/states_1_e.txt')
+v16_ldfa_i4 = np.loadtxt('v16/scaled/ldfa/i4/states_1_e.txt')
 
 # a = ax.plot(v16_bomd[:,0],v16_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
-b = ax.plot(v16_odf[:,0],v16_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
-# c = ax.plot(v16_iesh[:,0],v16_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
-# d = ax.plot(v16_mdef[:,0],v16_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
+# b = ax.plot(v16_odf[:,0],v16_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
+c = ax.plot(v16_iesh[:,0],v16_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
+d = ax.plot(v16_mdef[:,0],v16_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
 #e = ax.plot(v16_ldfa[:,0],v16_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
-f = ax.plot(v16_odf_rr4[:,0],v16_odf_rr4[:,1],markersize=6,markeredgecolor='black',**tdpt_d4_args)
+# f = ax.plot(v16_odf_rr4[:,0],v16_odf_rr4[:,1],markersize=6,markeredgecolor='black',**tdpt_d4_args)
+
+# g = ax.plot(v16_ldfa_i4[:,0],v16_ldfa_i4[:,1],markersize=6,markeredgecolor='black',**ldfa_i4_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(2))
@@ -188,7 +203,7 @@ ax.set_ylabel('Population',)
 
 handles,labels = ax.get_legend_handles_labels()
 print(labels)
-plt.legend(ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.4), loc='center')
+plt.legend(ncol=4,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.44, 1.4), loc='center')
 
 fig.set_figheight(2.5)
 fig.set_figwidth(4.25)

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 import itertools
-plt.style.use('clb_publication')
+plt.style.use('clb_publication_thesis')
 
 if os.path.exists("fig3.txt"):
     os.remove("fig3.txt")
@@ -20,8 +20,8 @@ pes_args = {'marker' : 'v', 'linestyle' : 'None','color' : 'green', 'label' : r'
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
 exp_args = {'marker' : 's','linestyle' : '-','color' : 'black', 'markerfacecolor' : 'gold', 'label' : r'Expt', 'alpha' : 1.0}
-ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{[1]}$', 'alpha' : 1.0}
-iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{[1]}$', 'alpha' : 1.0}
+ef_args = {'marker' : 's','linestyle' : '-','color' : '#F5C799', 'markerfacecolor' : 'white', 'label' : r'MDEF$^{[3]}$', 'alpha' : 1.0}
+iesh_args = {'marker' : 'o','linestyle' : '-','color' : '#9ABD8F', 'markerfacecolor' : 'white', 'label' : r'IESH$^{[3]}$', 'alpha' : 1.0}
 d4_args = {'marker' : '^', 'linestyle' : '--','color' : 'indigo', 'label' : r'ODF [$\Lambda_{rr} \times 4$]', 'alpha' : 1.0}
 annotate_args = {'xy' : (0.03,0.85), 'xycoords' : 'axes fraction'}
 
@@ -71,7 +71,7 @@ v3_exp = [exp_v3tov1,exp_v3tov2,exp_v3tov3]
 
 
 
-fig, ax = plt.subplots(1, 4)#, sharex='all',sharey='all')#, constrained_layout=True)
+fig, ax = plt.subplots(1, 4, sharex='all')   #,sharey='all')#, constrained_layout=True)
 
 final_state = 1
 c=-1
@@ -225,9 +225,9 @@ for initial_state in [2,3]:
                         f.write(str(ratios[s]))
                         f.write('\n')
         if final_state==3:
-            ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.2,0.1),xycoords='axes fraction')
+            ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.1,0.1),xycoords='axes fraction')
         else:
-            ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.2,0.9),xycoords='axes fraction')
+            ax[map_plot[c]].annotate(r'$v_i=$'+str(initial_state)+r'$\rightarrow$'+r'$v_f=$'+str(final_state),xy=(0.1,0.85),xycoords='axes fraction')
 
 
 
@@ -242,33 +242,38 @@ for initial_state in [2,3]:
 
 
 letters = [r'(a)',r'(b)',r'(c)',r'(d)']
-c=0
-d=-1
-for i in range(2):
-    for j in range(2):
-        d+=1
-        #ax[d].annotate(letters[c],ha="left", **annotate_args)
-        c+=1
-        if i == 0 and j ==0:
-            ax[d].tick_params(axis='both', which='major')
-            ax[d].xaxis.set_major_locator(MaxNLocator(integer=True))
-            ax[d].xaxis.set_minor_locator(MultipleLocator(0.1))
-            ax[d].xaxis.set_major_locator(MultipleLocator(0.35))
-            continue
+# c=0
+# d=-1
+# for i in range(2):
+#     for j in range(2):
+#         d+=1
+#         #ax[d].annotate(letters[c],ha="left", **annotate_args)
+#         c+=1
+#         # if i == 0 and j ==0:
+#         #     ax[d].tick_params(axis='both', which='major')
+#         #     ax[d].xaxis.set_major_locator(MaxNLocator(integer=True))
+#         #     ax[d].xaxis.set_minor_locator(MultipleLocator(0.1))
+#         #     ax[d].xaxis.set_major_locator(MultipleLocator(0.35))
+#         #     continue
 
-        ax[d].set_xlim(0,1.2)
-        ax[d].tick_params(axis='both', which='major')
-        ax[d].xaxis.set_major_locator(MaxNLocator(integer=True))
-        ax[d].xaxis.set_minor_locator(MultipleLocator(0.05))
-        ax[d].xaxis.set_major_locator(MultipleLocator(0.3))
-        ax[d].yaxis.set_minor_locator(MultipleLocator(0.05))
+#         ax[d].set_xlim(0,1.2)
 
-        ax[d].yaxis.set_major_locator(MultipleLocator(0.2))
+
+#         if i == 1 and j == 1:
+#             ax[d].tick_params(axis='both', which='major')
+#             ax[d].xaxis.set_major_locator(MaxNLocator(integer=True))
+#             ax[d].xaxis.set_minor_locator(MultipleLocator(0.05))
+#             ax[d].xaxis.set_major_locator(MultipleLocator(0.3))
+#             ax[d].yaxis.set_minor_locator(MultipleLocator(0.05))
+
+#         ax[d].yaxis.set_major_locator(MultipleLocator(0.2))
+
+ax[3].set_xlim(0,1.2)
 
 ax[1].yaxis.set_major_locator(MultipleLocator(0.1))
 ax[0].set_xlabel(r'$E_i$ / eV',color='black')
-ax[1].set_xlabel(r'$E_i$ / eV',color='black')
-ax[2].set_xlabel(r'$E_i$ / eV',color='black')
+# ax[1].set_xlabel(r'$E_i$ / eV',color='black')
+# ax[2].set_xlabel(r'$E_i$ / eV',color='black')
 ax[3].set_xlabel(r'$E_i$ / eV',color='black')
 
 ax[0].set_ylabel(r'$P(1)\ /\ P(2)$',color='black')
@@ -281,19 +286,19 @@ ax[0].set_ylabel(r'$P(1)\ /\ P(2)$',color='black')
 
 ax[1].set_ylabel(r'$B(v_f)$',color='black')
 ax[2].set_ylabel(r'$B(v_f)$',color='black')
-# ax[3].set_ylabel(r'$B(v_f)$',color='black')
+ax[3].set_ylabel(r'$B(v_f)$',color='black')
 
 
-ax[1].set_ylim(0,0.3)
+ax[1].set_ylim(0,0.5)
 ax[2].set_ylim(0,1.)
 ax[3].set_ylim(0,1.)
 
-ax[0].set_xlim(0,0.7)
-ax[0].set_yscale('log')  
-labels= (1e-4,1e-3,1e-2,1e-1,1)
-ax[0].set_yticks(labels)
-#ax[0,0].set_yticklabels(labels)
-ax[0].set_ylim(1e-3,1)
+# ax[0].set_xlim(0,0.7)
+# ax[0].set_yscale('log')  
+# labels= (1e-4,1e-3,1e-2,1e-1,1)
+# ax[0].set_yticks(labels)
+# #ax[0,0].set_yticklabels(labels)
+# ax[0].set_ylim(1e-3,1)
 
 
 # ax[1,1].yaxis.set_label_position("right")
@@ -312,11 +317,11 @@ handles,labels = ax[2].get_legend_handles_labels()
 #             labels[2], labels[5]]
 
 
-#fig.delaxes(ax[3])
-fig.set_figheight(2.5)
-fig.set_figwidth(16.)
-plt.legend(handles=handles,labels=labels,ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-1, 1.2), loc='center')
-plt.subplots_adjust(hspace=0.6,wspace=0.4)
-fig.savefig('fig3.pdf',transparent=True,bbox_inches='tight')
+fig.delaxes(ax[0])
+fig.set_figheight(2.)
+fig.set_figwidth(8.)
+plt.legend(handles=handles,labels=labels,ncol=2,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(0.5, 3.4), loc='center')
+plt.subplots_adjust(hspace=0.1,wspace=0.4)
+fig.savefig('thesis_fig3_horizontal.pdf',transparent=False,bbox_inches='tight')
 # fig.savefig('fig3.tiff',transparent=True,bbox_inches='tight',dpi=600)
 # fig.savefig('fig3.eps',transparent=True,bbox_inches='tight')
