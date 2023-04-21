@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 import itertools
+
 SMALL_SIZE = 9.5
 MEDIUM_SIZE = 9.5
 BIGGER_SIZE = 9.5
@@ -303,5 +304,5 @@ fig.set_figwidth(3.25)
 plt.legend(handles=handles,labels=labels,ncol=3,handletextpad=0.15,columnspacing=0.6,fancybox=True,framealpha=0,handlelength=2,bbox_to_anchor=(-0.0, 2.5), loc='center')
 plt.subplots_adjust(hspace=0.3,wspace=0.2)
 fig.savefig('fig3_all.pdf',transparent=True,bbox_inches='tight')
-fig.savefig('fig3_all.tiff',transparent=True,bbox_inches='tight',dpi=600)
-fig.savefig('fig3_all.eps',transparent=True,bbox_inches='tight')
+# fig.savefig('fig3_all.tiff',transparent=True,bbox_inches='tight',dpi=600)
+# fig.savefig('fig3_all.eps',transparent=True,bbox_inches='tight')

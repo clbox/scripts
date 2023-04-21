@@ -894,7 +894,7 @@ class friction_output_parser_2021():
 
 
         for i,file in enumerate(gamma_files):
-            print(file)
+            #print(file)
             with open(file, "r") as f:
                 read_gamma = False
                 for line in f:
@@ -918,7 +918,7 @@ class friction_output_parser_2021():
             gamma_k_reshape = np.reshape(gamma_k_data,(n_excits_k,dimension,4))
 
             eigenvalues_k = np.zeros((n_excits_k,2))
-            eigenvalues_k = gamma_k_reshape[:,0,:1] #only  need first dimension since idetical for each coordinate [ground state]
+            eigenvalues_k[:,:] = gamma_k_reshape[:,0,:2] #only  need first dimension since idetical for each coordinate [ground state]
 
             couplings_k = np.zeros((n_excits_k,dimension),dtype=np.cdouble)
             couplings_k = gamma_k_reshape[:,:,2] + 1j * gamma_k_reshape[:,:,3] 
@@ -975,20 +975,20 @@ class calc_time_tensor_2021():
 
 
 
-        n_dim = np.shape(couplings1[0])[1]
+        dimension = np.shape(couplings1[0])[1]
         n_k_points = len(couplings1)
 
 
         ex_energy_grid = np.linspace(0,self.e_cutoff,n_points) #eV
-        ex_energy_grid_tensor = np.zeros((self.dimension,self.dimension,n_points))
-
+        ex_energy_grid_tensor = np.zeros((dimension,dimension,n_points))
+        ex_energy_grid_dx = ex_energy_grid[1]-ex_energy_grid[0]
         
 
         for i_spin in range(0,self.n_spin):
 
             for i_k_point in range (n_k_points):
 
-                spin_k_factor = self.k_weights[i_k_point] * 2/self.n_spin
+                spin_k_factor = k_weights[i_k_point] * 2/self.n_spin
 
                 eigenvalues1_k = eigenvalues1[i_k_point]
                 couplings1_k = couplings1[i_k_point]
@@ -998,18 +998,20 @@ class calc_time_tensor_2021():
                 couplings2_k = couplings2[i_k_point]
                 n_excits2_k = n_excits2[i_k_point]
 
+                # We take minimum number of excitations to prevent OOB error but this is funky
+                n_excits_min = np.min(np.array((n_excits1_k,n_excits2_k)))
+
                 fermi_occupation_factors = np.zeros((n_excits1_k))
 
-                for i_ex in range(n_excits1_k): # Approximation: use fermi occupation for structure 1
+                for i_ex in range(n_excits_min): # Approximation: use fermi occupation for structure 1
                     # We could analyse the fermi occupation for other structure and take average? or compare size
 
-                    # assume n_excits1_k = n_excits2_k 
                     fermi_occupation_factors[i_ex] = fermi_pop(eigenvalues1_k[i_ex,0],self.chem_pot,self.temp) - \
                                                      fermi_pop(eigenvalues1_k[i_ex,1],self.chem_pot,self.temp)
 
-                for i_coord in range(self.dimension):
+                for i_coord in range(dimension):
 
-                    for j_coord in range(self.dimension):
+                    for j_coord in range(dimension):
 
                         # .... discretize excitations
                         # don't need a separate loop over excitations in each structure since we
@@ -1019,14 +1021,87 @@ class calc_time_tensor_2021():
                             ex1_e = eigenvalues1_k[i_ex,1] - eigenvalues1_k[i_ex,0]
                             ex2_e = eigenvalues2_k[i_ex,1] - eigenvalues2_k[i_ex,0]
 
-                            ex_energy_grid_tensor[i_coord,j_coord,:] += fermi_occupation_factors[i_ex] * \
-                                np.conjg(couplings1_k[i_ex,i_coord]) * \
-                                couplings2_k[i_ex,j_coord] * \
-                                gaussian_function(ex1_e,ex_energy_grid[:],self.sigma) * \
-                                gaussian_function(ex2_e,ex_energy_grid[:],self.sigma) * \
-                                spin_k_factor
+                            delta = gaussian_function(ex1_e,ex_energy_grid[:],self.sigma) * \
+                                    gaussian_function(ex2_e,ex_energy_grid[:],self.sigma)
+                            norm = np.sum(delta)
+                            norm = norm * ex_energy_grid_dx
 
-        return ex_energy_grid_tensor
+                            if norm!=0.0:
+                                ex_energy_grid_tensor[i_coord,j_coord,:] += fermi_occupation_factors[i_ex] * \
+                                    np.real(np.conjugate(couplings1_k[i_ex,i_coord]) * \
+                                    couplings2_k[i_ex,j_coord]) * \
+                                    delta/norm * \
+                                    spin_k_factor
+  
+        return ex_energy_grid, ex_energy_grid_tensor
+
+
+    def evaluate_time_tensor(self,ex_energy_grid,ex_energy_grid_tensor,time_cutoff,n_time_points):
+
+        dimension = np.shape(ex_energy_grid_tensor)[0]
+        time_axis = np.linspace(0,time_cutoff,n_time_points)
+        time_tensor = np.zeros((dimension,dimension,len(time_axis)))
+        d_tau = time_axis[1]-time_axis[0]
+        frequency_cutoff = self.e_cutoff/hbar
+
+        # ..... Fourier transfoorm with cos
+
+
+        for i_coord in range(dimension):
+
+            for j_coord in range(dimension):
+
+                for t,tau in enumerate(time_axis):
+                    
+                    integrand = np.zeros_like(ex_energy_grid)
+                    
+                    # Ignore e=0
+                    integrand[1:] = ex_energy_grid_tensor[i_coord,j_coord,1:] * \
+                        np.cos(ex_energy_grid[1:]/hbar * tau) / ex_energy_grid[1:]
+
+                    time_tensor[i_coord,j_coord,t] =  simps(integrand,ex_energy_grid)
+
+
+
+                    # ..... Convolute with sinc factor due to finite cutoff
+
+                    sinc_factor = frequency_cutoff*np.sinc((tau*frequency_cutoff)/2)    
+
+                    #exp_factor = np.cos(0.5*times_up*cutoff_freq) + (1j * np.sin(0.5*times_up*cutoff_freq))
+                    exp_factor_real = np.cos(0.5*tau*frequency_cutoff)
+    
+                    convolute_factor = sinc_factor*exp_factor_real
+                    
+                    time_tensor[i_coord,j_coord,t] = np.convolve(time_tensor[i_coord,j_coord,t],convolute_factor,mode='same')*d_tau
+
+        return time_axis, time_tensor
+
+
+    def evaluate_time_tensor_no_convolute(self,ex_energy_grid,ex_energy_grid_tensor,time_cutoff,n_time_points):
+
+        dimension = np.shape(ex_energy_grid_tensor)[0]
+        time_axis = np.linspace(0,time_cutoff,n_time_points)
+        time_tensor = np.zeros((dimension,dimension,len(time_axis)))
+        d_tau = time_axis[1]-time_axis[0]
+        frequency_cutoff = self.e_cutoff/hbar
+
+        # ..... Fourier transfoorm with cos
+
+
+        for i_coord in range(dimension):
+
+            for j_coord in range(dimension):
+
+                for t,tau in enumerate(time_axis):
+                    
+                    integrand = np.zeros_like(ex_energy_grid)
+                    
+                    # Ignore e=0
+                    integrand[1:] = ex_energy_grid_tensor[i_coord,j_coord,1:] * \
+                        np.cos(ex_energy_grid[1:]/hbar * tau) / ex_energy_grid[1:]
+
+                    time_tensor[i_coord,j_coord,t] =  simps(integrand,ex_energy_grid)
+
 
 class friction_gamma_parser_2022():
     def __init__(self,aims_file,gamma_files):

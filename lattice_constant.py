@@ -3,6 +3,7 @@ from ase.io import read,write
 import matplotlib
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+from ase.calculators.aims import Aims
 
 matplotlib.use('PDF')
 matplotlib.rcParams['font.sans-serif'] = "Arial"

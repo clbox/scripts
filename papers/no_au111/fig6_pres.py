@@ -10,23 +10,9 @@ from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 from scipy.optimize import curve_fit
 from matplotlib import gridspec
+plt.style.use('clb_publication')
 
 
-SMALL_SIZE = 9.5
-MEDIUM_SIZE = 9.5
-BIGGER_SIZE = 9.5
-
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-annotate=True
-matplotlib.rcParams['font.sans-serif'] = "Arial"
-# Then, "ALWAYS use sans-serif fonts"
-matplotlib.rcParams['font.family'] = "sans-serif"
 if os.path.exists("fig6.txt"):
     os.remove("fig6.txt")
 filenames = sys.argv[1:]
@@ -299,8 +285,8 @@ ax[2].set_xlabel('Population')
 ax[1].xaxis.set_major_formatter(matplotlib.ticker.NullFormatter())
 
 #ax.set_yscale('log')  
-fig.set_figheight(3.4)
-fig.set_figwidth(3.25)
+fig.set_figheight(5.4)
+fig.set_figwidth(7.)
 
 
 #fig.set_constrained_layout_pads(w_pad=0, h_pad=0)
@@ -324,5 +310,4 @@ ax[0].legend(handles=handles,labels=labels,ncol=3,handletextpad=0.1,columnspacin
 #plt.legend(ncol=3,handletextpad=0.1,columnspacing=0.2,fancybox=True,framealpha=0,handlelength=1.7,bbox_to_anchor=(0.6, 1.1), loc='center')
 plt.subplots_adjust(hspace=0.1,wspace=0.3)
 fig.savefig('fig6.pdf',transparent=True,bbox_inches='tight')
-fig.savefig('fig6.tiff',transparent=True,bbox_inches='tight',dpi=600)
-fig.savefig('fig6.eps',transparent=True,bbox_inches='tight')
+

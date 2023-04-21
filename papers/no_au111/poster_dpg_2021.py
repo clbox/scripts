@@ -9,29 +9,11 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
                                AutoMinorLocator, MaxNLocator)
 from matplotlib import gridspec
+plt.style.use('clb_publication')
 #COMMAND: python ~/Documents/scripts/papers/no_au111/fig2.py v02/translational/*/300K/640/states_1_e.txt {v03,v11,v16}/overview/*/states_1_e.txt && open fig2.pdf
-SMALL_SIZE = 12
-MEDIUM_SIZE = 12
-BIGGER_SIZE = 12
-
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-#plt.style.use('dark_background')
-# from matplotlib import rc
-# #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-# rc('font',**{'family':'serif','serif':['Times']})
-# rc('text', usetex=True)
-annotate=True
-matplotlib.rcParams['font.sans-serif'] = "Arial"
-# Then, "ALWAYS use sans-serif fonts"
-matplotlib.rcParams['font.family'] = "sans-serif"
 
 tdpt_args = {'marker' : 'o', 'linestyle' : '--','color' : 'mediumorchid', 'label' : r'MDEF(ODF)', 'alpha' : 1.0}
+tdpt_d4_args = {'marker' : '^', 'linestyle' : '-','color' : 'cyan', 'label' : r'MDEF(ODF) $\Lambda_{rr} \times 4$', 'alpha' : 1.0}
 #tdpt_args = {'marker' : '^', 'linestyle' : '--','color' : 'grey', 'label' : r'ODF', 'alpha' : 1.0}
 bomd_args = {'marker' : '^','linestyle' : '-','color' : 'red', 'label' : r'BOMD', 'alpha' : 1.0}
 ldfa_args = {'marker' : 's','linestyle' : '-.','color' : 'blue', 'label' : r'MDEF(LDFA)', 'alpha' : 1.0}
@@ -145,12 +127,15 @@ v11_odf = np.loadtxt('v11/overview/tdpt/states_1_e.txt')
 v11_ldfa = np.loadtxt('v11/overview/ldfa/states_1_e.txt')
 v11_iesh = np.loadtxt('v11/overview/ref/iesh/states_1_e.txt')
 v11_mdef = np.loadtxt('v11/overview/ref/mdef/states_1_e.txt')
+v11_odf_rr4 = np.loadtxt('v11/scaled/tdpt/d4/states_1_e.txt')
 
-a = ax.plot(v11_bomd[:,0],v11_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
+# a = ax.plot(v11_bomd[:,0],v11_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
 b = ax.plot(v11_odf[:,0],v11_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
-c = ax.plot(v11_iesh[:,0],v11_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
-d = ax.plot(v11_mdef[:,0],v11_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
+# c = ax.plot(v11_iesh[:,0],v11_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
+# d = ax.plot(v11_mdef[:,0],v11_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
 #e = ax.plot(v11_ldfa[:,0],v11_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
+f = ax.plot(v11_odf_rr4[:,0],v11_odf_rr4[:,1],markersize=6,markeredgecolor='black',**tdpt_d4_args)
+
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(1))
 
@@ -185,12 +170,14 @@ v16_odf = np.loadtxt('v16/overview/tdpt/states_1_e.txt')
 v16_iesh = np.loadtxt('v16/overview/ref/iesh/states_1_e.txt')
 v16_mdef = np.loadtxt('v16/overview/ref/mdef/states_1_e.txt')
 v16_ldfa = np.loadtxt('v16/overview/ldfa/states_1_e.txt')
+v16_odf_rr4 = np.loadtxt('v16/scaled/tdpt/d4/states_1_e.txt')
 
-a = ax.plot(v16_bomd[:,0],v16_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
+# a = ax.plot(v16_bomd[:,0],v16_bomd[:,1],markersize=6,markeredgecolor='black',**bomd_args)
 b = ax.plot(v16_odf[:,0],v16_odf[:,1],markersize=6,markeredgecolor='black',**tdpt_args)
-c = ax.plot(v16_iesh[:,0],v16_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
-d = ax.plot(v16_mdef[:,0],v16_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
+# c = ax.plot(v16_iesh[:,0],v16_iesh[:,1],markersize=6,markeredgecolor='black',**iesh_args)
+# d = ax.plot(v16_mdef[:,0],v16_mdef[:,1],markersize=6,markeredgecolor='black',**mdef_args)
 #e = ax.plot(v16_ldfa[:,0],v16_ldfa[:,1],markersize=6,markeredgecolor='black',**ldfa_args)
+f = ax.plot(v16_odf_rr4[:,0],v16_odf_rr4[:,1],markersize=6,markeredgecolor='black',**tdpt_d4_args)
 
 ax.yaxis.set_minor_locator(MultipleLocator(0.1))
 ax.xaxis.set_major_locator(MultipleLocator(2))
