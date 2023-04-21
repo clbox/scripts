@@ -10,6 +10,7 @@ start_time = time.time()
 hbar = _hbar * J * s
 ps = fs*1000
 boltzmann_kB = 8.617333262145e-5 #eV K-1
+hartree = 27.2113845
 #TODO spin
 
 def fermi_pop(x,x0,T):
@@ -30,11 +31,32 @@ def gaussian_function(x,x0,s):
 def gaussian_function2(x,x0,s):
     return 1./np.sqrt(np.pi*s*s)*np.exp(-(((x-x0) / (s))**2))
 
+def gaussian_function_qe(ei,ej,ef,s):
+
+    return 1./(np.pi*s**2) * np.exp(-((ef-np.array(ei))**2 + (ef-np.array(ej))**2)/s**2)
+
+# Franceso mauri 2005
+def gaussian_function_mauri(x,x0,s): 
+    return 1./np.sqrt(np.pi*s)*np.exp((((x) / (s))**2))
+
 def gaussian_norm(x0, s):
     return 0.5 * (1-special.erf((-x0/s)*(1/np.sqrt(2))))
 
 def gaussian_norm2(x0, s):
     return 0.5 * (1-special.erf((-x0)))
+
+def gaussian_derivative(x,x0,s):
+
+    gd  = (-x+x0)/(np.sqrt(2*np.pi)*s**3) * np.exp((-(x-x0)**2)/(2*s**2))
+
+    return gd
+
+def fermi_derivative(x,x0,T):
+
+    fermi_derivative = np.exp((x-x0)/(boltzmann_kB*T))
+    fermi_derivative = fermi_derivative / (((fermi_derivative+1)**2)*T*boltzmann_kB)
+        
+    return fermi_derivative
 
 def lorentzian_function(x,x0,s):
     return (1./np.pi)*((0.5*s)/((x-x0)*(x-x0)+(0.5*s)*(0.5*s)))
@@ -68,30 +90,108 @@ def methfessel_paxton_function(e,e0,s,N):
         delta_function_methfessel = delta_function_methfessel + tmp
     return delta_function_methfessel
 
+# Changed 2023
 class friction_gamma_parser():
-    def __init__(self,aims_file,gamma_files):
-        self.chem_pot = self.parse_chem_pot(aims_file)
-        #gamma_files.sort()
-        ks,coords,eis,ejs,couplings,kweights = self.parse_gamma_couplings(gamma_files)
-        self.ks = np.array(ks)
-        self.coords = np.array(coords)
-        self.eis = np.array(eis)
-        self.ejs = np.array(ejs)
-        self.couplings = np.array(couplings)
-        self.kweights = np.array(kweights)
-        self.friction_masses = self.parse_fiction_masses(aims_file)
+    def __init__(self,aims_file,gamma_files,nspin):
+        self.nspin = nspin
+        self.chem_pot = self.parse_chem_pot(aims_file,self.nspin)
 
-    def parse_chem_pot(self,aims_file):
-        chem_pot = 0
+        self.chem_pot_response = self.parse_chem_pot_response(aims_file,)
+        #gamma_files.sort()
+        max_k,gamma_files_sorted = self.sort_gamma_files(gamma_files)
+        self.friction_masses = self.parse_fiction_masses(aims_file)
+        eis,ejs,couplings,kweights = self.parse_gamma_couplings(gamma_files_sorted)
+
+
+
+
+        self.ndim = len(self.friction_masses) * 3
+
+
+        #self.ks = np.array(ks)
+        self.max_k = max_k
+        #self.coords = np.array(coords)
+        self.eis = eis
+        self.ejs = ejs
+        self.couplings = couplings
+        self.kweights = np.array(kweights)
+
+
+
+    def sort_gamma_files(self,gamma_files):
+
+        #gamma_files_sorted = np.array(gamma_files)
+
+        
+        if any('spin_002' in item for item in gamma_files):
+            self.nspin = 2
+        else:
+            self.nspin =1
+
+
+        if self.nspin == 2:
+            assert(len(gamma_files)%2==0)
+        
+        gamma_files_sorted = np.empty(shape=(int(len(gamma_files)/self.nspin), self.nspin), dtype=object)
+
+
+        if self.nspin ==2:
+            n1=0
+            n2=0
+            for i, gf in enumerate(gamma_files): 
+                if "_spin_001" in gf:
+                    gamma_files_sorted[n1,0] = gf
+                    n1+=1
+                elif "_spin_002" in gf:
+                    gamma_files_sorted[n2,1] = gf
+                    n2+=1
+        else:
+            gamma_files_sorted[:,0] = gamma_files
+
+        k_no_list = []
+        for i, gf in enumerate(gamma_files_sorted[:,0]):
+            if "spin" in gf:
+                k_no = int(gf.replace('friction_gamma_k','').replace('.out','').replace("_spin_001",""))
+            else:
+                k_no = int(gf.replace('friction_gamma_k','').replace('.out',''))
+
+            k_no_list.append(k_no)
+
+        idx = np.argsort(k_no_list)
+
+        gamma_files_sorted[:,:] = gamma_files_sorted[idx,:]
+        k_no_list = np.array(k_no_list)[idx]
+
+        max_k = np.max(k_no_list)
+
+
+        return max_k,gamma_files_sorted
+
+    def parse_chem_pot(self,aims_file,nspin):
+        chem_pot = np.zeros((2))
         with open(aims_file, "r") as af:
             for line in af:
                 if '**FRICTION**' in line:
                     break
                 if '| Chemical potential (Fermi level):' in line:
-                    chem_pot = float(line.split()[-2])
+                    chem_pot[:] = float(line.split()[-2])
+                if '| Chemical potential, spin up:' in line:
+                    chem_pot[0] = float(line.split()[-2]) 
+                if '| Chemical potential, spin dn:' in line:
+                    chem_pot[1] = float(line.split()[-2])  
         return chem_pot
 
-    
+    def parse_chem_pot_response(self,aims_file):
+        chem_pot_response = []
+        with open(aims_file, "r") as af:
+            for line in af:
+                if ' | Response of chemical potential (Fermi level):' in line:
+                    chem_pot_response.append(float(line.split()[-2]))
+
+        chem_pot_response = np.array(chem_pot_response)
+        
+        return chem_pot_response
+
     def parse_fiction_masses(self,aims_file):
         friction_atoms = []
         with open(aims_file, "r") as af:
@@ -99,8 +199,13 @@ class friction_gamma_parser():
             for line in af:
                 if 'The contents of geometry.in will be repeated verbatim below' in line:
                     read=True
+                if "moment" in line:
+                    continue
                 if 'calculate_friction .true.' in line:
-                    friction_atoms.append(element)
+                    if (len(element)>2):
+                        continue
+                    else:
+                        friction_atoms.append(element)
                 if read:
                     try:
                         element = line.split()[-1]
@@ -110,68 +215,92 @@ class friction_gamma_parser():
         a = Atoms(symbols=friction_atoms)
         friction_masses = a.get_masses()
 
-
-
-
         return friction_masses
 
-    def parse_gamma_couplings(self,gamma_files):
-        #Parsing all for now but in future less memory intensive to 
-        #process whilst parsing
+    def parse_gamma_couplings(self,gamma_files_sorted):
+        #Parsing a limited amount to reduce memory usage
         print("--- %s Start parser ---" % (time.time() - start_time))
-        ks = [] 
-        coords = []
-        eis = []
-        ejs = []
-        couplings = []
-        kweights = []
-        for file in gamma_files:
-            print(file)
-            with open(file, "r") as f:
-                read_gamma = False
-                for line in f:
-                    if '| k-point:' in line:
-                        k = int(line.split()[2])
-                        kweight = float(line.split()[-1])
-                        kweights.append(kweight)
-                    elif 'Friction component ' in line:
-                        read_gamma = True
-                        coord = int(line.split()[-1])-1
-                    elif read_gamma:
-                        ei = float(line.split()[0])
-                        ej = float(line.split()[1])
-                        coupling = complex(float(line.split()[2]),float(line.split()[3]))
+
+        # eis = [[0 for columns in range(0)] for i_rows in range(len(gamma_files))]
+
+        #ejs = [[0 for columns in range(0)] for i_rows in range(len(gamma_files))]
+
+
+
+        couplings = [[0 for columns in range(0)] for i_rows in range(self.nspin)]
+        eis = [[0 for columns in range(0)] for i_rows in range(self.nspin)] 
+        ejs = [[0 for columns in range(0)] for i_rows in range(self.nspin)]  
+
+
+        for i_spin in range(self.nspin):
+            couplings_s = [[0 for columns in range(0)] for i_rows in range(len(gamma_files_sorted[:,0]))]
+            eis_s = [[] for i_rows in range(len(gamma_files_sorted[:,0]))]
+            ejs_s = [[] for i_rows in range(len(gamma_files_sorted[:,0]))]
+
+            kweights = []
+            ks = [] 
+            for i,file in enumerate(gamma_files_sorted[:,i_spin]):
+                #print(file)
+                couplings_k = []
+                eis_k = []
+                ejs_k = []
+
+                with open(file, "r") as f:
+                    read_gamma = False
+
+                    for line in f:
+                        if '| k-point:' in line:
+                            #k = int(line.split()[2])
+                            kweight = float(line.split()[-1])
+                            kweights.append(kweight)
+                        elif 'Friction component ' in line:
+                            read_gamma = True
+                            coord = int(line.split()[-1])-1
+                            #coords.append(coord)
+                        elif read_gamma:
+                            
+                            ei = float(line.split()[0])
+                            ej = float(line.split()[1])
+                            
+                            # Trim eigenvalues
+                            if ei>ej:
+                                continue
+
+                            if ei == ej:
+                            #     # if abs(ei-self.chem_pot) > 0.05:
+                            #     if not (ei==self.chem_pot):
+                               continue
+
+
+                            coupling = complex(float(line.split()[2]),float(line.split()[3])) 
+                            couplings_k.append(coupling)
+
+                            if coord==1: #Eigenvalues same for each coomponent
+                                eis_k.append(ei)
+                                ejs_k.append(ej)
+
+                    couplings_s[i] = couplings_k
+                    eis_s[i] = eis_k
+                    ejs_s[i] = ejs_k
+
+            couplings[i_spin] = couplings_s
+            eis[i_spin] = eis_s
+            ejs[i_spin] = ejs_s
+
                         
-                        if ei>ej:
-                            continue
-                        if ei == ej:
-                            continue
-                        if abs(ei-ej)<1e-30:
-                            continue
-                        if ej-ei > 3.0:
-                            continue
-                        if ei > 0.:
-                            continue
-                        if ej < -6:
-                            continue
-                        #ks.append(k-1)
-                        ks.append(k)
-                        coords.append(coord)
-                        eis.append(ei)
-                        ejs.append(ej)
-                        couplings.append(coupling)
         print("--- %s End parser ---" % (time.time() - start_time))
-        return ks,coords,eis,ejs,couplings,kweights
+        return eis,ejs,couplings,kweights
 
 class friction_tensor():
     #So ks are base zero (i.e first k_point = 0)
     #ks is just a list of what k point each excitation is associated with
     def __init__(self,parser,temp,sigma,nspin):
         self.couplings = parser.couplings
-        self.coords = parser.coords
+        # self.coords = parser.coords
         self.eis = parser.eis
         self.ejs = parser.ejs
-        self.ks = parser.ks
+        #self.ks = parser.ks
+        self.max_k = parser.max_k
         self.chem_pot = parser.chem_pot
         self.temp = temp
         self.kweights=parser.kweights
@@ -179,98 +308,185 @@ class friction_tensor():
         self.friction_masses = parser.friction_masses
         self.nspin = nspin
 
-    def calc_tensor(self,mode='default',order=2,perturbing_energy=0.):
+        self.ndim = parser.ndim
+
+    def calc_tensor(self,mode='default',order=2,perturbing_energy=0.,fermi_correction='none',chemical_potential=None):
         print("--- %s Start calc tensor ---" % (time.time() - start_time))
-        ks = self.ks
-        coords = self.coords
-        ndim = np.max(coords)
-        max_k = np.max(ks)
+        #ks = self.ks
+        # coords = self.coords
+        # ndim = np.max(coords)+1
+
+        ndim = self.ndim
+        #max_k = np.max(ks)
         eis = self.eis
         ejs = self.ejs
         couplings = self.couplings
-        tensor = np.zeros((ndim+1,ndim+1))
-        chem_pot = self.chem_pot
+        tensor = np.zeros((ndim,ndim))
+
+        if chemical_potential is None:
+            chem_pot = self.chem_pot
+        else:
+            chem_pot = chemical_potential
+
+
         temp = self.temp
         nspin = self.nspin
-        for k in range(1,max_k+1):
-            #Loop over k_points 
-            #kw = self.kweights[k]
-            #i_kw = np.where(ks == k)[0]
-            kw = self.kweights[k-1]
+
+        if perturbing_energy > 0:
+            if mode in ['default','double_delta','prb_print','double_delta_methfessel_paxton']:
+                raise ValueError('mode can only deal with 0 perturbing energy')
             
-            for i in range(ndim+1):
-                i_idx = np.where((coords == i) & (ks == k))[0]
-                for j in range(ndim+1):
-                    if j < i:
-                        continue
-                    j_idx = np.where((coords == j) & (ks == k))[0]
 
-                    es = ejs[j_idx]-eis[i_idx]
+        for i_spin in range(self.nspin):
 
-                    if mode=='default':
-                        if perturbing_energy!=0.:
-                            print('default mode can only deal with 0 perturbing energy')
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(gaussian_function(es,0,self.sigma)/gaussian_norm(es,self.sigma))*kw*2/nspin)
+            couplings_s = couplings[i_spin]
+            #Loop over k_points
+            
+            for i_k,k in enumerate(range(1,self.max_k+1)):
 
-                    elif mode=='double_delta':
-                        if perturbing_energy!=0.:
-                            print('double delta mode can only deal with 0 perturbing energy')
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                            (gaussian_function(eis[i_idx]-chem_pot,0,self.sigma)*gaussian_function(ejs[j_idx]-chem_pot,0,self.sigma))*\
-                            kw*2/nspin)
+                kw = self.kweights[i_k]
 
-                    # elif mode=='double_delta_half_sigma':
-                    #     if perturbing_energy!=0.:
-                    #         print('double delta mode can only deal with 0 perturbing energy')
-                    #     tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                    #         (gaussian_function(eis[i_idx]-chem_pot,0,self.sigma/2)*gaussian_function(ejs[j_idx]-chem_pot,0,self.sigma/2))*\
-                    #         kw*2/nspin)
+                es = np.array(ejs[i_spin][i_k])-np.array(eis[i_spin][i_k])
 
-                    elif mode=='prb_print':
-                        if perturbing_energy!=0.:
-                            print('prb print mode can only deal with 0 perturbing energy')
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(gaussian_function(es,0,self.sigma)/gaussian_norm2(es,self.sigma))*kw*2/nspin)
 
-                    elif mode=='no_norm':
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(gaussian_function(es,perturbing_energy,self.sigma))*kw*2/nspin)
+                if mode == 'no_norm':
+                    gaussian_delta_factor = ((gaussian_function(es,perturbing_energy,self.sigma))/(perturbing_energy))*kw*2/nspin 
+                else:
+                    gaussian_delta_factor = ((gaussian_function(es,perturbing_energy,self.sigma))/(es))*kw*2/nspin
 
-                    elif mode=='gaussian2_no_norm':
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(gaussian_function2(es,perturbing_energy,self.sigma))*kw*2/nspin)
-                            
-                    elif mode=='lorentzian': #no additional normalisation
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(lorentzian_function(es,perturbing_energy,self.sigma))*kw*2/nspin)
 
-                    elif mode=='methfessel_paxton': #no additional normalisation
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                        (fermi_pop(eis[i_idx],chem_pot,temp)-fermi_pop(ejs[j_idx],chem_pot,temp))/(es)\
-                            *(methfessel_paxton_function(es,perturbing_energy,self.sigma,order))*kw*2/nspin)
+                fermi_factor = fermi_pop(np.array(eis[i_spin][i_k]),chem_pot[i_spin],temp)-fermi_pop(np.array(ejs[i_spin][i_k]),chem_pot[i_spin],temp)
 
-                    elif mode=='double_delta_methfessel_paxton':
-                        if perturbing_energy!=0.:
-                            print('double delta mode can only deal with 0 perturbing energy')
-                        tensor[i,j] += np.sum(np.conjugate(couplings[i_idx])*couplings[j_idx]*\
-                            (methfessel_paxton_function(eis[i_idx]-chem_pot,0,self.sigma,order)*methfessel_paxton_function(ejs[j_idx]-chem_pot,0,self.sigma,order))*\
-                            kw*2/nspin)
-                    else:
-                        print('No viable tensor mode selected')
+
+                couplings_k = np.array_split(np.array(couplings_s[i_k]), ndim)
+
+                omegas = es/hbar
+
+                for i in range(ndim):
+                    #i_idx = np.where((coords == i) & (ks == k))[0]
+                    for j in range(ndim):
+                        if j < i:
+                            continue
+                        #j_idx = np.where((coords == j) & (ks == k))[0]
+
+                        nacs = np.conjugate(couplings_k[i])*couplings_k[j]
+
+                        # for c_t,coupling in enumerate(nacs):
+                        #     if eis[i_k][c_t] == eis[i_k][c_t]:
+                        #         # nacs[c_t] = np.real(nacs[c_t]) + 0j
+                        #         nacs[c_t] = np.conjugate((couplings_k[i][c_t] - e_f_changes[i])) * (couplings_k[j][c_t] - e_f_changes[j])
+
+
+                        if mode=='default': # With additional normalisation described in RJM PRB 2016
+                            # We no longer like this
                     
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor*gaussian_delta_factor/gaussian_norm(es,self.sigma))
+
+                        elif mode=='double_delta':
+                
+                            tensor[i,j] += np.sum(nacs*\
+                                (gaussian_function(np.array(eis[i_spin][i_k])-chem_pot[i_spin],0,self.sigma)*gaussian_function(np.array(ejs[i_spin][i_k])-chem_pot[i_spin],0,self.sigma))*\
+                                kw*2/nspin)
+
+
+
+
+                        elif mode=='occ_delta_only':
+                
+                            tensor[i,j] += np.sum(
+                                (gaussian_function(np.array(ejs[i_spin][i_k])-chem_pot[i_spin],0,self.sigma))*\
+                                kw*2/nspin)
+
+
+                        elif mode=='unocc_delta_only':
+                
+                            tensor[i,j] += np.sum(gaussian_function(np.array(ejs[i_spin][i_k])-chem_pot[i_spin],0,self.sigma)*\
+                                kw*2/nspin)
+
+
+                        elif mode=='double_delta_mauri':
+                
+                            tensor[i,j] += np.sum(nacs*\
+                                (gaussian_function_mauri(np.array(eis[i_spin][i_k]),0,self.sigma)*gaussian_function_mauri(np.array(ejs[i_spin][i_k]),0,self.sigma))*\
+                                kw*2/nspin)
+
+
+                        elif mode=='novko':
+                
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor*(gaussian_derivative(np.array(eis[i_spin][i_k]),np.array(ejs[i_spin][i_k]),self.sigma))*\
+                                kw*2/nspin)
+
+                        elif mode=='double_delta_qe':
+
+                                tensor[i,j] += np.sum(nacs*\
+                                (gaussian_function_qe(eis[i_spin][i_k],ejs[i_spin][i_k],chem_pot[i_spin],self.sigma))* \
+                                kw*2/nspin)
+
+                        elif mode=='prb_print':
+                
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor/(es)\
+                                *(gaussian_function(es,0,self.sigma)/gaussian_norm2(es,self.sigma))*kw*2/nspin)
+
+
+                        elif mode=='no_norm':
+
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor*gaussian_delta_factor)
+
+                        elif mode=='no_norm_approx':
+
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor*gaussian_delta_factor)
+
+
+                        elif mode=='fermi_derivative':
+            
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_derivative(es,chem_pot[i_spin],temp)\
+                                *(gaussian_function(es,0,self.sigma))*kw*2/nspin)
+
+                        elif mode == 'laplace':
+
+                            omega_factors = (((perturbing_energy/hbar)*omegas)/(((perturbing_energy/hbar)**2)+omegas**2))
+                            tensor[i,j] += np.sum((nacs/(es**2))*fermi_factor*omega_factors*kw*2/nspin)
+
+                        elif mode=='gaussian2_no_norm':
+
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor/(es)\
+                                *(gaussian_function2(es,perturbing_energy,self.sigma))*kw*2/nspin)
+                                
+                        elif mode=='lorentzian': #no additional normalisation
+                
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor/(es)\
+                                *(lorentzian_function(es,perturbing_energy,self.sigma))*kw*2/nspin)
+
+                        elif mode=='methfessel_paxton': #no additional normalisation
+                    
+                            tensor[i,j] += np.sum(nacs*\
+                                fermi_factor/(es)\
+                                *(methfessel_paxton_function(es,perturbing_energy,self.sigma,order))*kw*2/nspin)
+
+                        elif mode=='double_delta_methfessel_paxton':
+                    
+                            tensor[i,j] += np.sum(nacs*\
+                                (methfessel_paxton_function(np.array(ejs[i_spin][i_k])-chem_pot[i_spin],0,self.sigma,order)*methfessel_paxton_function(np.array(ejs[i_spin][i_k])-chem_pot[i_spin],0,self.sigma,order))*\
+                                kw*2/nspin)
+
+                        else:
+                            print('No viable tensor mode selected')
+                        
         #tensor *= hbar*np.pi*2 
         #CLB 2021: don't think should have factor 2, removing it gives right tensor value
         tensor *= hbar*np.pi
 
-        for i in range(ndim+1):
+        for i in range(ndim):
             mass_i = self.friction_masses[i // 3]
-            for j in range(ndim+1):
+            for j in range(ndim):
                 if j < i:
                     continue
                 mass_j = self.friction_masses[j // 3]
@@ -279,6 +495,130 @@ class friction_tensor():
 
         print("--- %s End calc tensor ---" % (time.time() - start_time))
         return tensor*ps
+
+
+class laplacian():
+    #So ks are base zero (i.e first k_point = 0)
+    #ks is just a list of what k point each excitation is associated with
+    def __init__(self,parser,temp,nspin):
+        self.couplings = parser.couplings
+        self.coords = parser.coords
+        self.eis = parser.eis
+        self.ejs = parser.ejs
+        #self.ks = parser.ks
+        self.max_k = parser.max_k
+        self.chem_pot = parser.chem_pot
+        self.temp = temp
+        self.kweights=parser.kweights
+        self.friction_masses = parser.friction_masses
+        self.nspin = nspin
+
+    def calc_laplacian(self,mode='default',sigma=0.01,min_e=0.01,max_e=1.0,chemical_potential=None):
+        print("--- %s Start calc tensor ---" % (time.time() - start_time))
+        #ks = self.ks
+        coords = self.coords
+        ndim = np.max(coords)+1
+        #max_k = np.max(ks)
+        eis = self.eis
+        ejs = self.ejs
+        couplings = self.couplings
+
+
+        if chemical_potential is None:
+            chem_pot = self.chem_pot
+        else:
+            chem_pot = chemical_potential
+
+        temp = self.temp
+        nspin = self.nspin
+
+        e_grid = np.linspace(min_e,max_e,100)
+        discretization_length = e_grid[1]-e_grid[0]
+
+        spectrum = np.zeros(len(e_grid))
+
+        laplacian = np.zeros((ndim,ndim,len(e_grid)))
+
+        #Loop over k_points 
+        for i_k,k in enumerate(range(1,self.max_k+1)):
+
+            kw = self.kweights[k-1]
+            es = np.array(ejs[i_k])-np.array(eis[i_k])
+
+
+            fermi_factor = (fermi_pop(np.array(eis[i_k]),chem_pot,temp)-fermi_pop(np.array(ejs[i_k]),chem_pot,temp))*kw*2/nspin 
+
+            couplings_k = np.array_split(np.array(couplings[i_k]), ndim)
+
+            omegas = es/hbar
+
+
+
+            for i in range(ndim):
+                #i_idx = np.where((coords == i) & (ks == k))[0]
+                for j in range(ndim):
+                    if j < i:
+                        continue
+                    #j_idx = np.where((coords == j) & (ks == k))[0]
+
+                    nacs = np.conjugate(couplings_k[i])*couplings_k[j]
+
+
+                    # for c_t,coupling in enumerate(nacs):
+                    #     if eis[i_k][c_t] == eis[i_k][c_t]:
+                    #         # nacs[c_t] = np.real(nacs[c_t]) + 0j
+                    #         nacs[c_t] = np.conjugate((couplings_k[i][c_t] - e_f_changes[i])) * (couplings_k[j][c_t] - e_f_changes[j])
+
+
+                    if mode=='default': 
+
+                        for e_counter,e in enumerate(e_grid):
+                            omega_factors = (((e_grid[e_counter]/hbar)*omegas)/(((e_grid[e_counter]/hbar)**2)+omegas**2))
+                            laplacian[i,j,e_counter] += np.sum((nacs/(es**2))*fermi_factor*omega_factors)
+
+
+                    elif mode == 'gaussian': #TODO: NUMERICAL NORMALISATION OF GAUSSIAN?
+
+                        # for c_t,coupling in enumerate(nacs):
+
+                            gaussian_norm = 0.
+                            spectrum[:] = 0.
+
+                            gaussian_contribution = np.zeros((len(es)))
+
+                            for e_counter,e in enumerate(e_grid):
+
+                                gaussian_contribution[:] += gaussian_function(e,es,sigma)
+
+
+                            for e_counter,e in enumerate(e_grid):
+
+                                # gaussian_norm += gaussian_function(e,es,sigma)
+                                # laplacian[i,j,e_counter] += np.sum((nacs[c_t])*(fermi_factor[c_t]/es[c_t])*gaussian_function(es[c_t],e,sigma))
+                                spectrum[e_counter] = np.sum((nacs)*(fermi_factor/es)*gaussian_function(e,es,sigma)/(gaussian_contribution[:]*discretization_length))
+
+
+                            laplacian[i,j,:] += spectrum
+            
+
+                    else:
+                        print('No viable tensor mode selected')
+                    
+        #tensor *= hbar*np.pi*2 
+        #CLB 2021: don't think should have factor 2, removing it gives right tensor value
+        laplacian *= hbar*np.pi
+
+        for i in range(ndim):
+            mass_i = self.friction_masses[i // 3]
+            for j in range(ndim):
+                if j < i:
+                    continue
+                mass_j = self.friction_masses[j // 3]
+                laplacian[i,j,:] = laplacian[i,j,:]/np.sqrt(mass_i*mass_j)
+                laplacian[j,i,:] = laplacian[i,j,:]
+
+        print("--- %s End calc tensor ---" % (time.time() - start_time))
+        return e_grid,laplacian*ps
 
 class calc_gamma():
     #discretize ei and ejs with gaussian functions of smearing width sigma
@@ -500,7 +840,6 @@ class calc_gamma():
         print("--- %s End eval tensor2 ---" % (time.time() - start_time))
         return tensor
 
-
 # ..... 2021 rewrite 
 class friction_output_parser_2021():
     def __init__(self):
@@ -515,6 +854,9 @@ class friction_output_parser_2021():
                 if '| Chemical potential (Fermi level):' in line:
                     chem_pot = float(line.split()[-2])
         return chem_pot
+
+
+
 
     def parse_fiction_masses(self,aims_file):
         friction_atoms = []
@@ -672,7 +1014,6 @@ class calc_time_tensor_2021():
                         # .... discretize excitations
                         # don't need a separate loop over excitations in each structure since we
                         # assume the KS state energies do not change much, not sure how valid this 
-                        # assumption is but I think its already implicit within MDEF anyway.
                         for i_ex in range(n_excits1_k):
                             
                             ex1_e = eigenvalues1_k[i_ex,1] - eigenvalues1_k[i_ex,0]
@@ -687,7 +1028,382 @@ class calc_time_tensor_2021():
 
         return ex_energy_grid_tensor
 
+class friction_gamma_parser_2022():
+    def __init__(self,aims_file,gamma_files):
+        self.chem_pot = self.parse_chem_pot(aims_file)
+        self.chem_pot_response = self.parse_chem_pot_response(aims_file)
+        #gamma_files.sort()
+        max_k,gamma_files_sorted = self.sort_gamma_files(gamma_files)
+        self.friction_masses = self.parse_fiction_masses(aims_file)
+        coords,eis,ejs,couplings,kweights = self.parse_gamma_couplings(gamma_files_sorted,len(self.friction_masses))
 
+        #self.ks = np.array(ks)
+        self.max_k = max_k
+        self.coords = np.array(coords)
+        self.eis = eis
+        self.ejs = ejs
+        self.couplings = couplings
+        self.kweights = np.array(kweights)
+
+
+
+    def sort_gamma_files(self,gamma_files):
+
+        gamma_files_sorted = np.array(gamma_files)
+
+        k_no_list = []
+        for i, gf in enumerate(gamma_files):
+
+            if "spin" in gf:
+                k_no = int(gf.replace('friction_gamma_k','').replace('.out','').replace("_spin_001",""))
+            else:
+                k_no = int(gf.replace('friction_gamma_k','').replace('.out',''))
+            k_no_list.append(k_no)
+
+        idx = np.argsort(k_no_list)
+
+        gamma_files_sorted = gamma_files_sorted[idx]
+
+        max_k = np.max(k_no_list)
+
+
+        return max_k,gamma_files_sorted
+
+    def parse_chem_pot(self,aims_file):
+        chem_pot = 0
+        with open(aims_file, "r") as af:
+            for line in af:
+                if '**FRICTION**' in line:
+                    break
+                if '| Chemical potential (Fermi level):' in line:
+                    chem_pot = float(line.split()[-2])
+        return chem_pot
+
+    def parse_chem_pot_response(self,aims_file):
+        chem_pot_response = []
+        with open(aims_file, "r") as af:
+            for line in af:
+                if ' | Response of chemical potential (Fermi level):' in line:
+                    chem_pot_response.append(float(line.split()[-2]))
+
+        chem_pot_response = np.array(chem_pot_response)
+        
+        return chem_pot_response
+
+    
+    def parse_fiction_masses(self,aims_file):
+        friction_atoms = []
+        with open(aims_file, "r") as af:
+            read = False
+            for line in af:
+                if 'The contents of geometry.in will be repeated verbatim below' in line:
+                    read=True
+                if "moment" in line:
+                    continue
+                if 'calculate_friction .true.' in line:
+                    if (len(element)>2):
+                        continue
+                    else:
+                        friction_atoms.append(element)
+                if read:
+                    try:
+                        element = line.split()[-1]
+                    except:
+                        continue
+        
+        a = Atoms(symbols=friction_atoms)
+        friction_masses = a.get_masses()
+
+        return friction_masses
+
+    def parse_gamma_couplings(self,gamma_files,n_f_atoms):
+        #Parsing a limited amount to reduce memory usage
+        print("--- %s Start parser ---" % (time.time() - start_time))
+        ks = [] 
+        coords = []
+        # eis = [[0 for columns in range(0)] for i_rows in range(len(gamma_files))]
+        eis = [[] for i_rows in range(len(gamma_files))]
+
+        ejs = [[] for i_rows in range(len(gamma_files))]
+        #ejs = [[0 for columns in range(0)] for i_rows in range(len(gamma_files))]
+        couplings = [[0 for columns in range(0)] for i_rows in range(len(gamma_files))]
+        kweights = []
+        for i,file in enumerate(gamma_files):
+            #print(file)
+            couplings_k = []
+            eis_k = []
+            ejs_k = []
+
+            with open(file, "r") as f:
+                read_gamma = False
+
+                for line in f:
+                    if '| k-point:' in line:
+                        #k = int(line.split()[2])
+                        kweight = float(line.split()[-1])
+                        kweights.append(kweight)
+                    elif 'Friction component ' in line:
+                        read_gamma = True
+                        coord = int(line.split()[-1])-1
+                        coords.append(coord)
+                    elif read_gamma:
+                        
+                        ei = float(line.split()[0])
+
+                        # if ei > 0.:
+                        #     continue
+
+                        ej = float(line.split()[1])
+                        
+                        # Trim eigenvalues
+                        if ei>ej:
+                            continue
+
+                        #if ei == ej:
+                        #     # if abs(ei-self.chem_pot) > 0.05:
+                        #     if not (ei==self.chem_pot):
+                        #    continue
+
+
+                        # if (ej-ei)>1.0:
+                        #     continue
+
+                        # if (ej-ei)<1e-30:
+                        #     continue
+
+                        # if ei!=ej:
+                        #     continue
+
+                        # if ei > 2.8 or ej > 2.8:
+                        #     continue
+
+                        # if ei < -9.5 or ej < -9.5:
+                        #     continue
+                        # if ei == ej:
+                        #     continue
+                        # if abs(ei-ej)<1e-30:
+                        #     continue
+
+                        # if (abs(ei-ej)<1e-2 and ei!=ej):
+                        #      continue
+                        # if ej-ei > 3.0:
+                        #     continue
+
+                        # if ej < -6:
+                        #     continue
+
+
+                        coupling = complex(float(line.split()[2]),float(line.split()[3]))
+
+                             
+                        couplings_k.append(coupling)
+
+                        if coord==1: #Eigenvalues same for each coomponent
+                            eis_k.append(ei)
+                            ejs_k.append(ej)
+
+                couplings[i] = couplings_k
+                eis[i] = eis_k
+                ejs[i] = ejs_k
+
+                        
+        print("--- %s End parser ---" % (time.time() - start_time))
+        return coords,eis,ejs,couplings,kweights
+
+class friction_tensor_2022():
+    #So ks are base zero (i.e first k_point = 0)
+    #ks is just a list of what k point each excitation is associated with
+    def __init__(self,parser,temp,sigma,nspin):
+        self.couplings = parser.couplings
+        self.coords = parser.coords
+        self.eis = parser.eis
+        self.ejs = parser.ejs
+        #self.ks = parser.ks
+        self.max_k = parser.max_k
+        self.chem_pot = parser.chem_pot
+        self.temp = temp
+        self.kweights=parser.kweights
+        self.sigma = sigma
+        self.friction_masses = parser.friction_masses
+        self.nspin = nspin
+
+    def calc_tensor(self,mode='default',order=2,perturbing_energy=0.,fermi_correction='none',chemical_potential=None):
+        print("--- %s Start calc tensor ---" % (time.time() - start_time))
+        #ks = self.ks
+        coords = self.coords
+        ndim = np.max(coords)+1
+        #max_k = np.max(ks)
+        eis = self.eis
+        ejs = self.ejs
+        couplings = self.couplings
+        tensor = np.zeros((ndim,ndim))
+
+        if chemical_potential is None:
+            chem_pot = self.chem_pot
+        else:
+            chem_pot = chemical_potential
+
+
+        temp = self.temp
+        nspin = self.nspin
+
+        if perturbing_energy > 0:
+            if mode in ['default','double_delta','prb_print','double_delta_methfessel_paxton']:
+                raise ValueError('mode can only deal with 0 perturbing energy')
+            
+
+        #Loop over k_points 
+        for i_k,k in enumerate(range(1,self.max_k+1)):
+
+            kw = self.kweights[k-1]
+            es = np.array(ejs[i_k])-np.array(eis[i_k])
+
+            if mode == 'no_norm':
+                gaussian_delta_factor = ((gaussian_function(es,perturbing_energy,self.sigma))/(perturbing_energy))*kw*2/nspin 
+            else:
+                gaussian_delta_factor = ((gaussian_function(es,perturbing_energy,self.sigma))/(es))*kw*2/nspin 
+            fermi_factor = fermi_pop(np.array(eis[i_k]),chem_pot,temp)-fermi_pop(np.array(ejs[i_k]),chem_pot,temp)
+
+            couplings_k = np.array_split(np.array(couplings[i_k]), ndim)
+
+            e_f_changes = [0,0,-4.22975078227829,0,0,5.86890516634832]
+            e_f_changes = np.array(e_f_changes)
+
+            omegas = es/hbar
+
+            for i in range(ndim):
+                #i_idx = np.where((coords == i) & (ks == k))[0]
+                for j in range(ndim):
+                    if j < i:
+                        continue
+                    #j_idx = np.where((coords == j) & (ks == k))[0]
+
+                    nacs = np.conjugate(couplings_k[i])*couplings_k[j]
+
+                    # for c_t,coupling in enumerate(nacs):
+                    #     if eis[i_k][c_t] == eis[i_k][c_t]:
+                    #         # nacs[c_t] = np.real(nacs[c_t]) + 0j
+                    #         nacs[c_t] = np.conjugate((couplings_k[i][c_t] - e_f_changes[i])) * (couplings_k[j][c_t] - e_f_changes[j])
+
+
+                    if mode=='default': # With additional normalisation described in RJM PRB 2016
+                        # We no longer like this
+                
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor*gaussian_delta_factor/gaussian_norm(es,self.sigma))
+
+                    elif mode=='double_delta':
+              
+                        tensor[i,j] += np.sum(nacs*\
+                            (gaussian_function(np.array(eis[i_k])-chem_pot,0,self.sigma)*gaussian_function(np.array(ejs[i_k])-chem_pot,0,self.sigma))*\
+                            kw*2/nspin)
+
+
+
+
+                    elif mode=='occ_delta_only':
+              
+                        tensor[i,j] += np.sum(
+                            (gaussian_function(np.array(eis[i_k])-chem_pot,0,self.sigma))*\
+                            kw*2/nspin)
+
+
+                    elif mode=='unocc_delta_only':
+            
+                        tensor[i,j] += np.sum(gaussian_function(np.array(ejs[i_k])-chem_pot,0,self.sigma)*\
+                            kw*2/nspin)
+
+
+                    elif mode=='double_delta_mauri':
+              
+                        tensor[i,j] += np.sum(nacs*\
+                            (gaussian_function_mauri(np.array(eis[i_k]),0,self.sigma)*gaussian_function_mauri(np.array(ejs[i_k]),0,self.sigma))*\
+                            kw*2/nspin)
+
+
+                    elif mode=='novko':
+              
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor*(gaussian_derivative(np.array(eis[i_k]),np.array(ejs[i_k]),self.sigma))*\
+                            kw*2/nspin)
+
+                    elif mode=='double_delta_qe':
+
+                            tensor[i,j] += np.sum(nacs*\
+                            (gaussian_function_qe(eis[i_k],ejs[i_k],chem_pot,self.sigma))* \
+                            kw*2/nspin)
+
+                    elif mode=='prb_print':
+            
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor/(es)\
+                            *(gaussian_function(es,0,self.sigma)/gaussian_norm2(es,self.sigma))*kw*2/nspin)
+
+
+                    elif mode=='no_norm':
+
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor*gaussian_delta_factor)
+
+                    elif mode=='no_norm_approx':
+
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor*gaussian_delta_factor)
+
+
+                    elif mode=='fermi_derivative':
+           
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_derivative(es,chem_pot,temp)\
+                            *(gaussian_function(es,0,self.sigma))*kw*2/nspin)
+
+                    elif mode == 'laplace':
+
+                        omega_factors = (((perturbing_energy/hbar)*omegas)/(((perturbing_energy/hbar)**2)+omegas**2))
+                        tensor[i,j] += np.sum((nacs/(es**2))*fermi_factor*omega_factors*kw*2/nspin)
+
+                    elif mode=='gaussian2_no_norm':
+
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor/(es)\
+                            *(gaussian_function2(es,perturbing_energy,self.sigma))*kw*2/nspin)
+                            
+                    elif mode=='lorentzian': #no additional normalisation
+            
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor/(es)\
+                            *(lorentzian_function(es,perturbing_energy,self.sigma))*kw*2/nspin)
+
+                    elif mode=='methfessel_paxton': #no additional normalisation
+                 
+                        tensor[i,j] += np.sum(nacs*\
+                            fermi_factor/(es)\
+                            *(methfessel_paxton_function(es,perturbing_energy,self.sigma,order))*kw*2/nspin)
+
+                    elif mode=='double_delta_methfessel_paxton':
+                
+                        tensor[i,j] += np.sum(nacs*\
+                            (methfessel_paxton_function(np.array(eis[i_k])-chem_pot,0,self.sigma,order)*methfessel_paxton_function(np.array(ejs[i_k])-chem_pot,0,self.sigma,order))*\
+                            kw*2/nspin)
+
+                    else:
+                        print('No viable tensor mode selected')
+                    
+        #tensor *= hbar*np.pi*2 
+        #CLB 2021: don't think should have factor 2, removing it gives right tensor value
+        tensor *= hbar*np.pi
+
+        for i in range(ndim):
+            mass_i = self.friction_masses[i // 3]
+            for j in range(ndim):
+                if j < i:
+                    continue
+                mass_j = self.friction_masses[j // 3]
+                tensor[i,j] = tensor[i,j]/np.sqrt(mass_i*mass_j)
+                tensor[j,i] = tensor[i,j]
+
+        print("--- %s End calc tensor ---" % (time.time() - start_time))
+        return tensor*ps
 # couplings  [2,n_spin,n_k_points,dimension,dimension,3,max_n_excits]
 
 # gamma_files = ['/Users/u1865573/Downloads/friction_gamma_k001.out','/Users/u1865573/Downloads/friction_gamma_k002.out']

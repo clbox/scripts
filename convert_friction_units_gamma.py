@@ -52,7 +52,7 @@ ft = np.zeros_like(mass_weighted_ft)
     #i_atom = i // 3
     #for j in range(dimension):
         #j_atom = j // 3
-i_atom = int(friction_tensor_file.replace('.txt','').split('_')[-1]) // 3
+i_atom = int(friction_tensor_file.replace('.txt','').split('_')[2]) // 3
 j_atom = i_atom
 print(friction_masses[i_atom])
 ft[:] = mass_weighted_ft[:]*np.sqrt(friction_masses[i_atom]*friction_masses[j_atom])

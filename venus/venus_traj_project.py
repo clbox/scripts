@@ -117,21 +117,58 @@ class venus_analysis():
             lines_per_traj = n_atoms + 2
             nsteps = self.get_printed_nsteps()
             positions = np.zeros((nsteps,n_atoms,3))
-            c=0
+            #c=0
             i=0
+            i_atom=0
+
+            line_counter = 0
             for line in f:
-                if c<2:
-                    c+=1
-                    continue
-                elif c == lines_per_traj-1:
-                    i+=1
-                    c=0
-                    continue
+
+
+                if line_counter < 2:
+                    parse_data = False
                 else:
+                    parse_data = True
+
+
+                if parse_data:
                     pos = np.array((float(line.split()[1]),float(line.split()[2]),float(line.split()[3])))
-                    positions[i,c-2,:] = pos
-                    c+=1
+                    positions[i,i_atom,:] = pos
+                    i_atom += 1
+                    
+                if ((lines_per_traj-1)==line_counter):
+                    line_counter=0
+                    i_atom = 0
+                    i+=1
                     continue
+                
+                line_counter += 1
+
+
+
+
+
+
+
+                # if c<2:
+                #     c+=1
+                #     continue
+                # # elif c == lines_per_traj+1:
+                # #     i+=1
+                # #     c=0
+                # #     continue
+                # else:
+                #     pos = np.array((float(line.split()[1]),float(line.split()[2]),float(line.split()[3])))
+                #     positions[i,c-2,:] = pos
+                #     if (lines_per_traj==c):
+                #         print(line)
+                #         c=0
+                #         i+=1
+                #         continue
+                #     else:
+                #         c+=1
+                #         continue
+            
         return positions
 
     def get_element_list(self,traj_no):
@@ -865,6 +902,9 @@ def get_modes(atoms,friction_atoms,mode=2):
     elif mode == 2:
         modes = calc_modes2(atoms,friction_atoms)
 
+    elif mode == 3:
+        modes = calc_modes3(atoms,friction_atoms)
+
     return modes
     
 def calc_modes(atoms,friction_atoms):
@@ -992,6 +1032,78 @@ def calc_modes2(atoms,friction_atoms):
         #print('Converting any NaNs to 0')
         modes = np.nan_to_num(modes,nan=0)
         return modes
+
+
+
+def calc_modes3(atoms,friction_atoms):
+        """Calculates required transformation matrix to convert diatomic
+        friction tensor to internal coordinates as defined by CL Box and WG Stark
+        """
+
+        ndim = len(friction_atoms)*3
+        modes = np.zeros([ndim,ndim])
+        f1 = friction_atoms[0]
+        f2 = friction_atoms[1]
+
+        pos1 = atoms.positions[f1]
+        pos2 = atoms.positions[f2]
+
+        x1 = pos1[0]
+        y1 = pos1[1]
+        z1 = pos1[2]
+        x2 = pos2[0]
+        y2 = pos2[1]
+        z2 = pos2[2]
+
+        m1 = atoms.get_masses()[f1]
+        m2 = atoms.get_masses()[f2]
+
+        mt = m1 + m2
+        mr1 = m1/mt
+
+        mr2 = m2/mt
+
+        r = np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)
+        r1 = np.sqrt((x1-x2)**2 + (y1-y2)**2)
+
+        #mode 1 - r
+        modes[0,0] = (x1-x2)/r
+        modes[1,0] = (y1-y2)/r
+        modes[2,0] = (z1-z2)/r
+
+        modes[3,0] = (x2-x1)/r
+        modes[4,0] = (y2-y1)/r
+        modes[5,0] = (z2-z1)/r
+
+        #mode 2  - theta
+        modes[0,1] = ((x2-x1)*(z2-z1))/(r*r*r1)
+        modes[1,1] = ((y2-y1)*(z2-z1))/(r*r*r1)
+        modes[2,1] = -r1/(r*r)
+
+        modes[3,1] = ((x1-x2)*(z2-z1))/(r*r*r1)
+        modes[4,1] = ((y1-y2)*(z2-z1))/(r*r*r1)
+        modes[5,1] = r1/(r*r)
+
+        #mode 3 - phi
+        modes[0,2] = (y1-y2)/(r1*r1)
+        modes[1,2] = (x2-x1)/(r1*r1)
+        modes[2,2] = 0
+
+        modes[3,2] = (y2-y1)/(r1*r1)
+        modes[4,2] = (x1-x2)/(r1*r1)
+        modes[5,2] = 0
+
+        #mode 4 is the x translation
+        modes[:,3] = [mr1,0.,0.,mr2,0.,0.]
+        #mode 5 is the y translation
+        modes[:,4] = [0.,mr1,0.,0.,mr2,0.]
+        #mode 6 is the z translation
+        modes[:,5] = [0.,0.,mr1,0.,0.,mr2]
+
+        #print('Converting any NaNs to 0')
+        modes = np.nan_to_num(modes,nan=0)
+        return modes
+
 
 def write_array(filename,array):
     with open(filename, 'w') as outfile:
